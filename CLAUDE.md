@@ -99,6 +99,17 @@ Refer to `docs/git/` for detailed guidelines:
 
 **Branch Strategy:** Git-flow with `main` (production), `develop` (integration). All feature branches start from `develop`.
 
+## Development Guides
+
+Refer to `docs/dev/` for development guidelines:
+
+| Document | Description |
+| -------- | ----------- |
+| [claude-commands-guide.md](docs/dev/claude-commands-guide.md) | TCA Feature development workflow |
+| [kentback-tdd-guide.md](docs/dev/kentback-tdd-guide.md) | TDD principles with Swift & TCA |
+| [versioning-guide.md](docs/dev/versioning-guide.md) | iOS app versioning (SemVer, build numbers) |
+| [development-checklist.md](docs/dev/development-checklist.md) | Feature development checklist |
+
 ## Issue & PR Templates
 
 - Issue templates: `.github/ISSUE_TEMPLATE/` (bug_report, feature_request, todo)
