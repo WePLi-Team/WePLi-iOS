@@ -69,8 +69,19 @@ private extension LoginView {
 
 private extension LoginView {
   var albumCarousel: some View {
-    InteractiveAlbumCarousel(albumCount: 10)
-      .padding(.horizontal, -24)
+    InteractiveAlbumCarousel(
+      albumImages: [
+        Asset.Assets.album1,
+        Asset.Assets.album2,
+        Asset.Assets.album3,
+        Asset.Assets.album4,
+        Asset.Assets.album1,
+        Asset.Assets.album2,
+        Asset.Assets.album3,
+        Asset.Assets.album4
+      ]
+    )
+    .padding(.horizontal, -24)
   }
 }
 
