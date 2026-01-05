@@ -6,13 +6,13 @@ struct MainView: View {
 
   var body: some View {
     WithPerceptionTracking {
-      ZStack {
+      ZStack(alignment: .top) {
         Color.black
           .ignoresSafeArea()
 
         ScrollView(.vertical, showsIndicators: false) {
           VStack(spacing: 24) {
-            // 릴레이리스트 섹션
+            // 릴레이리스트 섹션 (상단 safe area까지 확장)
             RelayListSection(
               relayLists: store.relayLists,
               currentIndex: store.currentRelayListIndex,
@@ -66,15 +66,13 @@ struct MainView: View {
               .frame(height: 100)
           }
         }
+        .ignoresSafeArea(edges: .top)
 
         // 상단 앱바 (블러 배경)
-        VStack {
-          MainAppBar(
-            onSearchTapped: { store.send(.searchButtonTapped) },
-            onNotificationTapped: { store.send(.notificationButtonTapped) }
-          )
-          Spacer()
-        }
+        MainAppBar(
+          onSearchTapped: { store.send(.searchButtonTapped) },
+          onNotificationTapped: { store.send(.notificationButtonTapped) }
+        )
       }
       .onAppear {
         store.send(.onAppear)
@@ -90,46 +88,54 @@ private struct MainAppBar: View {
   let onNotificationTapped: () -> Void
 
   var body: some View {
-    HStack {
-      // 로고
-      Text("w.")
-        .font(.system(size: 24, weight: .bold))
-        .foregroundColor(.white)
-
-      Spacer()
-
-      // 검색 버튼
-      Button(action: onSearchTapped) {
-        Image(systemName: "magnifyingglass")
-          .font(.system(size: 20))
+    VStack(spacing: 0) {
+      HStack {
+        // 로고
+        Text("w.")
+          .font(.system(size: 24, weight: .bold))
           .foregroundColor(.white)
-      }
-      .frame(width: 40, height: 40)
 
-      // 알림 버튼
-      Button(action: onNotificationTapped) {
-        ZStack(alignment: .topTrailing) {
-          Image(systemName: "bell")
+        Spacer()
+
+        // 검색 버튼
+        Button(action: onSearchTapped) {
+          Image(systemName: "magnifyingglass")
             .font(.system(size: 20))
             .foregroundColor(.white)
-
-          Circle()
-            .fill(Color.red)
-            .frame(width: 5, height: 5)
-            .offset(x: 2, y: -2)
         }
+        .frame(width: 40, height: 40)
+
+        // 알림 버튼
+        Button(action: onNotificationTapped) {
+          ZStack(alignment: .topTrailing) {
+            Image(systemName: "bell")
+              .font(.system(size: 20))
+              .foregroundColor(.white)
+
+            Circle()
+              .fill(Color.red)
+              .frame(width: 5, height: 5)
+              .offset(x: 2, y: -2)
+          }
+        }
+        .frame(width: 40, height: 40)
       }
-      .frame(width: 40, height: 40)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 8)
+
+      Spacer()
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 8)
     .background(
-      LinearGradient(
-        colors: [Color.black.opacity(0.8), Color.black.opacity(0)],
-        startPoint: .top,
-        endPoint: .bottom
-      )
-      .blur(radius: 10)
+      VStack {
+        LinearGradient(
+          colors: [Color.black.opacity(0.7), Color.black.opacity(0)],
+          startPoint: .top,
+          endPoint: .bottom
+        )
+        .frame(height: 120)
+        Spacer()
+      }
+      .ignoresSafeArea(edges: .top)
     )
   }
 }
@@ -142,28 +148,32 @@ private struct RelayListSection: View {
   let onPageChanged: (Int) -> Void
 
   var body: some View {
-    VStack(spacing: 16) {
-      TabView(selection: Binding(
-        get: { currentIndex },
-        set: { onPageChanged($0) }
-      )) {
-        ForEach(Array(relayLists.enumerated()), id: \.element.id) { index, relayList in
-          RelayListCard(relayList: relayList)
-            .tag(index)
+    GeometryReader { geometry in
+      let topSafeArea = geometry.safeAreaInsets.top
+      VStack(spacing: 16) {
+        TabView(selection: Binding(
+          get: { currentIndex },
+          set: { onPageChanged($0) }
+        )) {
+          ForEach(Array(relayLists.enumerated()), id: \.element.id) { index, relayList in
+            RelayListCard(relayList: relayList, topSafeArea: topSafeArea)
+              .tag(index)
+          }
         }
-      }
-      .tabViewStyle(.page(indexDisplayMode: .never))
-      .frame(height: 392)
+        .tabViewStyle(.page(indexDisplayMode: .never))
 
-      // 커스텀 인디케이터
-      HStack(spacing: 4) {
-        ForEach(0 ..< relayLists.count, id: \.self) { index in
-          Capsule()
-            .fill(Color.white.opacity(index == currentIndex ? 0.7 : 0.3))
-            .frame(width: index == currentIndex ? 20 : 4, height: 4)
+        // 커스텀 인디케이터
+        HStack(spacing: 4) {
+          ForEach(0 ..< relayLists.count, id: \.self) { index in
+            Capsule()
+              .fill(Color.white.opacity(index == currentIndex ? 0.7 : 0.3))
+              .frame(width: index == currentIndex ? 20 : 4, height: 4)
+          }
         }
+        .padding(.bottom, 8)
       }
     }
+    .frame(height: 450)
   }
 }
 
@@ -171,6 +181,7 @@ private struct RelayListSection: View {
 
 private struct RelayListCard: View {
   let relayList: RelayList
+  var topSafeArea: CGFloat = 0
 
   var body: some View {
     ZStack(alignment: .bottom) {
@@ -197,8 +208,9 @@ private struct RelayListCard: View {
 
       // 콘텐츠
       VStack(alignment: .leading, spacing: 0) {
+        // 상단 safe area + 앱바 높이만큼 여백
         Spacer()
-          .frame(height: 100)
+          .frame(height: topSafeArea + 60)
 
         VStack(alignment: .leading, spacing: 4) {
           // 제목
@@ -230,7 +242,6 @@ private struct RelayListCard: View {
       .padding(.horizontal, 20)
       .padding(.bottom, 20)
     }
-    .clipShape(RoundedRectangle(cornerRadius: 0))
   }
 }
 
