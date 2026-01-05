@@ -14,15 +14,6 @@ enum SocialLoginProvider {
       return "Google로 시작하기"
     }
   }
-
-  var iconName: String {
-    switch self {
-    case .apple:
-      return "apple.logo"
-    case .google:
-      return "g.circle.fill"
-    }
-  }
 }
 
 // MARK: - SocialLoginButton
@@ -71,39 +62,10 @@ struct SocialLoginButton: View {
         .foregroundColor(.white)
 
     case .google:
-      GoogleIcon()
+      Asset.Assets.google.swiftUIImage
+        .resizable()
+        .aspectRatio(contentMode: .fit)
     }
-  }
-}
-
-// MARK: - GoogleIcon
-
-struct GoogleIcon: View {
-  var body: some View {
-    ZStack {
-      Circle()
-        .fill(Color.white)
-        .frame(width: 18, height: 18)
-
-      Text("G")
-        .font(.system(size: 12, weight: .bold))
-        .foregroundStyle(
-          LinearGradient(
-            colors: googleColors,
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-          )
-        )
-    }
-  }
-
-  private var googleColors: [Color] {
-    [
-      Color(red: 66.0 / 255.0, green: 133.0 / 255.0, blue: 244.0 / 255.0),
-      Color(red: 219.0 / 255.0, green: 68.0 / 255.0, blue: 55.0 / 255.0),
-      Color(red: 244.0 / 255.0, green: 180.0 / 255.0, blue: 0.0 / 255.0),
-      Color(red: 15.0 / 255.0, green: 157.0 / 255.0, blue: 88.0 / 255.0)
-    ]
   }
 }
 
