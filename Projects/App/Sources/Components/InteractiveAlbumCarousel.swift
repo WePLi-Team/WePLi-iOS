@@ -5,69 +5,30 @@ import SwiftUI
 struct InteractiveAlbumCarousel: View {
   let albumCount: Int
 
-  private let baseSize: CGFloat = 60
+  private let minSize: CGFloat = 60
   private let maxSize: CGFloat = 100
   private let spacing: CGFloat = 12
 
   var body: some View {
     GeometryReader { outerGeometry in
-      let screenCenterX = outerGeometry.size.width / 2
+      let centerX = outerGeometry.size.width / 2
 
       ScrollView(.horizontal, showsIndicators: false) {
-        HStack(spacing: spacing) {
+        HStack(alignment: .center, spacing: spacing) {
           ForEach(0..<albumCount, id: \.self) { index in
-            GeometryReader { geometry in
-              let itemCenterX = geometry.frame(in: .global).midX
-              let distanceFromCenter = abs(screenCenterX - itemCenterX)
-              let scale = calculateScale(distance: distanceFromCenter)
-              let size = baseSize * scale
-
-              albumCoverView(index: index, size: size)
-                .frame(width: baseSize, height: baseSize)
-                .scaleEffect(scale)
-                .animation(.interactiveSpring(response: 0.3, dampingFraction: 0.7), value: scale)
-            }
-            .frame(width: baseSize, height: maxSize)
+            AlbumItemView(
+              index: index,
+              screenCenterX: centerX,
+              minSize: minSize,
+              maxSize: maxSize,
+              gradientColors: albumGradientColors(for: index)
+            )
           }
         }
-        .padding(.horizontal, screenCenterX - baseSize / 2)
+        .padding(.horizontal, (outerGeometry.size.width - minSize) / 2)
       }
     }
-    .frame(height: maxSize + 20)
-    .clipped()
-  }
-
-  private func calculateScale(distance: CGFloat) -> CGFloat {
-    let maxDistance: CGFloat = 150
-    let minScale: CGFloat = 1.0
-    let maxScale: CGFloat = maxSize / baseSize
-
-    let normalizedDistance = min(distance / maxDistance, 1.0)
-    let scale = maxScale - (maxScale - minScale) * normalizedDistance
-
-    return max(minScale, scale)
-  }
-
-  @ViewBuilder
-  private func albumCoverView(index: Int, size: CGFloat) -> some View {
-    let cornerRadius: CGFloat = size > 80 ? 12 : 8
-
-    RoundedRectangle(cornerRadius: cornerRadius)
-      .fill(
-        LinearGradient(
-          colors: albumGradientColors(for: index),
-          startPoint: .topLeading,
-          endPoint: .bottomTrailing
-        )
-      )
-      .overlay {
-        if index == 2 {
-          Text("A NEW\nHOPE")
-            .font(.system(size: 8, weight: .bold))
-            .foregroundColor(.white)
-            .multilineTextAlignment(.center)
-        }
-      }
+    .frame(height: maxSize)
   }
 
   private func albumGradientColors(for index: Int) -> [Color] {
@@ -98,6 +59,74 @@ struct InteractiveAlbumCarousel: View {
       ]
     ]
     return gradients[index % gradients.count]
+  }
+}
+
+// MARK: - AlbumItemView
+
+private struct AlbumItemView: View {
+  let index: Int
+  let screenCenterX: CGFloat
+  let minSize: CGFloat
+  let maxSize: CGFloat
+  let gradientColors: [Color]
+
+  @State private var itemCenterX: CGFloat = 0
+
+  private var distance: CGFloat {
+    abs(screenCenterX - itemCenterX)
+  }
+
+  private var currentSize: CGFloat {
+    let maxDistance: CGFloat = 120
+    let normalizedDistance = min(distance / maxDistance, 1.0)
+    let size = maxSize - (maxSize - minSize) * normalizedDistance
+    return max(minSize, size)
+  }
+
+  var body: some View {
+    let cornerRadius: CGFloat = currentSize > 80 ? 12 : 8
+
+    RoundedRectangle(cornerRadius: cornerRadius)
+      .fill(
+        LinearGradient(
+          colors: gradientColors,
+          startPoint: .topLeading,
+          endPoint: .bottomTrailing
+        )
+      )
+      .frame(width: currentSize, height: currentSize)
+      .overlay {
+        if index == 2 {
+          Text("A NEW\nHOPE")
+            .font(.system(size: 8 * (currentSize / minSize), weight: .bold))
+            .foregroundColor(.white)
+            .multilineTextAlignment(.center)
+        }
+      }
+      .background(
+        GeometryReader { geometry in
+          Color.clear
+            .preference(
+              key: CenterXPreferenceKey.self,
+              value: geometry.frame(in: .global).midX
+            )
+        }
+      )
+      .onPreferenceChange(CenterXPreferenceKey.self) { value in
+        itemCenterX = value
+      }
+      .animation(.interactiveSpring(response: 0.3, dampingFraction: 0.8), value: currentSize)
+  }
+}
+
+// MARK: - CenterXPreferenceKey
+
+private struct CenterXPreferenceKey: PreferenceKey {
+  static var defaultValue: CGFloat = 0
+
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = nextValue()
   }
 }
 
