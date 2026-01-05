@@ -6,73 +6,76 @@ struct MainView: View {
 
   var body: some View {
     WithPerceptionTracking {
-      ZStack(alignment: .top) {
-        Color.black
-          .ignoresSafeArea()
+      GeometryReader { geometry in
+        let topSafeArea = geometry.safeAreaInsets.top
 
-        ScrollView(.vertical, showsIndicators: false) {
-          VStack(spacing: 24) {
-            // 릴레이리스트 섹션 (상단 safe area까지 확장)
-            RelayListSection(
-              relayLists: store.relayLists,
-              currentIndex: store.currentRelayListIndex,
-              onPageChanged: { store.send(.relayListPageChanged($0)) }
-            )
+        ZStack(alignment: .top) {
+          ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 24) {
+              // 릴레이리스트 섹션 (상단 safe area까지 확장)
+              RelayListSection(
+                relayLists: store.relayLists,
+                currentIndex: store.currentRelayListIndex,
+                topSafeArea: topSafeArea,
+                onPageChanged: { store.send(.relayListPageChanged($0)) }
+              )
 
-            // 위플리 TOP 100
-            ChartSection(
-              songs: store.chartSongs,
-              updateTime: store.chartUpdateTime,
-              onSongTapped: { store.send(.chartSongTapped($0)) },
-              onSeeAllTapped: { store.send(.seeAllChartTapped) }
-            )
+              // 위플리 TOP 100
+              ChartSection(
+                songs: store.chartSongs,
+                updateTime: store.chartUpdateTime,
+                onSongTapped: { store.send(.chartSongTapped($0)) },
+                onSeeAllTapped: { store.send(.seeAllChartTapped) }
+              )
 
-            // 배너 섹션
-            BannerSection(
-              banners: store.banners,
-              onBannerTapped: { store.send(.bannerTapped($0)) }
-            )
+              // 배너 섹션
+              BannerSection(
+                banners: store.banners,
+                onBannerTapped: { store.send(.bannerTapped($0)) }
+              )
 
-            // 위플리 인기 랭킹
-            ArtistRankingSection(
-              artists: store.popularArtists,
-              onArtistTapped: { store.send(.artistTapped($0)) }
-            )
+              // 위플리 인기 랭킹
+              ArtistRankingSection(
+                artists: store.popularArtists,
+                onArtistTapped: { store.send(.artistTapped($0)) }
+              )
 
-            // 위플리 추천 플레이리스트
-            PlaylistSection(
-              title: "위플리 추천 플레이리스트",
-              playlists: store.recommendedPlaylists,
-              onPlaylistTapped: { store.send(.playlistTapped($0)) },
-              onSeeAllTapped: { store.send(.seeAllPlaylistTapped) }
-            )
+              // 위플리 추천 플레이리스트
+              PlaylistSection(
+                title: "위플리 추천 플레이리스트",
+                playlists: store.recommendedPlaylists,
+                onPlaylistTapped: { store.send(.playlistTapped($0)) },
+                onSeeAllTapped: { store.send(.seeAllPlaylistTapped) }
+              )
 
-            // 테마별 플레이리스트
-            PlaylistSection(
-              title: "테마별 플레이리스트",
-              playlists: store.themedPlaylists,
-              onPlaylistTapped: { store.send(.playlistTapped($0)) },
-              onSeeAllTapped: { store.send(.seeAllThemedPlaylistTapped) }
-            )
+              // 테마별 플레이리스트
+              PlaylistSection(
+                title: "테마별 플레이리스트",
+                playlists: store.themedPlaylists,
+                onPlaylistTapped: { store.send(.playlistTapped($0)) },
+                onSeeAllTapped: { store.send(.seeAllThemedPlaylistTapped) }
+              )
 
-            // YouTube Music
-            YouTubeSection(
-              videos: store.youtubeVideos,
-              onVideoTapped: { store.send(.youtubeVideoTapped($0)) },
-              onSeeAllTapped: { store.send(.seeAllYoutubeTapped) }
-            )
+              // YouTube Music
+              YouTubeSection(
+                videos: store.youtubeVideos,
+                onVideoTapped: { store.send(.youtubeVideoTapped($0)) },
+                onSeeAllTapped: { store.send(.seeAllYoutubeTapped) }
+              )
 
-            Spacer()
-              .frame(height: 100)
+              Spacer()
+                .frame(height: 100)
+            }
           }
+
+          // 상단 앱바
+          MainAppBar(
+            topSafeArea: topSafeArea,
+            onSearchTapped: { store.send(.searchButtonTapped) },
+            onNotificationTapped: { store.send(.notificationButtonTapped) }
+          )
         }
         .ignoresSafeArea(edges: .top)
-
-        // 상단 앱바 (블러 배경)
-        MainAppBar(
-          onSearchTapped: { store.send(.searchButtonTapped) },
-          onNotificationTapped: { store.send(.notificationButtonTapped) }
-        )
       }
       .onAppear {
         store.send(.onAppear)
@@ -84,11 +87,15 @@ struct MainView: View {
 // MARK: - MainAppBar
 
 private struct MainAppBar: View {
+  let topSafeArea: CGFloat
   let onSearchTapped: () -> Void
   let onNotificationTapped: () -> Void
 
   var body: some View {
     VStack(spacing: 0) {
+      Spacer()
+        .frame(height: topSafeArea)
+
       HStack {
         // 로고
         Text("w.")
@@ -125,18 +132,6 @@ private struct MainAppBar: View {
 
       Spacer()
     }
-    .background(
-      VStack {
-        LinearGradient(
-          colors: [Color.black.opacity(0.7), Color.black.opacity(0)],
-          startPoint: .top,
-          endPoint: .bottom
-        )
-        .frame(height: 120)
-        Spacer()
-      }
-      .ignoresSafeArea(edges: .top)
-    )
   }
 }
 
@@ -145,35 +140,32 @@ private struct MainAppBar: View {
 private struct RelayListSection: View {
   let relayLists: [RelayList]
   let currentIndex: Int
+  let topSafeArea: CGFloat
   let onPageChanged: (Int) -> Void
 
   var body: some View {
-    GeometryReader { geometry in
-      let topSafeArea = geometry.safeAreaInsets.top
-      VStack(spacing: 16) {
-        TabView(selection: Binding(
-          get: { currentIndex },
-          set: { onPageChanged($0) }
-        )) {
-          ForEach(Array(relayLists.enumerated()), id: \.element.id) { index, relayList in
-            RelayListCard(relayList: relayList, topSafeArea: topSafeArea)
-              .tag(index)
-          }
+    VStack(spacing: 16) {
+      TabView(selection: Binding(
+        get: { currentIndex },
+        set: { onPageChanged($0) }
+      )) {
+        ForEach(Array(relayLists.enumerated()), id: \.element.id) { index, relayList in
+          RelayListCard(relayList: relayList, topSafeArea: topSafeArea)
+            .tag(index)
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
+      }
+      .tabViewStyle(.page(indexDisplayMode: .never))
+      .frame(height: 400 + topSafeArea)
 
-        // 커스텀 인디케이터
-        HStack(spacing: 4) {
-          ForEach(0 ..< relayLists.count, id: \.self) { index in
-            Capsule()
-              .fill(Color.white.opacity(index == currentIndex ? 0.7 : 0.3))
-              .frame(width: index == currentIndex ? 20 : 4, height: 4)
-          }
+      // 커스텀 인디케이터
+      HStack(spacing: 4) {
+        ForEach(0 ..< relayLists.count, id: \.self) { index in
+          Capsule()
+            .fill(Color.white.opacity(index == currentIndex ? 0.7 : 0.3))
+            .frame(width: index == currentIndex ? 20 : 4, height: 4)
         }
-        .padding(.bottom, 8)
       }
     }
-    .frame(height: 450)
   }
 }
 
