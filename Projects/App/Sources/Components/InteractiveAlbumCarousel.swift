@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 // MARK: - InteractiveAlbumCarousel
@@ -11,8 +12,9 @@ struct InteractiveAlbumCarousel: View {
   private let spacing: CGFloat = 12
 
   @State private var currentIndex: Int = 0
-  @State private var timer: Timer?
-  @State private var screenLeadingX: CGFloat = 0
+  @State private var scrollTarget: Int?
+
+  private let timer = Timer.publish(every: 3.0, on: .main, in: .common).autoconnect()
 
   var body: some View {
     GeometryReader { outerGeometry in
@@ -25,8 +27,6 @@ struct InteractiveAlbumCarousel: View {
                 focusedIndex: currentIndex + 1,
                 minSize: minSize,
                 maxSize: maxSize,
-                screenLeadingX: screenLeadingX,
-                itemWidth: minSize + spacing,
                 gradientColors: albumGradientColors(for: index)
               )
               .id(index)
@@ -34,52 +34,17 @@ struct InteractiveAlbumCarousel: View {
           }
           .padding(.leading, 24)
           .padding(.trailing, outerGeometry.size.width - 24 - minSize)
-          .background(
-            GeometryReader { geometry in
-              Color.clear
-                .preference(
-                  key: ScrollOffsetPreferenceKey.self,
-                  value: geometry.frame(in: .global).minX
-                )
-            }
-          )
         }
-        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-          screenLeadingX = value
-          updateCurrentIndex()
-        }
-        .onAppear {
-          startAutoScroll(scrollProxy: scrollProxy)
-        }
-        .onDisappear {
-          stopAutoScroll()
+        .onReceive(timer) { _ in
+          let nextIndex = (currentIndex + 1) % albumCount
+          currentIndex = nextIndex
+          withAnimation(.easeInOut(duration: 0.5)) {
+            scrollProxy.scrollTo(nextIndex, anchor: .leading)
+          }
         }
       }
     }
     .frame(height: maxSize)
-  }
-
-  private func updateCurrentIndex() {
-    let itemWidth = minSize + spacing
-    let offset = 24 - screenLeadingX
-    let newIndex = max(0, Int(offset / itemWidth))
-    if newIndex != currentIndex && newIndex < albumCount {
-      currentIndex = newIndex
-    }
-  }
-
-  private func startAutoScroll(scrollProxy: ScrollViewProxy) {
-    timer = Timer.scheduledTimer(withTimeInterval: autoScrollInterval, repeats: true) { _ in
-      withAnimation(.easeInOut(duration: 0.5)) {
-        let nextIndex = (currentIndex + 1) % albumCount
-        scrollProxy.scrollTo(nextIndex, anchor: .leading)
-      }
-    }
-  }
-
-  private func stopAutoScroll() {
-    timer?.invalidate()
-    timer = nil
   }
 
   private func albumGradientColors(for index: Int) -> [Color] {
@@ -120,8 +85,6 @@ private struct AlbumItemView: View {
   let focusedIndex: Int
   let minSize: CGFloat
   let maxSize: CGFloat
-  let screenLeadingX: CGFloat
-  let itemWidth: CGFloat
   let gradientColors: [Color]
 
   private var isFocused: Bool {
@@ -153,16 +116,6 @@ private struct AlbumItemView: View {
         }
       }
       .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.8), value: currentSize)
-  }
-}
-
-// MARK: - ScrollOffsetPreferenceKey
-
-private struct ScrollOffsetPreferenceKey: PreferenceKey {
-  static var defaultValue: CGFloat = 0
-
-  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-    value = nextValue()
   }
 }
 

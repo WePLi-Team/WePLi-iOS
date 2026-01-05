@@ -62,8 +62,7 @@ struct SocialLoginButton: View {
     .buttonStyle(.plain)
   }
 
-  @ViewBuilder
-  private var providerIcon: some View {
+  @ViewBuilder private var providerIcon: some View {
     switch provider {
     case .apple:
       Image(systemName: "apple.logo")
