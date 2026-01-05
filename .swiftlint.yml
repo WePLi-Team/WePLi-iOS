@@ -80,6 +80,9 @@ force_cast: warning
 force_try: warning
 force_unwrapping: warning
 
+trailing_comma:
+  mandatory_comma: true
+
 custom_rules:
   no_print_in_app:
     name: "print() 대신 Logger 사용"
