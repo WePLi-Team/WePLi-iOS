@@ -99,6 +99,11 @@ Refer to `docs/git/` for detailed guidelines:
 
 **Branch Strategy:** Git-flow with `main` (production), `develop` (integration). All feature branches start from `develop`.
 
+### Claude Code 규칙
+
+- PR 및 커밋 메시지에 `🤖 Generated with Claude Code` 문구를 포함하지 않음
+- 커밋 메시지에 `Co-Authored-By: Claude` 문구를 포함하지 않음
+
 ## Development Guides
 
 Refer to `docs/dev/` for development guidelines:
