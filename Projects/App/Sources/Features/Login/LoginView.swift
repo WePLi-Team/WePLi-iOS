@@ -69,71 +69,8 @@ private extension LoginView {
 
 private extension LoginView {
   var albumCarousel: some View {
-    ScrollView(.horizontal, showsIndicators: false) {
-      HStack(spacing: 12) {
-        ForEach(0..<6, id: \.self) { index in
-          albumCoverView(index: index)
-        }
-      }
-      .padding(.leading, 0)
-    }
-    .frame(height: 100)
-  }
-
-  @ViewBuilder
-  func albumCoverView(index: Int) -> some View {
-    let isLarge = index == 1
-    let size: CGFloat = isLarge ? 100 : 60
-    let cornerRadius: CGFloat = isLarge ? 12 : 8
-
-    RoundedRectangle(cornerRadius: cornerRadius)
-      .fill(
-        LinearGradient(
-          colors: albumGradientColors(for: index),
-          startPoint: .topLeading,
-          endPoint: .bottomTrailing
-        )
-      )
-      .frame(width: size, height: size)
-      .overlay {
-        if index == 2 {
-          Text("A NEW\nHOPE")
-            .font(.system(size: 8, weight: .bold))
-            .foregroundColor(.white)
-            .multilineTextAlignment(.center)
-        }
-      }
-  }
-
-  // swiftlint:disable:next function_body_length
-  func albumGradientColors(for index: Int) -> [Color] {
-    let gradients: [[Color]] = [
-      [
-        Color(red: 40.0 / 255.0, green: 40.0 / 255.0, blue: 45.0 / 255.0),
-        Color(red: 60.0 / 255.0, green: 60.0 / 255.0, blue: 65.0 / 255.0)
-      ],
-      [
-        Color(red: 139.0 / 255.0, green: 90.0 / 255.0, blue: 43.0 / 255.0),
-        Color(red: 89.0 / 255.0, green: 60.0 / 255.0, blue: 30.0 / 255.0)
-      ],
-      [
-        Color(red: 75.0 / 255.0, green: 0.0 / 255.0, blue: 130.0 / 255.0),
-        Color(red: 138.0 / 255.0, green: 43.0 / 255.0, blue: 226.0 / 255.0)
-      ],
-      [
-        Color(red: 180.0 / 255.0, green: 30.0 / 255.0, blue: 30.0 / 255.0),
-        Color(red: 100.0 / 255.0, green: 20.0 / 255.0, blue: 20.0 / 255.0)
-      ],
-      [
-        Color(red: 50.0 / 255.0, green: 50.0 / 255.0, blue: 55.0 / 255.0),
-        Color(red: 70.0 / 255.0, green: 70.0 / 255.0, blue: 75.0 / 255.0)
-      ],
-      [
-        Color(red: 30.0 / 255.0, green: 30.0 / 255.0, blue: 35.0 / 255.0),
-        Color(red: 50.0 / 255.0, green: 50.0 / 255.0, blue: 55.0 / 255.0)
-      ]
-    ]
-    return gradients[index % gradients.count]
+    InteractiveAlbumCarousel(albumCount: 10)
+      .padding(.horizontal, -24)
   }
 }
 
