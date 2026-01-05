@@ -77,25 +77,25 @@ extension AuthClient: DependencyKey {
   static let liveValue = AuthClient(
     signInWithApple: {
       // TODO: Implement Apple Sign-In
-      try await Task.sleep(nanoseconds: 1_000_000_000)
+      try await Task.sleep(nanoseconds: 1000000000)
     },
     signInWithGoogle: {
       // TODO: Implement Google Sign-In
-      try await Task.sleep(nanoseconds: 1_000_000_000)
+      try await Task.sleep(nanoseconds: 1000000000)
     }
   )
 
   static let testValue = AuthClient(
-    signInWithApple: { },
-    signInWithGoogle: { }
+    signInWithApple: {},
+    signInWithGoogle: {}
   )
 
   static let previewValue = AuthClient(
     signInWithApple: {
-      try await Task.sleep(nanoseconds: 500_000_000)
+      try await Task.sleep(nanoseconds: 500000000)
     },
     signInWithGoogle: {
-      try await Task.sleep(nanoseconds: 500_000_000)
+      try await Task.sleep(nanoseconds: 500000000)
     }
   )
 }

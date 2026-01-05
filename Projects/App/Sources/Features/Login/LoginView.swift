@@ -78,7 +78,7 @@ private extension LoginView {
         Asset.Assets.album1,
         Asset.Assets.album2,
         Asset.Assets.album3,
-        Asset.Assets.album4
+        Asset.Assets.album4,
       ]
     )
     .padding(.horizontal, -24)

@@ -54,7 +54,7 @@ let project = Project(
       resources: ["Resources/**"],
       entitlements: .file(path: .relativeToManifest("App.entitlements")),
       scripts: [
-        swiftLintScript
+        swiftLintScript,
       ],
       dependencies: [
         .external(name: "Moya"),

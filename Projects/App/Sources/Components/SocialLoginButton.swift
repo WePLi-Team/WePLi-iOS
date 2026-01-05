@@ -9,9 +9,9 @@ enum SocialLoginProvider {
   var title: String {
     switch self {
     case .apple:
-      return "Apple로 시작하기"
+      "Apple로 시작하기"
     case .google:
-      return "Google로 시작하기"
+      "Google로 시작하기"
     }
   }
 }
@@ -73,9 +73,9 @@ struct SocialLoginButton: View {
 
 #Preview {
   VStack(spacing: 16) {
-    SocialLoginButton(provider: .apple) { }
+    SocialLoginButton(provider: .apple) {}
 
-    SocialLoginButton(provider: .google) { }
+    SocialLoginButton(provider: .google) {}
   }
   .padding()
   .background(Color.black)
