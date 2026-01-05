@@ -4,31 +4,82 @@ import SwiftUI
 
 struct InteractiveAlbumCarousel: View {
   let albumCount: Int
+  var autoScrollInterval: TimeInterval = 3.0
 
   private let minSize: CGFloat = 60
   private let maxSize: CGFloat = 100
   private let spacing: CGFloat = 12
 
+  @State private var currentIndex: Int = 0
+  @State private var timer: Timer?
+  @State private var screenLeadingX: CGFloat = 0
+
   var body: some View {
     GeometryReader { outerGeometry in
-      let centerX = outerGeometry.size.width / 2
-
-      ScrollView(.horizontal, showsIndicators: false) {
-        HStack(alignment: .center, spacing: spacing) {
-          ForEach(0..<albumCount, id: \.self) { index in
-            AlbumItemView(
-              index: index,
-              screenCenterX: centerX,
-              minSize: minSize,
-              maxSize: maxSize,
-              gradientColors: albumGradientColors(for: index)
-            )
+      ScrollViewReader { scrollProxy in
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(alignment: .center, spacing: spacing) {
+            ForEach(0..<albumCount, id: \.self) { index in
+              AlbumItemView(
+                index: index,
+                focusedIndex: currentIndex + 1,
+                minSize: minSize,
+                maxSize: maxSize,
+                screenLeadingX: screenLeadingX,
+                itemWidth: minSize + spacing,
+                gradientColors: albumGradientColors(for: index)
+              )
+              .id(index)
+            }
           }
+          .padding(.leading, 24)
+          .padding(.trailing, outerGeometry.size.width - 24 - minSize)
+          .background(
+            GeometryReader { geometry in
+              Color.clear
+                .preference(
+                  key: ScrollOffsetPreferenceKey.self,
+                  value: geometry.frame(in: .global).minX
+                )
+            }
+          )
         }
-        .padding(.horizontal, (outerGeometry.size.width - minSize) / 2)
+        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+          screenLeadingX = value
+          updateCurrentIndex()
+        }
+        .onAppear {
+          startAutoScroll(scrollProxy: scrollProxy)
+        }
+        .onDisappear {
+          stopAutoScroll()
+        }
       }
     }
     .frame(height: maxSize)
+  }
+
+  private func updateCurrentIndex() {
+    let itemWidth = minSize + spacing
+    let offset = 24 - screenLeadingX
+    let newIndex = max(0, Int(offset / itemWidth))
+    if newIndex != currentIndex && newIndex < albumCount {
+      currentIndex = newIndex
+    }
+  }
+
+  private func startAutoScroll(scrollProxy: ScrollViewProxy) {
+    timer = Timer.scheduledTimer(withTimeInterval: autoScrollInterval, repeats: true) { _ in
+      withAnimation(.easeInOut(duration: 0.5)) {
+        let nextIndex = (currentIndex + 1) % albumCount
+        scrollProxy.scrollTo(nextIndex, anchor: .leading)
+      }
+    }
+  }
+
+  private func stopAutoScroll() {
+    timer?.invalidate()
+    timer = nil
   }
 
   private func albumGradientColors(for index: Int) -> [Color] {
@@ -66,22 +117,19 @@ struct InteractiveAlbumCarousel: View {
 
 private struct AlbumItemView: View {
   let index: Int
-  let screenCenterX: CGFloat
+  let focusedIndex: Int
   let minSize: CGFloat
   let maxSize: CGFloat
+  let screenLeadingX: CGFloat
+  let itemWidth: CGFloat
   let gradientColors: [Color]
 
-  @State private var itemCenterX: CGFloat = 0
-
-  private var distance: CGFloat {
-    abs(screenCenterX - itemCenterX)
+  private var isFocused: Bool {
+    index == focusedIndex
   }
 
   private var currentSize: CGFloat {
-    let maxDistance: CGFloat = 120
-    let normalizedDistance = min(distance / maxDistance, 1.0)
-    let size = maxSize - (maxSize - minSize) * normalizedDistance
-    return max(minSize, size)
+    isFocused ? maxSize : minSize
   }
 
   var body: some View {
@@ -104,25 +152,13 @@ private struct AlbumItemView: View {
             .multilineTextAlignment(.center)
         }
       }
-      .background(
-        GeometryReader { geometry in
-          Color.clear
-            .preference(
-              key: CenterXPreferenceKey.self,
-              value: geometry.frame(in: .global).midX
-            )
-        }
-      )
-      .onPreferenceChange(CenterXPreferenceKey.self) { value in
-        itemCenterX = value
-      }
-      .animation(.interactiveSpring(response: 0.3, dampingFraction: 0.8), value: currentSize)
+      .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.8), value: currentSize)
   }
 }
 
-// MARK: - CenterXPreferenceKey
+// MARK: - ScrollOffsetPreferenceKey
 
-private struct CenterXPreferenceKey: PreferenceKey {
+private struct ScrollOffsetPreferenceKey: PreferenceKey {
   static var defaultValue: CGFloat = 0
 
   static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
@@ -137,6 +173,6 @@ private struct CenterXPreferenceKey: PreferenceKey {
     Color.black
       .ignoresSafeArea()
 
-    InteractiveAlbumCarousel(albumCount: 10)
+    InteractiveAlbumCarousel(albumCount: 10, autoScrollInterval: 2.0)
   }
 }
