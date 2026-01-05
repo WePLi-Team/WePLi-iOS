@@ -11,31 +11,56 @@ struct InteractiveAlbumCarousel: View {
   private let maxSize: CGFloat = 100
   private let spacing: CGFloat = 12
 
+  /// 무한 스크롤을 위해 원본 데이터를 복제한 횟수
+  private let repeatCount: Int = 100
+
   @State private var currentIndex: Int = 0
+  @State private var isInitialized: Bool = false
 
   private let timer = Timer.publish(every: 3.0, on: .main, in: .common).autoconnect()
+
+  /// 무한 스크롤을 위해 복제된 전체 아이템 배열
+  private var extendedItems: [(index: Int, imageAsset: ImageAsset)] {
+    guard !albumImages.isEmpty else { return [] }
+    return (0 ..< albumImages.count * repeatCount).map { index in
+      (index: index, imageAsset: albumImages[index % albumImages.count])
+    }
+  }
+
+  /// 무한 스크롤 시작 위치 (중간)
+  private var startIndex: Int {
+    guard !albumImages.isEmpty else { return 0 }
+    return (repeatCount / 2) * albumImages.count
+  }
 
   var body: some View {
     GeometryReader { outerGeometry in
       ScrollViewReader { scrollProxy in
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(alignment: .center, spacing: spacing) {
-            ForEach(Array(albumImages.enumerated()), id: \.offset) { index, imageAsset in
+            ForEach(extendedItems, id: \.index) { item in
               AlbumItemView(
-                index: index,
+                index: item.index,
                 focusedIndex: currentIndex + 1,
                 minSize: minSize,
                 maxSize: maxSize,
-                imageAsset: imageAsset
+                imageAsset: item.imageAsset
               )
-              .id(index)
+              .id(item.index)
             }
           }
           .padding(.leading, 24)
           .padding(.trailing, outerGeometry.size.width - 24 - minSize)
         }
+        .onAppear {
+          guard !isInitialized else { return }
+          isInitialized = true
+          currentIndex = startIndex
+          scrollProxy.scrollTo(startIndex, anchor: .leading)
+        }
         .onReceive(timer) { _ in
-          let nextIndex = (currentIndex + 1) % albumImages.count
+          guard isInitialized else { return }
+          let nextIndex = currentIndex + 1
           currentIndex = nextIndex
           withAnimation(.easeInOut(duration: 0.5)) {
             scrollProxy.scrollTo(nextIndex, anchor: .leading)
