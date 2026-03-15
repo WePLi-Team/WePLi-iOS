@@ -136,7 +136,7 @@ jobs:
             ${{ runner.os }}-tuist-
 
       - name: Setup mise (Tuist via mise)
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
 
       - name: Install tools via mise
         run: |
