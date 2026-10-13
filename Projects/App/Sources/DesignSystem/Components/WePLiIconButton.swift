@@ -8,7 +8,8 @@ struct WePLiIconButton: View {
   let accessibilityLabel: String
   let action: () -> Void
 
-  @Environment(\.wepliChrome) private var chrome
+  @Environment(\.wepliChrome)
+  private var chrome
 
   static let size: CGFloat = 44
 

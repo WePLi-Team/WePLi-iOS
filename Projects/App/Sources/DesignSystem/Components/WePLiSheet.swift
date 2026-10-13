@@ -8,7 +8,8 @@ import SwiftUI
 private struct WePLiSheetModifier: ViewModifier {
   let detents: Set<PresentationDetent>
 
-  @Environment(\.wepliChrome) private var chrome
+  @Environment(\.wepliChrome)
+  private var chrome
 
   func body(content: Content) -> some View {
     content
