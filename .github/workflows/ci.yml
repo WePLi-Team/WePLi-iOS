@@ -33,6 +33,7 @@ jobs:
         with:
           filters: |
             code:
+              - '.github/workflows/ci.yml'
               - 'Projects/**'
               - 'Tuist/**'
               - 'Configs/**'
@@ -42,6 +43,7 @@ jobs:
               - '**/*.xcodeproj'
               - '**/*.xcworkspace'
             lint:
+              - '.github/workflows/ci.yml'
               - 'Projects/**/*.swift'
               - '.swiftlint.yml'
               - '.swiftformat'
