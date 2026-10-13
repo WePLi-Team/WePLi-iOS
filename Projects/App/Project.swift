@@ -1,7 +1,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-// --- Build Scripts ---
+/// --- Build Scripts ---
 let swiftLintScript: TargetScript = .pre(
   script: #"""
   set -euo pipefail
@@ -22,7 +22,7 @@ let swiftLintScript: TargetScript = .pre(
   basedOnDependencyAnalysis: true
 )
 
-// --- Project ---
+/// --- Project ---
 let project = Project(
   name: "WePLi",
   settings: .settings(

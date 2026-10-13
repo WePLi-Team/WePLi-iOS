@@ -17,16 +17,9 @@ enum WePLiChrome: Equatable {
   }
 }
 
-private struct WePLiChromeKey: EnvironmentKey {
-  static let defaultValue = WePLiChrome.current
-}
-
 extension EnvironmentValues {
-  /// 미리보기 · 테스트에서 `.environment(\.wepliChrome, .material)`로 바꿔 볼 수 있다.
-  var wepliChrome: WePLiChrome {
-    get { self[WePLiChromeKey.self] }
-    set { self[WePLiChromeKey.self] = newValue }
-  }
+  // 미리보기 · 테스트에서 `.environment(\.wepliChrome, .material)`로 바꿔 볼 수 있다.
+  @Entry var wepliChrome: WePLiChrome = .current
 }
 
 // MARK: - 크롬 수치 (UI-12d)
