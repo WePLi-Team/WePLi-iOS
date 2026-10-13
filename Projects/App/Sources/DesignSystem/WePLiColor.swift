@@ -18,6 +18,8 @@ enum WePLiColor {
   static let textSecondary = Color(rgbHex: 0xB5B5C0)
   static let textTertiary = Color(rgbHex: 0xA3A3A3)
   static let textQuaternary = Color(rgbHex: 0x8E8E99)
+  /// 꺼진 칩 · 배지 글자 (10a)
+  static let textMuted = Color(rgbHex: 0xD8D8DD)
   static let textDisabled = Color(rgbHex: 0x6B6B7C)
   /// CTA 그라디언트 위 글자
   static let textOnCTA = Color(rgbHex: 0x171821)
@@ -38,6 +40,8 @@ enum WePLiColor {
   // MARK: 상태 · 오버레이
 
   static let disabledFill = Color.white.opacity(0.08)
+  /// 보조 캡슐 버튼 바탕 (10f 빈 상태 버튼)
+  static let secondaryButtonFill = Color.white.opacity(0.1)
   static let dim = Color.black.opacity(0.55)
 
   // MARK: iOS 26 글래스 (UI-12d)
