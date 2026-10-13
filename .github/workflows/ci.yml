@@ -96,16 +96,15 @@ jobs:
             echo "present=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install tools
+      - name: Install lint tools (pinned in .mise.toml)
         if: ${{ steps.has_swift.outputs.present == 'true' }}
-        env:
-          HOMEBREW_NO_AUTO_UPDATE: '1'
-          HOMEBREW_NO_INSTALL_CLEANUP: '1'
+        uses: jdx/mise-action@v3
+        with:
+          install_args: swiftformat swiftlint
+
+      - name: Tool versions
+        if: ${{ steps.has_swift.outputs.present == 'true' }}
         run: |
-          # 러너 이미지에 있는 도구는 건너뛰고, 없는 것만 설치한다(brew update 생략).
-          for tool in swiftformat swiftlint; do
-            command -v "$tool" >/dev/null 2>&1 || brew install "$tool"
-          done
           swiftformat --version
           swiftlint version
 
