@@ -33,6 +33,7 @@ jobs:
         with:
           filters: |
             code:
+              - '.github/workflows/ci.yml'
               - 'Projects/**'
               - 'Tuist/**'
               - 'Configs/**'
@@ -42,6 +43,7 @@ jobs:
               - '**/*.xcodeproj'
               - '**/*.xcworkspace'
             lint:
+              - '.github/workflows/ci.yml'
               - 'Projects/**/*.swift'
               - '.swiftlint.yml'
               - '.swiftformat'
@@ -94,11 +96,17 @@ jobs:
             echo "present=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install tools
+      - name: Install lint tools (pinned in .mise.toml)
+        if: ${{ steps.has_swift.outputs.present == 'true' }}
+        uses: jdx/mise-action@v3
+        with:
+          install_args: swiftformat swiftlint
+
+      - name: Tool versions
         if: ${{ steps.has_swift.outputs.present == 'true' }}
         run: |
-          brew update
-          brew install swiftformat swiftlint
+          swiftformat --version
+          swiftlint version
 
       - name: SwiftFormat (lint mode)
         if: ${{ steps.has_swift.outputs.present == 'true' }}
@@ -158,9 +166,13 @@ jobs:
           tuist version
 
       - name: Setup utilities
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+          HOMEBREW_NO_INSTALL_CLEANUP: '1'
         run: |
-          brew update
-          brew install swiftgen xcbeautify
+          for tool in swiftgen xcbeautify; do
+            command -v "$tool" >/dev/null 2>&1 || brew install "$tool"
+          done
           defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
           swiftgen --version
 

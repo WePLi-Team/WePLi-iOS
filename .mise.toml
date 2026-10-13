@@ -1,3 +1,6 @@
 [tools]
 tuist = "4.71.0"
 ruby = "3.2.4"
+# 린트 도구 버전 고정 — 로컬과 CI가 같은 규칙으로 검사한다(#29)
+swiftformat = "0.63.0"
+swiftlint = "0.65.1"

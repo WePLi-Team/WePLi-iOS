@@ -94,7 +94,7 @@ private struct AlbumItemView: View {
 
     imageAsset.swiftUIImage
       .resizable()
-      .aspectRatio(contentMode: .fill)
+      .scaledToFill()
       .frame(width: currentSize, height: currentSize)
       .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
       .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.8), value: currentSize)

@@ -58,13 +58,13 @@ struct SocialLoginButton: View {
     case .apple:
       Image(systemName: "apple.logo")
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .scaledToFit()
         .foregroundColor(.white)
 
     case .google:
       Asset.Assets.google.swiftUIImage
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .scaledToFit()
     }
   }
 }

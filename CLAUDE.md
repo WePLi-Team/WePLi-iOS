@@ -19,9 +19,9 @@ open WePLi.xcworkspace
 # Run tests
 xcodebuild -workspace WePLi.xcworkspace -scheme WePLi -destination 'platform=iOS Simulator,name=iPhone 15' test
 
-# Lint code
-swiftlint --config .swiftlint.yml
-swiftformat --lint . --config .swiftformat
+# Lint code (versions pinned in .mise.toml — same as CI)
+mise exec -- swiftlint --strict --config .swiftlint.yml
+mise exec -- swiftformat --lint . --config .swiftformat
 
 # Run SwiftGen for asset code generation
 swiftgen config run --config swiftgen.yml
@@ -126,5 +126,6 @@ Refer to `docs/dev/` for development guidelines:
 
 - Tuist 4.71.0
 - Ruby 3.2.4
+- SwiftFormat 0.63.0 · SwiftLint 0.65.1 (`.mise.toml` 고정, CI와 같은 버전 — `mise exec -- swiftformat …`)
 - Xcode 16.2+ (CI uses 16.2)
 - iOS deployment target: 16.0

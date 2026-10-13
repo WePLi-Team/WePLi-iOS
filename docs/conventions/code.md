@@ -68,7 +68,7 @@ Projects/App/Resources/{Assets,Colors}.xcassets · Localizable.xcstrings
 | 아키텍처 | View · Feature가 SDK · `URLSession`을 직접 쓰지 않음 | `verify_arch` |
 | 린트 | SwiftLint (CI는 `--strict` + SwiftFormat lint) | `verify_ios` 첫 단계 |
 
-`verify_ios` = `swiftlint` → `verify_arch` → `xcodebuild test -workspace WePLi.xcworkspace -scheme WePLi -destination 'platform=iOS Simulator,name=${SIM:-iPhone 17}'`. 워크스페이스가 없으면 먼저 `tuist install && tuist generate --no-open`.
+`verify_ios` = `mise exec -- swiftformat --lint` · `mise exec -- swiftlint --strict`(버전은 `.mise.toml`) → `verify_arch` → `xcodebuild test -workspace WePLi.xcworkspace -scheme WePLi -destination 'platform=iOS Simulator,name=${SIM:-iPhone 17}'`. 워크스페이스가 없으면 먼저 `tuist install && tuist generate --no-open`.
 
 - 테스트 데이터는 가짜만 쓴다(실제 이름 · 번호 · 계좌 금지).
 - 보고에는 실행한 명령과 결과를 그대로 붙인다. 못 돌렸으면 "미실행"과 이유.
