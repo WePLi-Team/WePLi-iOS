@@ -42,6 +42,12 @@ enum WePLiColor {
   static let disabledFill = Color.white.opacity(0.08)
   /// 보조 캡슐 버튼 바탕 (10f 빈 상태 버튼)
   static let secondaryButtonFill = Color.white.opacity(0.1)
+  /// 릴레이 완성 배지 안쪽 (UI-3c)
+  static let completionBadgeFill = Color(rgbHex: 0x0C0C12)
+  /// 릴레이 타이머 숫자 (UI-3c)
+  static let timerText = Color(rgbHex: 0xC2C2C2)
+  /// 타이머 캡슐 안쪽 빛 rgba(78,80,122) (UI-3c)
+  static let timerGlow = Color(rgbHex: 0x4E507A, opacity: 0.25)
   static let dim = Color.black.opacity(0.55)
 
   // MARK: iOS 26 글래스 (UI-12d)
