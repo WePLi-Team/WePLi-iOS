@@ -24,6 +24,7 @@ jobs:
       code: ${{ steps.filter.outputs.code }}
       lint: ${{ steps.filter.outputs.lint }}
       labels: ${{ steps.filter.outputs.labels }}
+      automation: ${{ steps.filter.outputs.automation }}
     steps:
       - uses: actions/checkout@v6
 
@@ -46,6 +47,19 @@ jobs:
               - '.swiftformat'
             labels:
               - '.github/labels.yml'
+            automation:
+              - '.claude/**'
+
+  automation:
+    name: Automation Scripts (.claude)
+    needs: changes
+    if: ${{ needs.changes.outputs.automation == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify automation scripts
+        run: sh .claude/skills/finish-feature/scripts/verify.sh claude
 
   labels:
     name: Sync Labels
