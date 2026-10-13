@@ -38,7 +38,9 @@ extension MainTabView {
     switch tab {
     case .relay:
       RelayListView(store: self.store.scope(state: \.relay, action: \.relay))
-    case .home, .community, .my, .search:
+    case .my:
+      MyView(store: self.store.scope(state: \.my, action: \.my))
+    case .home, .community, .search:
       TabPlaceholder(tab: tab)
         .navigationTitle(tab.title)
     }

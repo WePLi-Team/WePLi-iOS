@@ -41,16 +41,22 @@ struct MainTabFeature {
   struct State: Equatable {
     var selectedTab: Tab = .home
     var relay = RelayListFeature.State()
+    var my = MyFeature.State()
   }
 
   enum Action: Equatable {
     case tabSelected(Tab)
     case relay(RelayListFeature.Action)
+    case my(MyFeature.Action)
   }
 
   var body: some ReducerOf<Self> {
     Scope(state: \.relay, action: \.relay) {
       RelayListFeature()
+    }
+
+    Scope(state: \.my, action: \.my) {
+      MyFeature()
     }
 
     Reduce { state, action in
@@ -59,7 +65,7 @@ struct MainTabFeature {
         state.selectedTab = tab
         return .none
 
-      case .relay:
+      case .relay, .my:
         return .none
       }
     }
