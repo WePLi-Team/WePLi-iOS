@@ -57,6 +57,8 @@ xcuserdata/
 .swiftpm/
 Package.resolved
 **/*.xcworkspace/xcshareddata/swiftpm/Package.resolved
+# 의존성 버전 고정: Tuist가 쓰는 resolved 파일은 커밋한다(로컬 · CI 동일 버전)
+!Tuist/Package.resolved
 
 # ===================================================================
 # Tuist (generated artifacts)
