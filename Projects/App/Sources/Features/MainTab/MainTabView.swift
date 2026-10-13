@@ -37,18 +37,11 @@ private struct TabPlaceholder: View {
   let tab: MainTabFeature.Tab
 
   var body: some View {
-    VStack(spacing: 8) {
-      Image(systemName: self.tab.systemImage)
-        .font(.system(size: 32, weight: .regular))
-        .foregroundStyle(WePLiColor.textQuaternary)
-      Text("\(self.tab.title) 화면을 준비하고 있어요")
-        .wepliFont(.headline)
-        .foregroundStyle(WePLiColor.textPrimary)
-      Text("곧 이 탭에서 만나요.")
-        .wepliFont(.subheadline)
-        .foregroundStyle(WePLiColor.textTertiary)
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    WePLiEmptyState(
+      systemImage: self.tab.systemImage,
+      title: "\(self.tab.title) 화면을 준비하고 있어요",
+      message: "곧 이 탭에서 만나요."
+    )
     .background(WePLiColor.background)
   }
 }
