@@ -57,11 +57,26 @@ AREAS='
 verify_ios() {
   [ -d WePLi.xcworkspace ] || { echo "WePLi.xcworkspace 없음 — tuist generate --no-open 먼저"; return 1; }
   # 린트 도구는 .mise.toml에 고정한 버전으로 돌린다(CI와 같은 규칙)
+  check_lint_tools || return 1
   mise exec -- swiftformat --lint . --config .swiftformat --exclude vendor,Projects/App/Derived || return 1
   mise exec -- swiftlint --strict --quiet --no-cache --config .swiftlint.yml || return 1
   verify_arch || return 1
   xcodebuild test -quiet -workspace WePLi.xcworkspace -scheme WePLi \
     -destination "platform=iOS Simulator,name=${SIM:-iPhone 17}" -parallel-testing-enabled NO
+}
+
+# .mise.toml 고정 버전과 실제로 실행되는 버전이 같은지 확인한다(#32).
+# 새 worktree에서는 mise가 설정을 신뢰하지 않아 전역 버전으로 조용히 돌 수 있다.
+check_lint_tools() {
+  for tool in swiftformat swiftlint; do
+    want=$(sed -nE "s/^${tool} = \"([^\"]+)\".*/\1/p" .mise.toml)
+    if [ "$tool" = swiftlint ]; then have=$(mise exec -- swiftlint version 2>/dev/null)
+    else have=$(mise exec -- swiftformat --version 2>/dev/null); fi
+    if [ "$want" != "$have" ]; then
+      echo "$tool 버전 불일치: 고정 $want · 실행 ${have:-없음} — 'mise trust && mise install' 후 다시 실행"
+      return 1
+    fi
+  done
 }
 
 # 아키텍처 검사 (TCA 구조 유지 — docs/conventions/architecture.md · DEC-002)
