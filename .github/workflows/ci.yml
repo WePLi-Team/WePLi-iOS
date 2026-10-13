@@ -96,9 +96,16 @@ jobs:
 
       - name: Install tools
         if: ${{ steps.has_swift.outputs.present == 'true' }}
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+          HOMEBREW_NO_INSTALL_CLEANUP: '1'
         run: |
-          brew update
-          brew install swiftformat swiftlint
+          # 러너 이미지에 있는 도구는 건너뛰고, 없는 것만 설치한다(brew update 생략).
+          for tool in swiftformat swiftlint; do
+            command -v "$tool" >/dev/null 2>&1 || brew install "$tool"
+          done
+          swiftformat --version
+          swiftlint version
 
       - name: SwiftFormat (lint mode)
         if: ${{ steps.has_swift.outputs.present == 'true' }}
@@ -158,9 +165,13 @@ jobs:
           tuist version
 
       - name: Setup utilities
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+          HOMEBREW_NO_INSTALL_CLEANUP: '1'
         run: |
-          brew update
-          brew install swiftgen xcbeautify
+          for tool in swiftgen xcbeautify; do
+            command -v "$tool" >/dev/null 2>&1 || brew install "$tool"
+          done
           defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
           swiftgen --version
 
