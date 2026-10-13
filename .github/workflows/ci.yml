@@ -105,7 +105,7 @@ jobs:
   build-test:
     name: Build & Unit Test
     needs: [changes, lint]
-    if: ${{ needs.changes.outputs.code == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
+    if: ${{ !cancelled() && needs.changes.outputs.code == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
     runs-on: macos-14
     timeout-minutes: 60
     steps:
