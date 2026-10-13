@@ -18,7 +18,7 @@ enum WePLiChrome: Equatable {
 }
 
 extension EnvironmentValues {
-  // 미리보기 · 테스트에서 `.environment(\.wepliChrome, .material)`로 바꿔 볼 수 있다.
+  /// 미리보기 · 테스트에서 `.environment(\.wepliChrome, .material)`로 바꿔 볼 수 있다.
   @Entry var wepliChrome: WePLiChrome = .current
 }
 
