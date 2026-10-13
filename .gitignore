@@ -93,3 +93,6 @@ fastlane/test_output/
 # ===================================================================
 .bundle/
 vendor/bundle/
+# Local env / Claude Code local settings
+.env
+.claude/settings.local.json
