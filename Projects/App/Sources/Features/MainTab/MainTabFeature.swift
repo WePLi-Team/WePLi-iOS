@@ -40,17 +40,26 @@ struct MainTabFeature {
   @ObservableState
   struct State: Equatable {
     var selectedTab: Tab = .home
+    var relay = RelayListFeature.State()
   }
 
   enum Action: Equatable {
     case tabSelected(Tab)
+    case relay(RelayListFeature.Action)
   }
 
   var body: some ReducerOf<Self> {
+    Scope(state: \.relay, action: \.relay) {
+      RelayListFeature()
+    }
+
     Reduce { state, action in
       switch action {
       case let .tabSelected(tab):
         state.selectedTab = tab
+        return .none
+
+      case .relay:
         return .none
       }
     }
