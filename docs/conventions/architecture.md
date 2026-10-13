@@ -68,7 +68,7 @@ Projects/Core/{DesignSystem,Network,Utils}  미결정 — 아직 빈 모듈. 옮
 ## OS 버전별 UI (DEC-005)
 
 - iOS 26 이상: Claude Design 원본(리퀴드 글래스 탭 바 · `tabViewBottomAccessory` · `Tab(role: .search)` 등)대로.
-- iOS 16–25: 사용자가 디자인을 나중에 제공한다. 그 전까지는 `if #available(iOS 26, *)` 분기를 두고 아래쪽은 시스템 기본 컴포넌트로만 둔다(임의 디자인 금지).
+- iOS 16–25: 「한 코드로 두 모양」(UI-12d). 레이아웃 · 간격 · 글자는 공유하고, 크롬(탭 바 · 뒤로 · 시트 · 목록 묶음 · 검색 · 미니 플레이어)만 `if #available(iOS 26, *)`로 나눈다. 크롬 값은 `docs/design/README.md` 「iOS 26 / iOS 16 크롬」에 있다. 모든 화면에 적용한다(DEC-005). 12d에 없는 크롬 요소가 필요하면 멈추고 묻는다.
 - 분기는 View 안에서만 한다. Reducer · Client는 OS 버전을 모른다.
 
 ## 규칙이 있는 기능

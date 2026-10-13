@@ -68,14 +68,19 @@
 | UI-11c | 바통 초대 받기 (초대 링크로 들어왔을 때) | 3 |  | WePLi 11 Export.dc.html |
 | UI-11d | 이의 신청 | 3 |  | WePLi 11 Export.dc.html |
 | UI-11e | 내 명함 · 수정 · 테마 | 3 |  | WePLi 11 Export.dc.html |
+| UI-12a | 통합 홈 · iOS 26 | 4 | | WePLi 12 iOS 16.dc.html + HomeFeed.dc.html |
+| UI-12b | 통합 홈 · iOS 16 (iPhone 14 Pro) | 3 | | WePLi 12 iOS 16.dc.html + HomeFeed.dc.html |
+| UI-12c | 통합 홈 · iPhone SE · 8 (iOS 16, 375×667) | 2 | | WePLi 12 iOS 16.dc.html + HomeFeed.dc.html |
+| UI-12d | iOS 26 → iOS 16 크롬 비교 (공통 규칙) | 0 | | WePLi 12 iOS 16.dc.html |
 
-합계 63개 (목차 62개 + 5f 「홈 화면 위젯」이 원본에서 따로 분리됨). 목차와 대조: 누락 0 · 중복 0.
+합계 67개 (목차 66개 + 5f 「홈 화면 위젯」이 원본에서 따로 분리됨). 목차와 대조: 누락 0 · 중복 0. `HomeFeed.dc.html`은 화면이 아니라 12a–12c가 불러 쓰는 홈 콘텐츠 컴포넌트(속성: os 26/16 · topY · heroH · padB).
 
 ## 대안 · 대체 관계
 
 | 화면 | 관계 |
 |---|---|
-| UI-1b · UI-4a · UI-9a · UI-9b | 홈 A안(히어로) · 홈 v2(1b 개선) · B안(리스트형) · C안(개인화). 채택 미결정 |
+| UI-1b · UI-4a · UI-9a · UI-9b → UI-12a · 12b · 12c | 홈 시안 넷을 12차 통합 홈이 하나로 이음(DEC-006). 섹션: 히어로(4a) → 투표 중 릴레이(9a) → TOP 100(1b) → 오늘의 플리 · 추천 노래(9a) → 내 최애 가수(9b) → 인기 랭킹(1b) → Fa♥orite · 추천 플리(9b+1b) → Youtube Cover(9b+1b) |
+| UI-12d | iOS 16 크롬 공통 규칙(탭 바 · 뒤로 · 시트 · 목록 · 검색) |
 | UI-1a · UI-3f | 로그인 A안(해시태그) · B안(앨범 캐러셀). 채택 미결정 |
 | UI-1c → UI-3b · UI-3c | 1c의 시트 투표는 3b 카드 투표 · 3c 상태 화면으로 대체(원본 명시) |
 | UI-2c · UI-9c · UI-9d | 게시글 상세 한 곡 · 플레이리스트 · 일반 타입 |
