@@ -32,7 +32,9 @@ struct Relay: Equatable, Identifiable, Sendable {
   let isMine: Bool
 
   var endsAt: Date? {
-    if case let .live(endsAt) = self.status { return endsAt }
+    if case let .live(endsAt) = self.status {
+      return endsAt
+    }
     return nil
   }
 

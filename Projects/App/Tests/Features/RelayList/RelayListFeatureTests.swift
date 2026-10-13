@@ -100,7 +100,9 @@ final class RelayListFeatureTests: XCTestCase {
       $0.continuousClock = ImmediateClock()
       $0.date.now = self.now
       $0.relayClient.fetchRelays = {
-        if shouldFail.value { throw URLError(.notConnectedToInternet) }
+        if shouldFail.value {
+          throw URLError(.notConnectedToInternet)
+        }
         return relays
       }
     }
