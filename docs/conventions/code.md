@@ -37,6 +37,17 @@ Projects/App/Resources/{Assets,Colors}.xcassets · Localizable.xcstrings
 ## 값 · 토큰
 
 - 색 · 간격 · 글자 · 시간 같은 값은 토큰 · 설정 이름으로만 쓴다. 화면 코드에 숫자를 직접 쓰지 않는다.
+- 토큰은 `Projects/App/Sources/DesignSystem/`에 있다(REQ-004).
+
+  | 무엇 | 쓰는 법 |
+  |---|---|
+  | 색 | `WePLiColor.accent` · `.surface1` · `.textSecondary` … |
+  | 그라디언트 | `WePLiGradient.cta` · `.brand` · `.bottomFade` |
+  | 글자 | `.wepliFont(.body)` · `.wepliFont(.title2)` · 굵기만 바꿀 때 `.wepliFont(.subheadline, weight: .medium)` |
+  | OS별 크롬 | `@Environment(\.wepliChrome)` → `.glass`(iOS 26) / `.material`(iOS 16–25). 수치는 `chrome.sheetCornerRadius` 등 |
+  | 컴포넌트 | `WePLiIconButton` · `WePLiPrimaryButton` · `.wepliToast($message)` · `.wepliSheetStyle()` |
+- iOS 26 전용 API(`glassEffect` 등)는 CI의 Xcode 16.2에서 컴파일되지 않는다. 쓰려면 `#if compiler(>=6.2)`로 감싸고, 기본은 디자인 값(`wepliGlass`)으로 그린다.
+- 기존 `Colors.xcassets`(Neutral · CoolGray)는 원본 디자인 토큰이 아니다. 새 화면에서는 `WePLiColor`를 쓴다.
 - 생성물은 손으로 고치지 않는다.
 
 ## 오류 처리
