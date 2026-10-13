@@ -95,12 +95,13 @@ Refer to `docs/git/` for detailed guidelines:
 
 **Commit Prefixes:** `[Feat]`, `[Fix]`, `[Design]`, `[Refactor]`, `[Docs]`, `[Test]`, `[Chore]`, `[Add]`, `[Del]`
 
-**Branch Format:** `{type}/{description}` (e.g., `feat/playlist-voting-ui`, `fix/login-crash`)
+**Branch Format:** `{type}/{issue}-{description}` (e.g., `feat/12-playlist-voting-ui`, `fix/31-login-crash`) — DEC-003
 
 **Branch Strategy:** Git-flow with `main` (production), `develop` (integration). All feature branches start from `develop`.
 
 ### Claude Code 규칙
 
+- 공통 작업 규칙 원본은 `AGENTS.md`. 디자인 원문(Claude Design)은 claude_design MCP로 **읽기만** 하고, 변경 반영은 `/design-sync`
 - PR 및 커밋 메시지에 `🤖 Generated with Claude Code` 문구를 포함하지 않음
 - 커밋 메시지에 `Co-Authored-By: Claude` 문구를 포함하지 않음
 
