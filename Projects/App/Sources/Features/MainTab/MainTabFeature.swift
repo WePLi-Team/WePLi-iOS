@@ -43,6 +43,7 @@ struct MainTabFeature {
     var relay = RelayListFeature.State()
     var my = MyFeature.State()
     var community = CommunityFeedFeature.State()
+    var search = SearchFeature.State()
   }
 
   enum Action: Equatable {
@@ -50,6 +51,7 @@ struct MainTabFeature {
     case relay(RelayListFeature.Action)
     case my(MyFeature.Action)
     case community(CommunityFeedFeature.Action)
+    case search(SearchFeature.Action)
   }
 
   var body: some ReducerOf<Self> {
@@ -65,13 +67,21 @@ struct MainTabFeature {
       CommunityFeedFeature()
     }
 
+    Scope(state: \.search, action: \.search) {
+      SearchFeature()
+    }
+
     Reduce { state, action in
       switch action {
       case let .tabSelected(tab):
         state.selectedTab = tab
         return .none
 
-      case .relay, .my, .community:
+      case .search(.delegate(.showHome)):
+        state.selectedTab = .home
+        return .none
+
+      case .relay, .my, .community, .search:
         return .none
       }
     }

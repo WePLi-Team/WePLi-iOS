@@ -7,6 +7,9 @@ import SwiftUI
 struct MainTabView: View {
   let store: StoreOf<MainTabFeature>
 
+  @Environment(\.wepliChrome)
+  private var chrome
+
   var body: some View {
     WithPerceptionTracking {
       ZStack {
@@ -22,8 +25,11 @@ struct MainTabView: View {
       }
       // 스크롤 콘텐츠는 탭 바 아래까지 그려지고, 마지막 줄은 탭 바에 가리지 않는다.
       .safeAreaInset(edge: .bottom, spacing: 0) {
-        MainTabBar(selectedTab: self.store.selectedTab) { tab in
-          self.store.send(.tabSelected(tab))
+        // iOS 26 검색 탭에서는 다른 탭이 홈 버튼 하나로 접히고 검색 화면이 하단 바를 그린다(UI-4c).
+        if !(self.chrome == .glass && self.store.selectedTab == .search) {
+          MainTabBar(selectedTab: self.store.selectedTab) { tab in
+            self.store.send(.tabSelected(tab))
+          }
         }
       }
       .ignoresSafeArea(.keyboard)
@@ -42,7 +48,9 @@ extension MainTabView {
       MyView(store: self.store.scope(state: \.my, action: \.my))
     case .community:
       CommunityFeedView(store: self.store.scope(state: \.community, action: \.community))
-    case .home, .search:
+    case .search:
+      SearchView(store: self.store.scope(state: \.search, action: \.search))
+    case .home:
       TabPlaceholder(tab: tab)
         .navigationTitle(tab.title)
     }
