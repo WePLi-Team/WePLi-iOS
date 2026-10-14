@@ -87,6 +87,7 @@ struct MainTabFeature {
     case editProfile(EditProfileFeature)
     case library(LibraryFeature)
     case vote(CardVoteFeature)
+    case notificationSettings(NotificationSettingsFeature)
   }
 
   enum Action: Equatable {
@@ -166,6 +167,14 @@ struct MainTabFeature {
       case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))),
            let .myPath(.element(id: elementID, action: .library(.delegate(.dismiss)))),
            let .myPath(.element(id: elementID, action: .vote(.delegate(.dismiss)))):
+        state.myPath.pop(from: elementID)
+        return .none
+
+      case .my(.delegate(.show(.notificationSettings))):
+        state.myPath.append(.notificationSettings(NotificationSettingsFeature.State()))
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .notificationSettings(.delegate(.dismiss)))):
         state.myPath.pop(from: elementID)
         return .none
 

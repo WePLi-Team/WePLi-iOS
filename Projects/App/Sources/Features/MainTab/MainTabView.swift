@@ -86,6 +86,7 @@ extension MainTabView {
       case let .editProfile(store): EditProfileView(store: store)
       case let .library(store): LibraryView(store: store)
       case let .vote(store): CardVoteView(store: store)
+      case let .notificationSettings(store): NotificationSettingsView(store: store)
       }
     }
   }
