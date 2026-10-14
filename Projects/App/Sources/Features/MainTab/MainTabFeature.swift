@@ -44,6 +44,20 @@ struct MainTabFeature {
     var my = MyFeature.State()
     var community = CommunityFeedFeature.State()
     var search = SearchFeature.State()
+    /// 릴레이 탭 화면 이동(DEC-007)
+    var relayPath = StackState<RelayPath.State>()
+
+    /// 하위 화면(상세 · 투표)에서는 탭 바를 숨긴다 — 원본 3c · 3b는 탭 바 없이 하단 버튼을 둔다
+    var hidesTabBar: Bool {
+      self.selectedTab == .relay && !self.relayPath.isEmpty
+    }
+  }
+
+  /// 릴레이 탭에서 push되는 화면
+  @Reducer(state: .equatable, action: .equatable)
+  enum RelayPath {
+    case detail(RelayDetailFeature)
+    case vote(CardVoteFeature)
   }
 
   enum Action: Equatable {
@@ -52,6 +66,7 @@ struct MainTabFeature {
     case my(MyFeature.Action)
     case community(CommunityFeedFeature.Action)
     case search(SearchFeature.Action)
+    case relayPath(StackActionOf<RelayPath>)
   }
 
   var body: some ReducerOf<Self> {
@@ -81,9 +96,26 @@ struct MainTabFeature {
         state.selectedTab = .home
         return .none
 
-      case .relay, .my, .community, .search:
+      case let .relay(.delegate(.showRelay(id))):
+        state.relayPath.append(.detail(RelayDetailFeature.State(relayID: id)))
+        return .none
+
+      case let .relayPath(.element(id: elementID, action: .detail(.delegate(.showVote(relayID))))):
+        // 상세 제목은 줄바꿈이 있어 투표 화면 주제에서는 한 줄로 보인다
+        let title = state.relayPath[id: elementID, case: \.detail]?.detail?.title ?? ""
+        let topic = title.replacingOccurrences(of: "\n", with: " ")
+        state.relayPath.append(.vote(CardVoteFeature.State(relayID: relayID, topic: topic)))
+        return .none
+
+      case let .relayPath(.element(id: elementID, action: .detail(.delegate(.dismiss)))),
+           let .relayPath(.element(id: elementID, action: .vote(.delegate(.dismiss)))):
+        state.relayPath.pop(from: elementID)
+        return .none
+
+      case .relay, .my, .community, .search, .relayPath:
         return .none
       }
     }
+    .forEach(\.relayPath, action: \.relayPath)
   }
 }
