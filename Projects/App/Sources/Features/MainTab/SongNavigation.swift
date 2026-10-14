@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import Foundation
 
-// REQ-023 · REQ-066 — 곡 상세(UI-2d)와 곡 공유 카드(UI-3g)로 가는 이동
+// REQ-023 · REQ-024 · REQ-066 — 곡 상세(UI-2d) · 아티스트(UI-5b) · 곡 공유 카드(UI-3g)로 가는 이동
 // 지금은 검색 탭의 노래 결과에서 연다. 다른 탭의 곡 행은 각 기능 이슈에서 잇는다.
 
 struct SongNavigation: Reducer {
@@ -18,7 +18,22 @@ struct SongNavigation: Reducer {
         state.searchPath.append(.songDetail(SongDetailFeature.State(songID: id)))
         return .none
 
-      case let .searchPath(.element(id: elementID, action: .songDetail(.delegate(.dismiss)))):
+      case let .searchPath(.element(id: elementID, action: .songDetail(.delegate(.showArtist)))):
+        // 곡 상세의 가수 이름 → 아티스트(원본 노트 01)
+        guard let artist = state.searchPath[id: elementID, case: \.songDetail]?.song?.artist else { return .none }
+        state.searchPath.append(.artist(ArtistFeature.State(artistID: artist)))
+        return .none
+
+      case let .searchPath(.element(id: _, action: .artist(.delegate(.showArtist(name))))):
+        state.searchPath.append(.artist(ArtistFeature.State(artistID: name)))
+        return .none
+
+      case let .searchPath(.element(id: _, action: .artist(.delegate(.showSong(songID))))):
+        state.searchPath.append(.songDetail(SongDetailFeature.State(songID: songID)))
+        return .none
+
+      case let .searchPath(.element(id: elementID, action: .artist(.delegate(.dismiss)))),
+           let .searchPath(.element(id: elementID, action: .songDetail(.delegate(.dismiss)))):
         state.searchPath.pop(from: elementID)
         return .none
 

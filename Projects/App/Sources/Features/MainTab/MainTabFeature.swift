@@ -99,6 +99,7 @@ struct MainTabFeature {
   @Reducer(state: .equatable, action: .equatable)
   enum SearchPath {
     case songDetail(SongDetailFeature)
+    case artist(ArtistFeature)
   }
 
   enum Action: Equatable {
