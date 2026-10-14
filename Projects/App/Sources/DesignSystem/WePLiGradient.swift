@@ -32,4 +32,17 @@ enum WePLiGradient {
     startPoint: .top,
     endPoint: .bottom
   )
+
+  /// 공유 시트 「스토리」 타일 (UI-3g, linear-gradient 222.409deg #334FFF → #C838F6 → #FF1F7A → #FF8534 → #FFBD28)
+  static let storyTile = LinearGradient(
+    stops: [
+      .init(color: Color(rgbHex: 0x334FFF), location: 0.1329),
+      .init(color: Color(rgbHex: 0xC838F6), location: 0.3284),
+      .init(color: Color(rgbHex: 0xFF1F7A), location: 0.5263),
+      .init(color: Color(rgbHex: 0xFF8534), location: 0.72),
+      .init(color: Color(rgbHex: 0xFFBD28), location: 0.9309),
+    ],
+    startPoint: .topTrailing,
+    endPoint: .bottomLeading
+  )
 }
