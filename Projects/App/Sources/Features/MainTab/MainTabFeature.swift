@@ -81,6 +81,7 @@ struct MainTabFeature {
   @Reducer(state: .equatable, action: .equatable)
   enum MyPath {
     case editProfile(EditProfileFeature)
+    case notificationSettings(NotificationSettingsFeature)
   }
 
   enum Action: Equatable {
@@ -157,6 +158,14 @@ struct MainTabFeature {
         return .none
 
       case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))):
+        state.myPath.pop(from: elementID)
+        return .none
+
+      case .my(.delegate(.show(.notificationSettings))):
+        state.myPath.append(.notificationSettings(NotificationSettingsFeature.State()))
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .notificationSettings(.delegate(.dismiss)))):
         state.myPath.pop(from: elementID)
         return .none
 

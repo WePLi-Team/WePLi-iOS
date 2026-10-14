@@ -72,6 +72,8 @@ extension MainTabView {
         switch store.case {
         case let .editProfile(store):
           EditProfileView(store: store)
+        case let .notificationSettings(store):
+          NotificationSettingsView(store: store)
         }
       }
     case .home, .search:
