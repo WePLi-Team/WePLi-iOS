@@ -193,7 +193,7 @@ private struct ShareActionRow: View {
 }
 
 /// 「더보기」 — iOS 공유 시트
-private struct ActivityView: UIViewControllerRepresentable {
+struct ActivityView: UIViewControllerRepresentable {
   let item: SystemShareItem
 
   func makeUIViewController(context _: Context) -> UIActivityViewController {
