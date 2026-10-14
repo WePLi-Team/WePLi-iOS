@@ -36,6 +36,8 @@ struct MyProfile: Equatable, Sendable {
   var email: String
   var persona: Persona?
   var photoURL: URL?
+  /// 소개(50자, UI-3e)
+  var bio = ""
 }
 
 /// 마이 탭 그룹 목록의 행 (UI-1e)

@@ -39,6 +39,7 @@ extension MyProfile {
   static let mock = MyProfile(
     nickname: "김동",
     email: "wepli.user@example.com",
-    persona: .sentimentalSymphony
+    persona: .sentimentalSymphony,
+    bio: "노래를 들으며 공부하는 걸 좋아하고 여러 사람들과 같이 듣는 걸 좋아하는 학생입니다:)"
   )
 }
