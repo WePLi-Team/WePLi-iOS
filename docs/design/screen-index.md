@@ -46,8 +46,8 @@
 | UI-7e | 가려진 콘텐츠 · 이의 신청(신고 콘텐츠 처리) | 8 |  | WePLi 7 Operations.dc.html |
 | UI-7f | 서비스 이용 가이드 | 4 |  | WePLi 7 Operations.dc.html |
 | UI-7g | 앱 정보 · 약관 | 5 |  | WePLi 7 Operations.dc.html |
-| UI-8a | 내 추천곡 크레딧 · 역전 알림 | 5 |  | WePLi 8 Fun Mechanics.dc.html |
-| UI-8b | 곡 월드컵 투표 | 5 |  | WePLi 8 Fun Mechanics.dc.html |
+| UI-8a | 내 추천곡 크레딧 · 역전 알림 | 5 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
+| UI-8b | 곡 월드컵 투표 | 5 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
 | UI-8c | 바통 릴레이 | 4 |  | WePLi 8 Fun Mechanics.dc.html |
 | UI-8d | 1위 예측 · 칭호와 배지 | 5 |  | WePLi 8 Fun Mechanics.dc.html |
 | UI-8e | 완성 플리 크레딧 · Apple Music 내보내기 | 4 |  | WePLi 8 Fun Mechanics.dc.html |

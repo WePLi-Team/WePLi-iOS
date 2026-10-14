@@ -25,6 +25,7 @@
 | WePLi 6 New Features.dc.html | 6차 신규 기능: 릴레이 만들기 · SharePlay · 오늘의 한 곡 · 궁합 · 공유 확장 · 결산 | 6a–6f | 1791465773906838 |
 | WePLi 7 Operations.dc.html | 7차 운영: 공지 · 고객센터 · 탈퇴 · 시스템 상태 · 가려진 콘텐츠 · 가이드 · 약관 | 7a–7g | 1791465773906838 |
 | WePLi 8 Fun Mechanics.dc.html | 8차 재미 장치: 역전 · 월드컵 · 바통 · 예측 · 크레딧 · 랭킹 | 8a–8f | 1791471784554291 |
+| WePLi 8 Fun Mechanics v2.dc.html | 8차 v2 「WePLi 톤으로 다시」 — 목차가 「최신」으로 표시. 8a · 8b는 이 파일 기준(2026-10-15 확인) | 8a · 8b | 1792002329737916 |
 | WePLi 9 Figma Variants.dc.html | 9차 Figma 시안: 홈 B·C안 · 게시글 상세 2종 · 곡 추가 시트 | 9a–9e | 1791469214614209 |
 | WePLi 10 Essentials.dc.html | 10차 필수: 릴레이 탭 · 명함 · 팔로우 · 플리 편집 · 내 글 · 로딩/빈 상태 | 10a–10f | 1791891463116882 |
 | WePLi 11 Export.dc.html | 11차 내보내기 · 바통 초대 · 이의 신청 · 내 명함 | 11a–11e | 1791471784554291 |
