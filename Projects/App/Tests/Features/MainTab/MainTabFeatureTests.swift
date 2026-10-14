@@ -268,6 +268,36 @@ final class SongNavigationTests: XCTestCase {
     XCTAssertEqual(store.state.compose?.tracks.map(\.title), [song.title])
   }
 
+  func testSongDetailArtist_opensArtistThenRelatedArtistAndSong() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .search
+    let song = SongDetail.mock(id: "밤편지|아이유")
+    initial.searchPath.append(.songDetail(SongDetailFeature.State(songID: song.id, song: song)))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    guard let detailID = store.state.searchPath.ids.first else { return XCTFail("경로 없음") }
+
+    await store.send(.searchPath(.element(id: detailID, action: .songDetail(.artistTapped))))
+    await store.receive(.searchPath(.element(id: detailID, action: .songDetail(.delegate(.showArtist)))))
+    XCTAssertEqual(store.state.searchPath.count, 2)
+    guard let artistID = store.state.searchPath.ids.last else { return XCTFail("아티스트가 열리지 않음") }
+    XCTAssertEqual(store.state.searchPath[id: artistID, case: \.artist]?.artistID, song.artist)
+
+    await store.send(.searchPath(.element(id: artistID, action: .artist(.relatedArtistTapped("비투비")))))
+    await store.receive(.searchPath(.element(id: artistID, action: .artist(.delegate(.showArtist("비투비"))))))
+    XCTAssertEqual(store.state.searchPath.count, 3)
+
+    await store.send(.searchPath(.element(id: artistID, action: .artist(.songTapped("밤편지")))))
+    await store.receive(.searchPath(.element(id: artistID, action: .artist(.delegate(.showSong("밤편지"))))))
+    XCTAssertEqual(store.state.searchPath.count, 4)
+
+    await store.send(.searchPath(.element(id: artistID, action: .artist(.backButtonTapped))))
+    await store.receive(.searchPath(.element(id: artistID, action: .artist(.delegate(.dismiss)))))
+    XCTAssertEqual(store.state.searchPath.count, 1)
+  }
+
   func testSongDetailBack_pops() async {
     var initial = MainTabFeature.State()
     initial.searchPath.append(.songDetail(SongDetailFeature.State(songID: "s")))

@@ -88,6 +88,7 @@ extension MainTabView {
     } destination: { store in
       switch store.case {
       case let .songDetail(store): SongDetailView(store: store)
+      case let .artist(store): ArtistView(store: store)
       }
     }
   }
