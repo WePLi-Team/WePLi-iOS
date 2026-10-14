@@ -103,6 +103,7 @@ extension MainTabView {
   private static func accountDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
     case let .notifications(store): NotificationsView(store: store)
+    case let .myRecommendation(store): MyRecommendationView(store: store)
     case let .editProfile(store): EditProfileView(store: store)
     case let .library(store): LibraryView(store: store)
     case let .notificationSettings(store): NotificationSettingsView(store: store)

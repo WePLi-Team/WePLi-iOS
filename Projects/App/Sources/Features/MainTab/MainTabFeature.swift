@@ -85,6 +85,7 @@ struct MainTabFeature {
     case relayDetail(RelayDetailFeature)
     case vote(CardVoteFeature)
     case worldCup(SongWorldCupFeature)
+    case myRecommendation(MyRecommendationFeature)
     case notifications(NotificationsFeature)
     case postDetail(PostDetailFeature)
     case editProfile(EditProfileFeature)
