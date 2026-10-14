@@ -45,4 +45,23 @@ enum WePLiGradient {
     startPoint: .topTrailing,
     endPoint: .bottomLeading
   )
+
+  /// 곡 월드컵 VS 배지 테두리 (UI-8b v2, conic-gradient from 103.645deg)
+  static let vsRing = AngularGradient(
+    stops: [
+      .init(color: Color(rgbHex: 0xB0C6FF), location: 0),
+      .init(color: Color(rgbHex: 0xEEF4E1), location: 54 / 360),
+      .init(color: Color(rgbHex: 0x71FFF6), location: 78.69 / 360),
+      .init(color: Color(rgbHex: 0xFAFCFE), location: 108 / 360),
+      .init(color: Color(rgbHex: 0xDCCCFF), location: 162 / 360),
+      .init(color: Color(rgbHex: 0xC0D1F9), location: 179.2 / 360),
+      .init(color: Color(rgbHex: 0xBFD1F9), location: 194.43 / 360),
+      .init(color: Color(rgbHex: 0xFAFCFE), location: 270 / 360),
+      .init(color: Color(rgbHex: 0x71FFF6), location: 306 / 360),
+      .init(color: Color(rgbHex: 0xB6D0F7), location: 1),
+    ],
+    center: .center,
+    // CSS conic은 위(12시)에서 시작하고 SwiftUI는 오른쪽(3시)에서 시작한다
+    angle: .degrees(103.645 - 90)
+  )
 }
