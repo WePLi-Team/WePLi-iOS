@@ -84,6 +84,7 @@ struct MainTabFeature {
   enum Path {
     case relayDetail(RelayDetailFeature)
     case vote(CardVoteFeature)
+    case worldCup(SongWorldCupFeature)
     case notifications(NotificationsFeature)
     case postDetail(PostDetailFeature)
     case editProfile(EditProfileFeature)
