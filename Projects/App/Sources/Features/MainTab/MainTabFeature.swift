@@ -61,6 +61,8 @@ struct MainTabFeature {
     @Presents var songShare: SongShareFeature.State?
     /// 곡 메뉴 시트(UI-1b)와 시트를 연 곡 상세
     @Presents var songMenu: SongMenuFeature.State?
+    /// 명함 만들기(UI-2e) — 전체 화면
+    @Presents var businessCard: BusinessCardFeature.State?
     var songMenuSource: StackElementID?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
@@ -117,11 +119,15 @@ struct MainTabFeature {
     case searchPath(StackActionOf<SearchPath>)
     case songShare(PresentationAction<SongShareFeature.Action>)
     case songMenu(PresentationAction<SongMenuFeature.Action>)
+    case businessCard(PresentationAction<BusinessCardFeature.Action>)
     /// 시트가 닫히는 동안 다음 화면을 띄우면 무시되므로 잠시 뒤에 띄운다
     case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
     case replySongPicker(PresentationAction<SongPickerFeature.Action>)
   }
+
+  @Dependency(\.date.now)
+  var now
 
   var body: some ReducerOf<Self> {
     Scope(state: \.relay, action: \.relay) {
@@ -177,6 +183,19 @@ struct MainTabFeature {
 
         case let .communityPath(.element(id: elementID, action: .notifications(.delegate(.dismiss)))):
           state.communityPath.pop(from: elementID)
+          return .none
+
+        case .my(.delegate(.showBusinessCard)):
+          // 미결정 — 명함이 이미 있으면 내 명함(UI-11e)으로 보낸다(11e 노트). 11e가 없어 지금은 늘 만들기로 연다.
+          state.businessCard = BusinessCardFeature.State(
+            nickname: state.my.profile?.nickname ?? "",
+            persona: state.my.profile?.persona?.name,
+            today: self.now
+          )
+          return .none
+
+        case .businessCard(.presented(.delegate(.dismiss))):
+          state.businessCard = nil
           return .none
 
         case .my(.delegate(.editProfile)):
@@ -262,7 +281,8 @@ struct MainTabFeature {
           return .none
 
         case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath, .compose, .replySongPicker,
-             .searchPath, .songShare, .songMenu, .presentAfterSheet:
+             .searchPath, .songShare, .songMenu, .presentAfterSheet,
+             .businessCard:
           return .none
         }
       }
@@ -282,6 +302,9 @@ struct MainTabFeature {
     }
     .ifLet(\.$songMenu, action: \.songMenu) {
       SongMenuFeature()
+    }
+    .ifLet(\.$businessCard, action: \.businessCard) {
+      BusinessCardFeature()
     }
   }
 }
