@@ -22,7 +22,9 @@ struct SongShareCardView: View {
         HStack(alignment: .top) {
           self.dateBlock
           Spacer(minLength: 8)
-          self.profilePill.padding(.trailing, -6)
+          if let name = self.card.sharerName {
+            self.profilePill(name).padding(.trailing, -6)
+          }
         }
         .padding(.top, 26)
         Spacer(minLength: 0)
@@ -61,7 +63,7 @@ struct SongShareCardView: View {
     .frame(width: 52)
   }
 
-  private var profilePill: some View {
+  private func profilePill(_ name: String) -> some View {
     HStack(spacing: 6) {
       Circle()
         .fill(WePLiColor.surface2)
@@ -72,7 +74,7 @@ struct SongShareCardView: View {
             .foregroundStyle(WePLiColor.textQuaternary)
         }
       VStack(alignment: .leading, spacing: 2) {
-        Text(self.card.sharerName)
+        Text(name)
           .font(.custom(WePLiFont.Weight.medium.postScriptName, fixedSize: 10))
           .foregroundStyle(WePLiColor.textPrimary)
         if let persona = self.card.sharerPersona {

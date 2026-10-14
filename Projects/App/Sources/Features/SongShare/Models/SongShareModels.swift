@@ -6,9 +6,10 @@ struct SongShareCard: Equatable, Sendable {
   let songID: String
   let title: String
   let artist: String
-  let sharerName: String
+  /// 공유자 — 프로필을 불러오기 전에는 nil이고 프로필 칩을 숨긴다
+  var sharerName: String?
   /// 성향 이름 — 원본 카드는 영문(「Melody Memories」)이지만 영문 이름이 하나만 있어 한글 이름을 쓴다(문구 확인 필요)
-  let sharerPersona: String?
+  var sharerPersona: String?
   /// 「15」
   let day: String
   /// 「OCT」
@@ -19,7 +20,7 @@ struct SongShareCard: Equatable, Sendable {
     "\(self.title) · \(self.artist)"
   }
 
-  init(songID: String, title: String, artist: String, sharerName: String, sharerPersona: String?, today: Date) {
+  init(songID: String, title: String, artist: String, sharerName: String?, sharerPersona: String?, today: Date) {
     self.songID = songID
     self.title = title
     self.artist = artist

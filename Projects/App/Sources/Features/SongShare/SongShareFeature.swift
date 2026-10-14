@@ -8,13 +8,15 @@ import Foundation
 struct SongShareFeature {
   @ObservableState
   struct State: Equatable {
-    let card: SongShareCard
+    var card: SongShareCard
     var systemShare: SystemShareItem?
     var toast: String?
     var shareCount = 0
   }
 
   enum Action: Equatable {
+    case onAppear
+    case sharerLoaded(MyProfile)
     case closeButtonTapped
     /// 카드 이미지는 화면이 그려서 넘긴다(ImageRenderer)
     case storyTapped(image: Data?)
@@ -36,9 +38,25 @@ struct SongShareFeature {
   @Dependency(\.songShareClient)
   var client
 
+  @Dependency(\.myClient)
+  var myClient
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        guard state.card.sharerName == nil else { return .none }
+        return .run { send in
+          if let profile = try? await self.myClient.fetchProfile() {
+            await send(.sharerLoaded(profile))
+          }
+        }
+
+      case let .sharerLoaded(profile):
+        state.card.sharerName = profile.nickname
+        state.card.sharerPersona = profile.persona?.name
+        return .none
+
       case .closeButtonTapped:
         return .send(.delegate(.dismiss))
 

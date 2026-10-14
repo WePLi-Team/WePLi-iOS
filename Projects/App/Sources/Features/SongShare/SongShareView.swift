@@ -20,6 +20,7 @@ struct SongShareView: View {
           .padding(.bottom, 8)
       }
       .ignoresSafeArea(edges: .bottom)
+      .onAppear { self.store.send(.onAppear) }
       .wepliToast(Binding(get: { self.store.toast }, set: {
         if $0 == nil {
           self.store.send(.toastDismissed)

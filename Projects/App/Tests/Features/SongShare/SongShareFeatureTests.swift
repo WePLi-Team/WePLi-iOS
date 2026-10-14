@@ -29,6 +29,24 @@ final class SongShareFeatureTests: XCTestCase {
     XCTAssertEqual(ShareCardDate(Date(timeIntervalSince1970: 1767225600)).month, "JAN")
   }
 
+  func testOnAppear_loadsSharerWhenMissing() async {
+    var initial = self.state()
+    initial.card.sharerName = nil
+    initial.card.sharerPersona = nil
+    let profile = MyProfile(nickname: "위플리", email: "", persona: .melodyMemories, photoURL: nil)
+    let store = TestStore(initialState: initial) {
+      SongShareFeature()
+    } withDependencies: {
+      $0.myClient.fetchProfile = { profile }
+    }
+
+    await store.send(.onAppear)
+    await store.receive(.sharerLoaded(profile)) {
+      $0.card.sharerName = "위플리"
+      $0.card.sharerPersona = "멜로디 메모리즈"
+    }
+  }
+
   func testCopyLink_copiesAndShowsToast() async {
     let copied = LockIsolated<URL?>(nil)
     let link = self.link
