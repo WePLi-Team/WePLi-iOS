@@ -59,6 +59,9 @@ struct MainTabFeature {
     var replySongTarget: StackElementID?
     /// 곡 공유 카드(UI-3g) — 전체 화면
     @Presents var songShare: SongShareFeature.State?
+    /// 곡 메뉴 시트(UI-1b)와 시트를 연 곡 상세
+    @Presents var songMenu: SongMenuFeature.State?
+    var songMenuSource: StackElementID?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
     var hidesTabBar: Bool {
@@ -113,6 +116,9 @@ struct MainTabFeature {
     case myPath(StackActionOf<MyPath>)
     case searchPath(StackActionOf<SearchPath>)
     case songShare(PresentationAction<SongShareFeature.Action>)
+    case songMenu(PresentationAction<SongMenuFeature.Action>)
+    /// 시트가 닫히는 동안 다음 화면을 띄우면 무시되므로 잠시 뒤에 띄운다
+    case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
     case replySongPicker(PresentationAction<SongPickerFeature.Action>)
   }
@@ -137,6 +143,7 @@ struct MainTabFeature {
     // 하위 화면 reducer(forEach · ifLet)보다 먼저 돌아야 해서 같은 묶음에 넣는다
     CombineReducers {
       SongNavigation()
+      SongMenuNavigation()
 
       Reduce { state, action in
         switch action {
@@ -255,7 +262,7 @@ struct MainTabFeature {
           return .none
 
         case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath, .compose, .replySongPicker,
-             .searchPath, .songShare:
+             .searchPath, .songShare, .songMenu, .presentAfterSheet:
           return .none
         }
       }
@@ -272,6 +279,9 @@ struct MainTabFeature {
     }
     .ifLet(\.$songShare, action: \.songShare) {
       SongShareFeature()
+    }
+    .ifLet(\.$songMenu, action: \.songMenu) {
+      SongMenuFeature()
     }
   }
 }
