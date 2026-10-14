@@ -98,3 +98,6 @@ vendor/bundle/
 # Local env / Claude Code local settings
 .env
 .claude/settings.local.json
+
+# 기능별 git worktree (docs/conventions/git.md 「worktree」)
+.worktrees/

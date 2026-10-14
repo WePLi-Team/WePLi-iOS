@@ -58,7 +58,7 @@ verify_ios() {
   [ -d WePLi.xcworkspace ] || { echo "WePLi.xcworkspace 없음 — tuist generate --no-open 먼저"; return 1; }
   # 린트 도구는 .mise.toml에 고정한 버전으로 돌린다(CI와 같은 규칙)
   check_lint_tools || return 1
-  mise exec -- swiftformat --lint . --config .swiftformat --exclude vendor,Projects/App/Derived || return 1
+  mise exec -- swiftformat --lint . --config .swiftformat --exclude vendor,Projects/App/Derived,.worktrees || return 1
   mise exec -- swiftlint --strict --quiet --no-cache --config .swiftlint.yml || return 1
   verify_arch || return 1
   xcodebuild test -quiet -workspace WePLi.xcworkspace -scheme WePLi \
