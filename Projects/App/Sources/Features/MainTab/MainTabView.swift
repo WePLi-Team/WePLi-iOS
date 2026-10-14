@@ -40,6 +40,9 @@ struct MainTabView: View {
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])
       }
+      .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
+        SongShareView(store: shareStore)
+      }
     }
   }
 }
@@ -52,7 +55,8 @@ extension MainTabView {
     case .relay: self.relayStack
     case .community: self.communityStack
     case .my: self.myStack
-    case .home, .search: NavigationStack { self.root(for: tab) }
+    case .search: self.searchStack
+    case .home: NavigationStack { self.root(for: tab) }
     }
   }
 
@@ -74,6 +78,16 @@ extension MainTabView {
       switch store.case {
       case let .notifications(store): NotificationsView(store: store)
       case let .postDetail(store): PostDetailView(store: store)
+      }
+    }
+  }
+
+  private var searchStack: some View {
+    NavigationStack(path: self.$store.scope(state: \.searchPath, action: \.searchPath)) {
+      self.root(for: .search)
+    } destination: { store in
+      switch store.case {
+      case let .songDetail(store): SongDetailView(store: store)
       }
     }
   }

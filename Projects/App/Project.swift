@@ -45,6 +45,8 @@ let project = Project(
         "UILaunchScreen": [:],
         "API_BASE_URL": "$(API_BASE_URL)",
         "LOG_LEVEL": "$(LOG_LEVEL)",
+        // UI-3g 이미지 저장 — 원본에 없는 문구(확인 필요)
+        "NSPhotoLibraryAddUsageDescription": "곡 공유 카드를 사진 앱에 저장하려면 사진 추가 권한이 필요해요.",
         "CFBundleURLTypes": [
           [
             "CFBundleURLName": "com.example.wepli",
