@@ -1,6 +1,6 @@
 # 화면 목록 (Screen Index)
 
-원본: Claude Design 「위플리 iOS UI 개선」 — `docs/design/README.md`. 확인 2026-10-13. 화면 ID는 원본 화면 번호이며, 이슈 · 커밋에서는 `UI-<번호>`로 쓴다(예: `UI-2c`).
+원본: Claude Design 「위플리 iOS UI 개선」 — `docs/design/README.md`. 확인 2026-10-15(13 · 14차 추가, 8차는 v2 기준). 화면 ID는 원본 화면 번호이며, 이슈 · 커밋에서는 `UI-<번호>`로 쓴다(예: `UI-2c`).
 플랫폼은 모두 iOS(iPhone). 상태 수 = 원본에 그려진 상태 · 변형 수(탭 바 glass/classic 변형 포함). 「별도 타깃」은 앱 외 Extension · capability가 필요한 화면.
 
 | ID | 이름 | 상태 수 | 별도 타깃 | 원본 파일 |
@@ -48,10 +48,10 @@
 | UI-7g | 앱 정보 · 약관 | 5 |  | WePLi 7 Operations.dc.html |
 | UI-8a | 내 추천곡 크레딧 · 역전 알림 | 5 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
 | UI-8b | 곡 월드컵 투표 | 5 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
-| UI-8c | 바통 릴레이 | 4 |  | WePLi 8 Fun Mechanics.dc.html |
-| UI-8d | 1위 예측 · 칭호와 배지 | 5 |  | WePLi 8 Fun Mechanics.dc.html |
-| UI-8e | 완성 플리 크레딧 · Apple Music 내보내기 | 4 |  | WePLi 8 Fun Mechanics.dc.html |
-| UI-8f | 시즌 랭킹 · 인기 호스트 | 3 |  | WePLi 8 Fun Mechanics.dc.html |
+| UI-8c | 바통 릴레이 | 4 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
+| UI-8d | 1위 예측 · 칭호와 배지 | 5 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
+| UI-8e | 완성 플리 크레딧 · Apple Music 내보내기 (→ UI-14b로 대체) | 4 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
+| UI-8f | 시즌 랭킹 · 인기 호스트 | 3 |  | WePLi 8 Fun Mechanics v2.dc.html (최신 · v1은 WePLi 8 Fun Mechanics.dc.html) |
 | UI-9a | 홈 B안 · 리스트형 릴레이 | 2 |  | WePLi 9 Figma Variants.dc.html |
 | UI-9b | 홈 C안 · Relay♪ist | 2 |  | WePLi 9 Figma Variants.dc.html |
 | UI-9c | 게시글 상세 · 플레이리스트 타입 | 1 |  | WePLi 9 Figma Variants.dc.html |
@@ -63,7 +63,7 @@
 | UI-10d | 내 플레이리스트 · 편집 | 2 |  | WePLi 10 Essentials.dc.html |
 | UI-10e | 내 게시글 수정·삭제 · 답글 | 7 |  | WePLi 10 Essentials.dc.html |
 | UI-10f | 로딩 · 빈 상태 | 5 |  | WePLi 10 Essentials.dc.html |
-| UI-11a | 내 음악 앱으로 내보내기 (Apple Music · Spotify · YouTube Music) | 8 |  | WePLi 11 Export.dc.html |
+| UI-11a | 내 음악 앱으로 내보내기 (Apple Music · Spotify · YouTube Music) (→ UI-14a–14o로 대체) | 8 |  | WePLi 11 Export.dc.html |
 | UI-11b | 연결된 음악 서비스 | 3 |  | WePLi 11 Export.dc.html |
 | UI-11c | 바통 초대 받기 (초대 링크로 들어왔을 때) | 3 |  | WePLi 11 Export.dc.html |
 | UI-11d | 이의 신청 | 3 |  | WePLi 11 Export.dc.html |
@@ -72,18 +72,43 @@
 | UI-12b | 통합 홈 · iOS 16 (iPhone 14 Pro) | 3 | | WePLi 12 iOS 16.dc.html + HomeFeed.dc.html |
 | UI-12c | 통합 홈 · iPhone SE · 8 (iOS 16, 375×667) | 2 | | WePLi 12 iOS 16.dc.html + HomeFeed.dc.html |
 | UI-12d | iOS 26 → iOS 16 크롬 비교 (공통 규칙) | 0 | | WePLi 12 iOS 16.dc.html |
+| UI-13a | 연결과 공개 범위 | 3 | MusicKit · Spotify · Last.fm | WePLi 13 Now Playing v2.dc.html (v1은 WePLi 13 Now Playing.dc.html) |
+| UI-13b | 친구 피드 — 커뮤니티 › 친구 | 2 |  | WePLi 13 Now Playing v2.dc.html (v1은 WePLi 13 Now Playing.dc.html) |
+| UI-13c | 친구 프로필 (A안) | 4 |  | WePLi 13 Now Playing v2.dc.html (v1은 WePLi 13 Now Playing.dc.html) |
+| UI-13d | 그룹 · 우리 넷 | 2 |  | WePLi 13 Now Playing v2.dc.html (v1은 WePLi 13 Now Playing.dc.html) |
+| UI-13e | 잠금화면 위젯 | 2 | WidgetKit · App Group | WePLi 13 Now Playing v2.dc.html (v1은 WePLi 13 Now Playing.dc.html) |
+| UI-13f | 지금 위플리 · 전체 트렌드 | 5 |  | WePLi 13 Now Playing v2.dc.html (v1은 WePLi 13 Now Playing.dc.html) |
+| UI-13g | 친구 프로필 B안 · 커뮤니티까지 | 10 |  | WePLi 13 Now Playing v2.dc.html (v2에만 있음) |
+| UI-14a | 완성 알림 | 1 | 푸시 | WePLi 14 Export Flow.dc.html |
+| UI-14b | 완성 플리 · 기준 화면 | 6 |  | WePLi 14 Export Flow.dc.html |
+| UI-14c | 서비스 선택 (어디로 담을까요) | 4 |  | WePLi 14 Export Flow.dc.html |
+| UI-14d | 담기 설정 | 2 |  | WePLi 14 Export Flow.dc.html |
+| UI-14e | Apple Music 접근 허용 | 2 | MusicKit | WePLi 14 Export Flow.dc.html |
+| UI-14f | Apple Music 구독 필요 | 1 | MusicKit | WePLi 14 Export Flow.dc.html |
+| UI-14g | Spotify 연결 | 2 | ASWebAuthenticationSession | WePLi 14 Export Flow.dc.html |
+| UI-14h | 곡 맞추는 중 | 3 | 백그라운드 | WePLi 14 Export Flow.dc.html |
+| UI-14i | 확인이 필요한 곡 | 3 |  | WePLi 14 Export Flow.dc.html |
+| UI-14j | 다른 버전 고르기 | 5 |  | WePLi 14 Export Flow.dc.html |
+| UI-14k | 담기 완료 | 2 |  | WePLi 14 Export Flow.dc.html |
+| UI-14l | 지금 순위로 먼저 담기 (진행 중) | 2 |  | WePLi 14 Export Flow.dc.html |
+| UI-14m | 내보낸 플리 · 변경 기록 | 2 |  | WePLi 14 Export Flow.dc.html |
+| UI-14n | 문제가 생겼을 때 | 3 |  | WePLi 14 Export Flow.dc.html |
+| UI-14o | 곡 목록으로 옮기기 | 4 |  | WePLi 14 Export Flow.dc.html |
 
-합계 67개 (목차 66개 + 5f 「홈 화면 위젯」이 원본에서 따로 분리됨). 목차와 대조: 누락 0 · 중복 0. `HomeFeed.dc.html`은 화면이 아니라 12a–12c가 불러 쓰는 홈 콘텐츠 컴포넌트(속성: os 26/16 · topY · heroH · padB).
+합계 89개 = 67개(목차 66개 + 5f 「홈 화면 위젯」 분리) + 13a–13f 6개 + 13g 1개(v2에만 있고 목차 카드에는 없음) + 14a–14o 15개. 2026-10-15 목차와 대조: 누락 0 · 중복 0, 없어진 ID 0. `HomeFeed.dc.html`은 화면이 아니라 12a–12c가 불러 쓰는 홈 콘텐츠 컴포넌트(속성: os 26/16 · topY · heroH · padB).
 
 ## 대안 · 대체 관계
 
 | 화면 | 관계 |
 |---|---|
-| UI-1b · UI-4a · UI-9a · UI-9b → UI-12a · 12b · 12c | 홈 시안 넷을 12차 통합 홈이 하나로 이음(DEC-006). 섹션: 히어로(4a) → 투표 중 릴레이(9a) → TOP 100(1b) → 오늘의 플리 · 추천 노래(9a) → 내 최애 가수(9b) → 인기 랭킹(1b) → Fa♥orite · 추천 플리(9b+1b) → Youtube Cover(9b+1b) |
+| UI-1b · UI-4a · UI-9a · UI-9b → UI-12a · 12b · 12c | 홈 시안 넷을 12차 통합 홈이 하나로 이음(DEC-006). 2026-10-15 갱신 17섹션: 히어로(4a) → TOP 100(1b) → 배너(1b) → 내 추천곡(8a) → 투표 중 릴레이(9a) → 1위 예측(8d) → 친구가 지금 듣는 중(13) → 지금 위플리에서 듣는 중(13) → 오늘의 플리(9a) → 시간대 추천 → 내 최애 가수(9b) → Fa♥orite · 내가 좋아요한 곡 → 커뮤니티 인기글(1d) → 인기 랭킹(1b) → 추천 플리(1b+9b) → 테마별 플리(1b) → Youtube Cover(9b+1b) |
 | UI-12d | iOS 16 크롬 공통 규칙(탭 바 · 뒤로 · 시트 · 목록 · 검색) |
 | UI-1a · UI-3f | 로그인 A안(해시태그) · B안(앨범 캐러셀). 채택 미결정 |
 | UI-1c → UI-3b · UI-3c | 1c의 시트 투표는 3b 카드 투표 · 3c 상태 화면으로 대체(원본 명시) |
 | UI-2c · UI-9c · UI-9d | 게시글 상세 한 곡 · 플레이리스트 · 일반 타입 |
 | UI-2a · UI-9e · UI-4c | 곡 검색(전체 화면) · 곡 추가 시트(가벼운 추가) · 통합 검색 탭 — 서로 다른 화면 |
-| UI-8e → UI-11a | 8e 내보내기 버튼은 11a로 연결됨 |
+| UI-8e · UI-3c · UI-4a → UI-14b | 「완성 플리의 기준 화면입니다. 8e·3c·4a의 ‘완성된 플리’가 모두 여기로 옵니다.」(14 원문) — 8e는 만들지 않는다 |
+| UI-11a → UI-14a–14o | 「11a 한 화면에 몰려 있던 흐름을 단계별 화면 15개로 나눴습니다」(14 원문). 11b–11e는 그대로 |
+| UI-13c · UI-13g | 친구 프로필 A안 · B안. 채택 미결정, 5a 대체 여부도 미결정 |
+| UI-13 · UI-4b | 13은 소셜 「지금 듣는 음악」 상태, 4b는 앱 안 전체 화면 플레이어 — 서로 다른 화면(대체 관계 없음) |
 | UI-10a | 1–4차의 「차트」 탭을 「릴레이」 탭으로 대체 |
