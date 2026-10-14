@@ -75,7 +75,7 @@ struct EditProfileView: View {
   private var photo: some View {
     VStack(spacing: 10) {
       Circle()
-        .fill(WePLiColor.surface4)
+        .fill(WePLiColor.imagePlaceholder)
         .frame(width: 96, height: 96)
         .overlay {
           Image(systemName: "person.fill")

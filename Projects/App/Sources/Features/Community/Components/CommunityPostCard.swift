@@ -83,7 +83,7 @@ struct CommunityPostCard: View {
         ForEach(Array(tracks.enumerated()), id: \.offset) { _, track in
           HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 4)
-              .fill(WePLiColor.surface4)
+              .fill(WePLiColor.imagePlaceholder)
               .frame(width: 40, height: 40)
               .overlay {
                 Image(systemName: "music.note")

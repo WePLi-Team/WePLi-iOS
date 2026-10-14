@@ -86,7 +86,7 @@ struct SearchResultRow: View {
     Button(action: self.action) {
       HStack(spacing: 12) {
         RoundedRectangle(cornerRadius: self.kind == .song ? 4 : 8)
-          .fill(WePLiColor.surface4)
+          .fill(WePLiColor.imagePlaceholder)
           .frame(width: self.coverSize, height: self.coverSize)
           .overlay {
             Image(systemName: self.kind == .song ? "music.note" : "music.note.list")

@@ -92,7 +92,7 @@ struct SongInfoCards: View {
       self.card(title: "앨범 정보") {
         Button(action: self.onAlbum) {
           HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 6).fill(WePLiColor.surface4).frame(width: 48, height: 48)
+            RoundedRectangle(cornerRadius: 6).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
             VStack(alignment: .leading, spacing: 2) {
               Text(self.song.album.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
               Text(self.song.album.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textQuaternary)
@@ -165,7 +165,7 @@ struct SongRelatedSections: View {
             self.onSong(related.id)
           } label: {
             HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.surface4).frame(width: 44, height: 44)
+              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
               VStack(alignment: .leading, spacing: 2) {
                 Text(related.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
                 Text(related.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textQuaternary)
@@ -191,7 +191,7 @@ struct SongRelatedSections: View {
                 self.onAlbum(album.id)
               } label: {
                 VStack(alignment: .leading, spacing: 4) {
-                  RoundedRectangle(cornerRadius: 10).fill(WePLiColor.surface4).frame(width: 140, height: 140)
+                  RoundedRectangle(cornerRadius: 10).fill(WePLiColor.imagePlaceholder).frame(width: 140, height: 140)
                   Text(album.title).wepliFont(.subheadline).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
                   Text(album.subtitle).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
                 }

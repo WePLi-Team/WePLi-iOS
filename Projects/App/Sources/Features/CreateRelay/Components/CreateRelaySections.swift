@@ -181,7 +181,7 @@ struct CreateRelayFirstSong: View {
     Button(action: self.onTap) {
       if let song = self.song {
         HStack(spacing: 12) {
-          RoundedRectangle(cornerRadius: 6).fill(WePLiColor.surface4).frame(width: 44, height: 44)
+          RoundedRectangle(cornerRadius: 6).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
           VStack(alignment: .leading, spacing: 1) {
             Text(song.title)
               .wepliFont(.body, weight: .medium)

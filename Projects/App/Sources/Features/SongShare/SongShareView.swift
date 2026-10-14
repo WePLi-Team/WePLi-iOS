@@ -42,7 +42,7 @@ struct SongShareView: View {
   private var backdrop: some View {
     ZStack {
       Color.black
-      WePLiColor.surface4
+      WePLiColor.imagePlaceholder
         .frame(width: 562, height: 700)
         .blur(radius: 60)
         .opacity(0.5)

@@ -88,7 +88,7 @@ struct MyPlaylistView: View {
       self.store.send(.coverTapped)
     } label: {
       RoundedRectangle(cornerRadius: 14)
-        .fill(WePLiColor.surface4)
+        .fill(WePLiColor.imagePlaceholder)
         .frame(width: 112, height: 112)
         .overlay {
           Image(systemName: "music.note.list")

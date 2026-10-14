@@ -56,7 +56,7 @@ struct MyProfileCard: View {
 
   private var photo: some View {
     Circle()
-      .fill(WePLiColor.surface4)
+      .fill(WePLiColor.imagePlaceholder)
       .overlay {
         Image(systemName: "person.fill")
           .font(.system(size: 28))

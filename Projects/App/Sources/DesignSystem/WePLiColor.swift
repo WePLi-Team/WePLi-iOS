@@ -40,6 +40,10 @@ enum WePLiColor {
   // MARK: 상태 · 오버레이
 
   static let disabledFill = Color.white.opacity(0.08)
+  /// 이미지 자리 · 로딩 중 커버 · 아바타 (디자인 시스템 surface2)
+  static let imagePlaceholder = Self.surface2
+  /// 입력 오류 — 위험 동작(#FF453A)과 구분한다 (모션 35)
+  static let inputError = Color(rgbHex: 0xFF6961)
   /// 고른 선택 카드 안쪽 (UI-6a 투표 방식)
   static let selectionFill = Color(rgbHex: 0x1A1A22)
   /// 명함 카드 면 · 테두리 · 말풍선 (UI-2e)
