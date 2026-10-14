@@ -68,6 +68,27 @@ struct MyNavigation: Reducer {
         state.myPath.append(.vote(CardVoteFeature.State(relayID: relayID, topic: topic)))
         return .none
 
+      case let .myPath(.element(id: _, action: .library(.delegate(.showPlaylist(id))))):
+        // 보관함 「내 플레이리스트」 → 내 플레이리스트 · 편집(UI-10d)
+        state.myPath.append(.myPlaylist(MyPlaylistFeature.State(playlistID: id)))
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .myPlaylist(.delegate(.dismiss)))):
+        state.myPath.pop(from: elementID)
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .myPlaylist(.delegate(.deleted(playlistID))))):
+        state.myPath.pop(from: elementID)
+        // 지운 플리는 보관함 목록에서도 뺀다
+        for id in state.myPath.ids {
+          state.myPath[id: id, case: \.library]?.library?.playlists.removeAll { $0.id == playlistID }
+        }
+        return .none
+
+      case let .myPath(.element(id: _, action: .myPlaylist(.delegate(.shareAsPost(tracks))))):
+        state.compose = ComposePostFeature.State(tracks: tracks)
+        return .none
+
       default:
         return .none
       }
