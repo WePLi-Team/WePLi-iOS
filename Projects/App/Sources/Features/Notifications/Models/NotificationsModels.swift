@@ -43,6 +43,8 @@ struct AppNotification: Equatable, Identifiable, Sendable {
   /// 「투표하기」 · 「듣기」 · 「맞팔로우」
   let actionTitle: String?
   var isRead: Bool
+  /// 릴레이 알림이면 그 릴레이 — 누르면 해당 화면으로 간다
+  var relayID: String?
 }
 
 enum NotificationPermission: Equatable, Sendable {

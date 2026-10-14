@@ -73,7 +73,8 @@ extension AppNotification {
       text: "‘손님들이 물어보는 카페 BGM’ 완성까지 1시간 남았어요. 마지막 투표에 참여해보세요.",
       timeText: "방금",
       actionTitle: "투표하기",
-      isRead: false
+      isRead: false,
+      relayID: "cafe-bgm"
     ),
     AppNotification(
       id: "n2",
@@ -82,7 +83,8 @@ extension AppNotification {
       text: "내가 추천한 ‘EASY’가 3위로 올랐어요.",
       timeText: "24분 전",
       actionTitle: nil,
-      isRead: false
+      isRead: false,
+      relayID: "first-love"
     ),
     AppNotification(
       id: "n3",
@@ -109,7 +111,8 @@ extension AppNotification {
       text: "‘첫 사랑이 생각나는 노래 모음’ 릴레이리스트가 완성되었어요 🎉",
       timeText: "2일 전",
       actionTitle: "듣기",
-      isRead: true
+      isRead: true,
+      relayID: "first-love"
     ),
     AppNotification(
       id: "n6",

@@ -28,6 +28,7 @@ struct ContentNavigation: Reducer {
   static func isDismiss(_ action: Path.Action) -> Bool {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
+         .myRecommendation(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
          .notificationSettings(.delegate(.dismiss)), .myPlaylist(.delegate(.dismiss)),
@@ -82,6 +83,14 @@ struct ContentNavigation: Reducer {
       return .vote(CardVoteFeature.State(relayID: relayID, topic: topic))
     case let .library(.delegate(.showRelay(id))):
       return .relayDetail(RelayDetailFeature.State(relayID: id))
+    case let .notifications(.delegate(.open(id))):
+      // 「내 추천곡 순위 변동」 → 내 추천곡 실시간 순위(UI-8a), 마감 · 완성 알림 → 릴레이 상세
+      guard let notice = stack[id: source.id, case: \.notifications]?.notifications[id: id],
+            let relayID = notice.relayID
+      else { return nil }
+      return notice.kind == .rankChanged
+        ? .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
+        : .relayDetail(RelayDetailFeature.State(relayID: relayID))
     case let .library(.delegate(.showPlaylist(id))):
       // 보관함 「내 플레이리스트」 → 내 플레이리스트 · 편집(UI-10d)
       return .myPlaylist(MyPlaylistFeature.State(playlistID: id))
