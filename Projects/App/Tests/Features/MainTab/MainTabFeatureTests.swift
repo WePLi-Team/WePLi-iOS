@@ -186,3 +186,37 @@ final class PostDetailNavigationTests: XCTestCase {
     XCTAssertEqual(store.state.communityPath[id: id, case: \.postDetail]?.replySong?.title, "밤양갱")
   }
 }
+
+@MainActor
+final class LibraryNavigationTests: XCTestCase {
+  func testMyMenus_openLibrarySegmentAndContinueVoting() async {
+    let now = Date(timeIntervalSince1970: 1800000000)
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.my(.menuTapped(.likesAndSaves)))
+    await store.receive(.my(.delegate(.show(.likesAndSaves))))
+    guard let id = store.state.myPath.ids.first else { return XCTFail("보관함이 열리지 않음") }
+    XCTAssertEqual(store.state.myPath[id: id, case: \.library]?.segment, .likes)
+
+    await store.send(.myPath(.element(id: id, action: .library(.loaded(.mock(now: now))))))
+    await store.send(.myPath(.element(id: id, action: .library(.continueVotingTapped("cafe-bgm")))))
+    await store.receive(.myPath(.element(id: id, action: .library(.delegate(.continueVoting(relayID: "cafe-bgm"))))))
+    guard let voteID = store.state.myPath.ids.last else { return XCTFail("투표가 열리지 않음") }
+    XCTAssertEqual(store.state.myPath[id: voteID, case: \.vote]?.topic, "손님들이 물어보는 카페 BGM")
+  }
+
+  func testSettingsMenu_doesNotOpenLibrary() async {
+    let store = TestStore(initialState: MainTabFeature.State()) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    await store.send(.my(.menuTapped(.notificationSettings)))
+    await store.receive(.my(.delegate(.show(.notificationSettings))))
+    XCTAssertTrue(store.state.myPath.isEmpty)
+  }
+}

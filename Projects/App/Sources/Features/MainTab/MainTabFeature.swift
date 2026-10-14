@@ -85,6 +85,8 @@ struct MainTabFeature {
   @Reducer(state: .equatable, action: .equatable)
   enum MyPath {
     case editProfile(EditProfileFeature)
+    case library(LibraryFeature)
+    case vote(CardVoteFeature)
   }
 
   enum Action: Equatable {
@@ -161,8 +163,28 @@ struct MainTabFeature {
         state.my.profile = profile
         return .none
 
-      case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))):
+      case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))),
+           let .myPath(.element(id: elementID, action: .library(.delegate(.dismiss)))),
+           let .myPath(.element(id: elementID, action: .vote(.delegate(.dismiss)))):
         state.myPath.pop(from: elementID)
+        return .none
+
+      case let .my(.delegate(.show(menu))):
+        // 마이의 「내 활동」 세 메뉴는 보관함의 해당 세그먼트로(UI-5c 노트 01)
+        let segment: LibrarySegment? = switch menu {
+        case .myPlaylists: .playlists
+        case .joinedRelays: .relays
+        case .likesAndSaves: .likes
+        case .notificationSettings, .serviceGuide, .noticesAndTerms, .developerMode: nil
+        }
+        guard let segment else { return .none }
+        state.myPath.append(.library(LibraryFeature.State(segment: segment)))
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .library(.delegate(.continueVoting(relayID))))):
+        let topic = state.myPath[id: elementID, case: \.library]?.library?.liveRelays
+          .first { $0.id == relayID }?.title ?? ""
+        state.myPath.append(.vote(CardVoteFeature.State(relayID: relayID, topic: topic)))
         return .none
 
       case .community(.delegate(.showCompose)):

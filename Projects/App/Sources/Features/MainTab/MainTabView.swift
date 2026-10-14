@@ -49,40 +49,43 @@ extension MainTabView {
   @ViewBuilder
   private func stack(for tab: MainTabFeature.Tab) -> some View {
     switch tab {
-    case .relay:
-      NavigationStack(path: self.$store.scope(state: \.relayPath, action: \.relayPath)) {
-        self.root(for: tab)
-      } destination: { store in
-        switch store.case {
-        case let .detail(store):
-          RelayDetailView(store: store)
-        case let .vote(store):
-          CardVoteView(store: store)
-        }
+    case .relay: self.relayStack
+    case .community: self.communityStack
+    case .my: self.myStack
+    case .home, .search: NavigationStack { self.root(for: tab) }
+    }
+  }
+
+  private var relayStack: some View {
+    NavigationStack(path: self.$store.scope(state: \.relayPath, action: \.relayPath)) {
+      self.root(for: .relay)
+    } destination: { store in
+      switch store.case {
+      case let .detail(store): RelayDetailView(store: store)
+      case let .vote(store): CardVoteView(store: store)
       }
-    case .community:
-      NavigationStack(path: self.$store.scope(state: \.communityPath, action: \.communityPath)) {
-        self.root(for: tab)
-      } destination: { store in
-        switch store.case {
-        case let .notifications(store):
-          NotificationsView(store: store)
-        case let .postDetail(store):
-          PostDetailView(store: store)
-        }
+    }
+  }
+
+  private var communityStack: some View {
+    NavigationStack(path: self.$store.scope(state: \.communityPath, action: \.communityPath)) {
+      self.root(for: .community)
+    } destination: { store in
+      switch store.case {
+      case let .notifications(store): NotificationsView(store: store)
+      case let .postDetail(store): PostDetailView(store: store)
       }
-    case .my:
-      NavigationStack(path: self.$store.scope(state: \.myPath, action: \.myPath)) {
-        self.root(for: tab)
-      } destination: { store in
-        switch store.case {
-        case let .editProfile(store):
-          EditProfileView(store: store)
-        }
-      }
-    case .home, .search:
-      NavigationStack {
-        self.root(for: tab)
+    }
+  }
+
+  private var myStack: some View {
+    NavigationStack(path: self.$store.scope(state: \.myPath, action: \.myPath)) {
+      self.root(for: .my)
+    } destination: { store in
+      switch store.case {
+      case let .editProfile(store): EditProfileView(store: store)
+      case let .library(store): LibraryView(store: store)
+      case let .vote(store): CardVoteView(store: store)
       }
     }
   }
