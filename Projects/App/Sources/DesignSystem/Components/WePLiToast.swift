@@ -1,10 +1,10 @@
 import SwiftUI
 
-// REQ-002 · 토스트 — 상단 중앙 44pt 캡슐, 체크 아이콘 #A4FFFF, 약 2.2초 뒤 사라짐 (1c · 2a · 3e · 5a · 7b …)
+// REQ-002 · 토스트 — 상단 중앙 44pt 캡슐, 체크 아이콘 #A4FFFF, 3초 유지 · 사라짐 200ms (모션 03)
 
 enum WePLiToast {
   static let height: CGFloat = 44
-  static let duration: Duration = .milliseconds(2200)
+  static let duration: Duration = .seconds(3)
 }
 
 struct WePLiToastView: View {
@@ -40,7 +40,7 @@ private struct WePLiToastModifier: ViewModifier {
             .task(id: message) {
               try? await Task.sleep(for: WePLiToast.duration)
               guard !Task.isCancelled else { return }
-              withAnimation(.easeOut(duration: 0.25)) { self.message = nil }
+              withAnimation(.easeOut(duration: 0.2)) { self.message = nil }
             }
         }
       }
@@ -49,7 +49,7 @@ private struct WePLiToastModifier: ViewModifier {
 }
 
 extension View {
-  /// `message`에 문자열을 넣으면 토스트가 뜨고 2.2초 뒤 `nil`로 돌아간다.
+  /// `message`에 문자열을 넣으면 토스트가 뜨고 3초 뒤 `nil`로 돌아간다.
   func wepliToast(_ message: Binding<String?>) -> some View {
     self.modifier(WePLiToastModifier(message: message))
   }

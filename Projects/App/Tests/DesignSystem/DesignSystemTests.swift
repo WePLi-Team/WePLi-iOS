@@ -56,7 +56,7 @@ final class DesignSystemTests: XCTestCase {
     XCTAssertEqual(WePLiIconButton.size, 44)
     XCTAssertEqual(WePLiPrimaryButton.height, 54)
     XCTAssertEqual(WePLiToast.height, 44)
-    XCTAssertEqual(WePLiToast.duration, .milliseconds(2200))
+    XCTAssertEqual(WePLiToast.duration, .seconds(3))
   }
 
   private func hex(_ color: Color) -> UInt32 {
