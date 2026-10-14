@@ -40,6 +40,8 @@ enum WePLiColor {
   // MARK: 상태 · 오버레이
 
   static let disabledFill = Color.white.opacity(0.08)
+  /// 고른 선택 카드 안쪽 (UI-6a 투표 방식)
+  static let selectionFill = Color(rgbHex: 0x1A1A22)
   /// 명함 카드 면 · 테두리 · 말풍선 (UI-2e)
   static let cardFace = Color(rgbHex: 0x030303)
   static let cardLine = Color(rgbHex: 0x2F2F38)

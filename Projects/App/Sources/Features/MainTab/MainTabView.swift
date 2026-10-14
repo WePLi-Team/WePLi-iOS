@@ -36,6 +36,10 @@ struct MainTabView: View {
         ComposePostView(store: composeStore)
           .wepliSheetStyle(detents: [.large])
       }
+      .sheet(item: self.$store.scope(state: \.createRelay, action: \.createRelay)) { createStore in
+        CreateRelayView(store: createStore)
+          .wepliSheetStyle(detents: [.large])
+      }
       .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])

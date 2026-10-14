@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import Foundation
 
-// REQ-061 · REQ-064 · REQ-075 — 탭 위에 뜨는 시트 · 전체 화면: 게시글 작성 · 노래로 답하기 곡 검색 · 명함 만들기
+// REQ-036 · REQ-061 · REQ-064 · REQ-075 — 탭 위에 뜨는 시트 · 전체 화면: 릴레이 만들기 · 게시글 작성 · 노래로 답하기 곡 검색 · 명함 만들기
 
 struct SheetNavigation: Reducer {
   typealias State = MainTabFeature.State
@@ -47,6 +47,20 @@ struct SheetNavigation: Reducer {
           persona: state.my.profile?.persona?.name,
           today: self.now
         )
+        return .none
+
+      case .relay(.delegate(.showCreateRelay)):
+        state.createRelay = CreateRelayFeature.State()
+        return .none
+
+      case .createRelay(.presented(.delegate(.dismiss))):
+        state.createRelay = nil
+        return .none
+
+      case let .createRelay(.presented(.delegate(.created(relay)))):
+        // 만든 릴레이는 릴레이 탭 「진행 중」 · 「참여 중」에 바로 보인다
+        state.createRelay = nil
+        state.relay.relays.insert(relay, at: 0)
         return .none
 
       case .businessCard(.presented(.delegate(.dismiss))):
