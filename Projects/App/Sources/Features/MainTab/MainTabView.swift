@@ -44,6 +44,9 @@ struct MainTabView: View {
         SongMenuView(store: menuStore)
           .wepliSheetStyle(detents: [.height(SongMenuView.height)])
       }
+      .fullScreenCover(item: self.$store.scope(state: \.businessCard, action: \.businessCard)) { cardStore in
+        BusinessCardFlowView(store: cardStore)
+      }
       .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
         SongShareView(store: shareStore)
       }

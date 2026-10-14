@@ -40,6 +40,9 @@ enum WePLiColor {
   // MARK: 상태 · 오버레이
 
   static let disabledFill = Color.white.opacity(0.08)
+  /// 명함 카드 면 · 테두리 · 말풍선 (UI-2e)
+  static let cardFace = Color(rgbHex: 0x030303)
+  static let cardLine = Color(rgbHex: 0x2F2F38)
   /// 세그먼트 컨트롤 선택 칸 (UI-5c)
   static let segmentSelected = Color(rgbHex: 0x3A3A44)
   /// 본문과 댓글 사이 8pt 띠 (UI-2c)

@@ -362,3 +362,27 @@ final class SongNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.searchPath.isEmpty)
   }
 }
+
+@MainActor
+final class BusinessCardNavigationTests: XCTestCase {
+  func testBusinessCardButton_presentsFlowAndExitCloses() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    initial.my.profile = MyProfile(nickname: "김동", email: "", persona: .melodyMemories, photoURL: nil)
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.date.now = Date(timeIntervalSince1970: 1791991800)
+    }
+    store.exhaustivity = .off
+
+    await store.send(.my(.businessCardButtonTapped))
+    await store.receive(.my(.delegate(.showBusinessCard)))
+    XCTAssertEqual(store.state.businessCard?.nickname, "김동")
+    XCTAssertEqual(store.state.businessCard?.persona, "멜로디 메모리즈")
+
+    await store.send(.businessCard(.presented(.closeTapped)))
+    await store.receive(.businessCard(.presented(.delegate(.dismiss))))
+    XCTAssertNil(store.state.businessCard)
+  }
+}
