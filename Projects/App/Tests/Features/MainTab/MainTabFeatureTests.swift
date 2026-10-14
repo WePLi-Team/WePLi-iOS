@@ -125,6 +125,24 @@ final class MyNavigationTests: XCTestCase {
     await store.receive(.myPath(.element(id: id, action: .editProfile(.delegate(.dismiss)))))
     XCTAssertTrue(store.state.myPath.isEmpty)
   }
+
+  func testNotificationSettings_pushesAndPops() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.my(.menuTapped(.notificationSettings)))
+    await store.receive(.my(.delegate(.show(.notificationSettings))))
+    guard let id = store.state.myPath.ids.first else { return XCTFail("알림 설정이 열리지 않음") }
+    XCTAssertTrue(store.state.hidesTabBar)
+
+    await store.send(.myPath(.element(id: id, action: .notificationSettings(.backButtonTapped))))
+    await store.receive(.myPath(.element(id: id, action: .notificationSettings(.delegate(.dismiss)))))
+    XCTAssertTrue(store.state.myPath.isEmpty)
+  }
 }
 
 @MainActor
@@ -215,8 +233,8 @@ final class LibraryNavigationTests: XCTestCase {
       MainTabFeature()
     }
     store.exhaustivity = .off
-    await store.send(.my(.menuTapped(.notificationSettings)))
-    await store.receive(.my(.delegate(.show(.notificationSettings))))
+    await store.send(.my(.menuTapped(.serviceGuide)))
+    await store.receive(.my(.delegate(.show(.serviceGuide))))
     XCTAssertTrue(store.state.myPath.isEmpty)
   }
 }
