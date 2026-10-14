@@ -36,6 +36,10 @@ struct MainTabView: View {
         ComposePostView(store: composeStore)
           .wepliSheetStyle(detents: [.large])
       }
+      .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
+        SongPickerView(store: pickerStore)
+          .wepliSheetStyle(detents: [.large])
+      }
     }
   }
 }
@@ -63,6 +67,8 @@ extension MainTabView {
         switch store.case {
         case let .notifications(store):
           NotificationsView(store: store)
+        case let .postDetail(store):
+          PostDetailView(store: store)
         }
       }
     case .my:

@@ -154,3 +154,35 @@ final class ComposeNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.community.hasLoaded)
   }
 }
+
+@MainActor
+final class PostDetailNavigationTests: XCTestCase {
+  func testPost_pushesDetailAndSongReplyComesBackFromPicker() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .community
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.postDetailClient.fetch = { .mock(postID: $0) }
+    }
+    store.exhaustivity = .off
+
+    await store.send(.community(.postTapped("p3")))
+    await store.receive(.community(.delegate(.showPost("p3"))))
+    guard let id = store.state.communityPath.ids.first else { return XCTFail("게시글 상세가 열리지 않음") }
+    await store.send(.communityPath(.element(id: id, action: .postDetail(.loaded(.mock(postID: "p3"))))))
+
+    await store.send(.communityPath(.element(id: id, action: .postDetail(.songReplyButtonTapped))))
+    await store.receive(.communityPath(.element(id: id, action: .postDetail(.delegate(.pickReplySong)))))
+    XCTAssertNotNil(store.state.replySongPicker)
+
+    let track = ComposeTrack(id: "c13", title: "밤양갱", artist: "비비(bibi)")
+    await store.send(.replySongPicker(.presented(.delegate(.add([track])))))
+    XCTAssertNil(store.state.replySongPicker)
+    await store.receive(.communityPath(.element(
+      id: id,
+      action: .postDetail(.replySongPicked(Track(title: "밤양갱", artist: "비비(bibi)")))
+    )))
+    XCTAssertEqual(store.state.communityPath[id: id, case: \.postDetail]?.replySong?.title, "밤양갱")
+  }
+}
