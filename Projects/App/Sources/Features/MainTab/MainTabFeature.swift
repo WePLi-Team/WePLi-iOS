@@ -46,10 +46,16 @@ struct MainTabFeature {
     var search = SearchFeature.State()
     /// 릴레이 탭 화면 이동(DEC-007)
     var relayPath = StackState<RelayPath.State>()
+    /// 커뮤니티 탭 화면 이동(DEC-007)
+    var communityPath = StackState<CommunityPath.State>()
 
-    /// 하위 화면(상세 · 투표)에서는 탭 바를 숨긴다 — 원본 3c · 3b는 탭 바 없이 하단 버튼을 둔다
+    /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
     var hidesTabBar: Bool {
-      self.selectedTab == .relay && !self.relayPath.isEmpty
+      switch self.selectedTab {
+      case .relay: !self.relayPath.isEmpty
+      case .community: !self.communityPath.isEmpty
+      case .home, .my, .search: false
+      }
     }
   }
 
@@ -60,6 +66,12 @@ struct MainTabFeature {
     case vote(CardVoteFeature)
   }
 
+  /// 커뮤니티 탭에서 push되는 화면
+  @Reducer(state: .equatable, action: .equatable)
+  enum CommunityPath {
+    case notifications(NotificationsFeature)
+  }
+
   enum Action: Equatable {
     case tabSelected(Tab)
     case relay(RelayListFeature.Action)
@@ -67,6 +79,7 @@ struct MainTabFeature {
     case community(CommunityFeedFeature.Action)
     case search(SearchFeature.Action)
     case relayPath(StackActionOf<RelayPath>)
+    case communityPath(StackActionOf<CommunityPath>)
   }
 
   var body: some ReducerOf<Self> {
@@ -112,10 +125,19 @@ struct MainTabFeature {
         state.relayPath.pop(from: elementID)
         return .none
 
-      case .relay, .my, .community, .search, .relayPath:
+      case .community(.delegate(.showNotifications)):
+        state.communityPath.append(.notifications(NotificationsFeature.State()))
+        return .none
+
+      case let .communityPath(.element(id: elementID, action: .notifications(.delegate(.dismiss)))):
+        state.communityPath.pop(from: elementID)
+        return .none
+
+      case .relay, .my, .community, .search, .relayPath, .communityPath:
         return .none
       }
     }
     .forEach(\.relayPath, action: \.relayPath)
+    .forEach(\.communityPath, action: \.communityPath)
   }
 }

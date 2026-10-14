@@ -52,7 +52,16 @@ extension MainTabView {
           CardVoteView(store: store)
         }
       }
-    case .home, .community, .my, .search:
+    case .community:
+      NavigationStack(path: self.$store.scope(state: \.communityPath, action: \.communityPath)) {
+        self.root(for: tab)
+      } destination: { store in
+        switch store.case {
+        case let .notifications(store):
+          NotificationsView(store: store)
+        }
+      }
+    case .home, .my, .search:
       NavigationStack {
         self.root(for: tab)
       }

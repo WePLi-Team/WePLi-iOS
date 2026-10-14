@@ -73,3 +73,25 @@ final class RelayNavigationTests: XCTestCase {
     XCTAssertFalse(store.state.hidesTabBar)
   }
 }
+
+@MainActor
+final class CommunityNavigationTests: XCTestCase {
+  func testBell_pushesNotificationsAndBackPops() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .community
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.community(.notificationButtonTapped))
+    await store.receive(.community(.delegate(.showNotifications)))
+    XCTAssertEqual(store.state.communityPath.count, 1)
+    XCTAssertTrue(store.state.hidesTabBar)
+
+    guard let id = store.state.communityPath.ids.first else { return XCTFail("알림이 열리지 않음") }
+    await store.send(.communityPath(.element(id: id, action: .notifications(.backButtonTapped))))
+    await store.receive(.communityPath(.element(id: id, action: .notifications(.delegate(.dismiss)))))
+    XCTAssertTrue(store.state.communityPath.isEmpty)
+  }
+}
