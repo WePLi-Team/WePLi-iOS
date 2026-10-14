@@ -12,6 +12,17 @@
 5. 리뷰 · CI 통과 → 병합 → 브랜치 삭제.
 6. `develop` → `main` 배포는 `docs/git/release-workflow.md`. `develop` · `main`에 직접 push하지 않는다.
 
+## worktree
+
+여러 이슈를 동시에 진행할 때는 git worktree를 저장소 안 `.worktrees/<이름>`에 만든다(`.gitignore` · 린트 제외). 저장소 바깥(상위 폴더)에 만들지 않는다.
+
+```sh
+git worktree add -b feat/<issue>-<slug> .worktrees/<이름> origin/develop
+cd .worktrees/<이름> && mise trust -q && tuist install && tuist generate --no-open
+```
+
+병합 뒤에는 `git worktree remove .worktrees/<이름>` · `git branch -D <브랜치>`로 정리한다.
+
 ## 브랜치 이름
 
 `<type>/<issue>-<slug>` — type: `feat` · `fix` · `design` · `refactor` · `chore` · `docs` · `test` · `perf` · `setting` (`.claude/project.sh` `BRANCH_TYPES`)
