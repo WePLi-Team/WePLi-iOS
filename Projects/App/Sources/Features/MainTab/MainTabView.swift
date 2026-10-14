@@ -59,58 +59,50 @@ extension MainTabView {
   @ViewBuilder
   private func stack(for tab: MainTabFeature.Tab) -> some View {
     switch tab {
-    case .relay: self.relayStack
-    case .community: self.communityStack
-    case .my: self.myStack
-    case .search: self.searchStack
+    case .relay: self.tabStack(.relay, state: \.relayPath, action: \.relayPath)
+    case .community: self.tabStack(.community, state: \.communityPath, action: \.communityPath)
+    case .my: self.tabStack(.my, state: \.myPath, action: \.myPath)
+    case .search: self.tabStack(.search, state: \.searchPath, action: \.searchPath)
     case .home: NavigationStack { self.root(for: tab) }
     }
   }
 
-  private var relayStack: some View {
-    NavigationStack(path: self.$store.scope(state: \.relayPath, action: \.relayPath)) {
-      self.root(for: .relay)
+  private func tabStack(
+    _ tab: MainTabFeature.Tab,
+    state: WritableKeyPath<MainTabFeature.State, StackState<MainTabFeature.Path.State>>,
+    action: CaseKeyPath<MainTabFeature.Action, StackActionOf<MainTabFeature.Path>>
+  ) -> some View {
+    NavigationStack(path: self.$store.scope(state: state, action: action)) {
+      self.root(for: tab)
     } destination: { store in
-      switch store.case {
-      case let .detail(store): RelayDetailView(store: store)
-      case let .vote(store): CardVoteView(store: store)
-      }
+      Self.destination(store)
     }
   }
 
-  private var communityStack: some View {
-    NavigationStack(path: self.$store.scope(state: \.communityPath, action: \.communityPath)) {
-      self.root(for: .community)
-    } destination: { store in
-      switch store.case {
-      case let .notifications(store): NotificationsView(store: store)
-      case let .postDetail(store): PostDetailView(store: store)
-      }
+  /// 탭 공용 push 화면 — 음악 · 게시글 화면
+  @ViewBuilder
+  private static func destination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+    switch store.case {
+    case let .songDetail(store): SongDetailView(store: store)
+    case let .artist(store): ArtistView(store: store)
+    case let .playlistDetail(store): PlaylistDetailView(store: store)
+    case let .postDetail(store): PostDetailView(store: store)
+    case let .relayDetail(store): RelayDetailView(store: store)
+    case let .vote(store): CardVoteView(store: store)
+    default: accountDestination(store)
     }
   }
 
-  private var searchStack: some View {
-    NavigationStack(path: self.$store.scope(state: \.searchPath, action: \.searchPath)) {
-      self.root(for: .search)
-    } destination: { store in
-      switch store.case {
-      case let .songDetail(store): SongDetailView(store: store)
-      case let .artist(store): ArtistView(store: store)
-      }
-    }
-  }
-
-  private var myStack: some View {
-    NavigationStack(path: self.$store.scope(state: \.myPath, action: \.myPath)) {
-      self.root(for: .my)
-    } destination: { store in
-      switch store.case {
-      case let .editProfile(store): EditProfileView(store: store)
-      case let .library(store): LibraryView(store: store)
-      case let .vote(store): CardVoteView(store: store)
-      case let .notificationSettings(store): NotificationSettingsView(store: store)
-      case let .myPlaylist(store): MyPlaylistView(store: store)
-      }
+  /// 탭 공용 push 화면 — 알림 · 내 정보 · 보관함 · 내 플리
+  @ViewBuilder
+  private static func accountDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+    switch store.case {
+    case let .notifications(store): NotificationsView(store: store)
+    case let .editProfile(store): EditProfileView(store: store)
+    case let .library(store): LibraryView(store: store)
+    case let .notificationSettings(store): NotificationSettingsView(store: store)
+    case let .myPlaylist(store): MyPlaylistView(store: store)
+    default: EmptyView()
     }
   }
 

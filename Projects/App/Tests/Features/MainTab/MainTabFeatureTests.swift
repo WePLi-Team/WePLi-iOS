@@ -52,11 +52,11 @@ final class RelayNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.hidesTabBar)
 
     guard let detailID = store.state.relayPath.ids.first else { return XCTFail("상세가 열리지 않음") }
-    await store.send(.relayPath(.element(id: detailID, action: .detail(.detailLoaded(detail)))))
-    await store.send(.relayPath(.element(id: detailID, action: .detail(.voteButtonTapped))))
+    await store.send(.relayPath(.element(id: detailID, action: .relayDetail(.detailLoaded(detail)))))
+    await store.send(.relayPath(.element(id: detailID, action: .relayDetail(.voteButtonTapped))))
     await store.receive(.relayPath(.element(
       id: detailID,
-      action: .detail(.delegate(.showVote(relayID: "first-love")))
+      action: .relayDetail(.delegate(.showVote(relayID: "first-love")))
     )))
     XCTAssertEqual(store.state.relayPath.count, 2)
     let vote = try store.state.relayPath[id: XCTUnwrap(store.state.relayPath.ids.last), case: \.vote]
@@ -67,8 +67,8 @@ final class RelayNavigationTests: XCTestCase {
     await store.receive(.relayPath(.element(id: voteID, action: .vote(.delegate(.dismiss)))))
     XCTAssertEqual(store.state.relayPath.count, 1)
 
-    await store.send(.relayPath(.element(id: detailID, action: .detail(.backButtonTapped))))
-    await store.receive(.relayPath(.element(id: detailID, action: .detail(.delegate(.dismiss)))))
+    await store.send(.relayPath(.element(id: detailID, action: .relayDetail(.backButtonTapped))))
+    await store.receive(.relayPath(.element(id: detailID, action: .relayDetail(.delegate(.dismiss)))))
     XCTAssertTrue(store.state.relayPath.isEmpty)
     XCTAssertFalse(store.state.hidesTabBar)
   }
@@ -384,5 +384,92 @@ final class BusinessCardNavigationTests: XCTestCase {
     await store.send(.businessCard(.presented(.closeTapped)))
     await store.receive(.businessCard(.presented(.delegate(.dismiss))))
     XCTAssertNil(store.state.businessCard)
+  }
+}
+
+@MainActor
+final class SharedPathNavigationTests: XCTestCase {
+  func testSearchPlaylist_opensDetailThenTrackAndArtist() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .search
+    initial.search.results.lists = [SearchList(title: "비 오는 날", subtitle: "플레이리스트 · WePLi")]
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.search(.delegate(.showList("비 오는 날"))))
+    guard let listID = store.state.searchPath.ids.last else { return XCTFail("플리 상세가 열리지 않음") }
+    XCTAssertEqual(store.state.searchPath[id: listID, case: \.playlistDetail]?.playlistID, "비 오는 날")
+
+    await store.send(.searchPath(.element(id: listID, action: .playlistDetail(.delegate(.showTrack("t1"))))))
+    XCTAssertEqual(store.state.searchPath.count, 2)
+    XCTAssertNotNil(store.state.searchPath[id: store.state.searchPath.ids[1], case: \.songDetail])
+
+    await store.send(.searchPath(.element(id: listID, action: .playlistDetail(.delegate(.showArtist("아이유"))))))
+    XCTAssertEqual(store.state.searchPath.count, 3)
+  }
+
+  func testSearchRelayAndPost_openMatchingScreens() async {
+    var initial = MainTabFeature.State()
+    initial.search.results.lists = [
+      SearchList(title: "카페 BGM", subtitle: "릴레이리스트 · 3,012명 참여"),
+      SearchList(title: "새벽 감성", subtitle: "게시글 · 김동"),
+    ]
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.search(.delegate(.showList("카페 BGM"))))
+    await store.send(.search(.delegate(.showList("새벽 감성"))))
+    let ids = store.state.searchPath.ids
+    XCTAssertNotNil(store.state.searchPath[id: ids[0], case: \.relayDetail])
+    XCTAssertNotNil(store.state.searchPath[id: ids[1], case: \.postDetail])
+  }
+
+  func testLibrary_opensSongRelayAndPostInMyTab() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    initial.myPath.append(.library(LibraryFeature.State(segment: .likes)))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    let libraryID = initial.myPath.ids[0]
+
+    await store.send(.myPath(.element(id: libraryID, action: .library(.delegate(.showSong(title: "밤편지"))))))
+    await store.send(.myPath(.element(id: libraryID, action: .library(.delegate(.showRelay("cafe-bgm"))))))
+    await store.send(.myPath(.element(id: libraryID, action: .library(.delegate(.showPost("p1"))))))
+    let ids = store.state.myPath.ids
+    XCTAssertEqual(ids.count, 4)
+    XCTAssertEqual(store.state.myPath[id: ids[1], case: \.songDetail]?.songID, "밤편지")
+    XCTAssertEqual(store.state.myPath[id: ids[2], case: \.relayDetail]?.relayID, "cafe-bgm")
+    XCTAssertEqual(store.state.myPath[id: ids[3], case: \.postDetail]?.postID, "p1")
+
+    // 뒤로는 어느 탭 · 어느 화면이든 그 탭 스택에서 뺀다
+    await store.send(.myPath(.element(id: ids[3], action: .postDetail(.delegate(.dismiss)))))
+    XCTAssertEqual(store.state.myPath.count, 3)
+  }
+
+  func testSongMenu_worksInMyTab() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    let song = SongDetail.mock(id: "밤편지|아이유")
+    initial.myPath.append(.songDetail(SongDetailFeature.State(songID: song.id, song: song)))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    let id = initial.myPath.ids[0]
+
+    await store.send(.myPath(.element(id: id, action: .songDetail(.moreButtonTapped))))
+    await store.receive(.myPath(.element(id: id, action: .songDetail(.delegate(.more(songID: song.id))))))
+    XCTAssertEqual(store.state.songMenuSource, PathSource(tab: .my, id: id))
+
+    await store.send(.songMenu(.presented(.itemTapped(.artist))))
+    await store.receive(.songMenu(.presented(.delegate(.selected(.artist)))))
+    XCTAssertEqual(store.state.myPath.count, 2)
+    XCTAssertTrue(store.state.searchPath.isEmpty)
   }
 }
