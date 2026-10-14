@@ -126,3 +126,31 @@ final class MyNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.myPath.isEmpty)
   }
 }
+
+@MainActor
+final class ComposeNavigationTests: XCTestCase {
+  func testCompose_opensAsSheetAndPublishingReloadsFeed() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .community
+    initial.community.hasLoaded = true
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.composeClient.publish = { _ in }
+      $0.communityClient.fetchFeed = { .mock }
+    }
+    store.exhaustivity = .off
+
+    await store.send(.community(.composeButtonTapped))
+    await store.receive(.community(.delegate(.showCompose)))
+    XCTAssertNotNil(store.state.compose)
+
+    await store.send(.compose(.presented(.titleChanged("제목"))))
+    await store.send(.compose(.presented(.bodyChanged("내용"))))
+    await store.send(.compose(.presented(.publishButtonTapped)))
+    await store.receive(.compose(.presented(.delegate(.published))))
+    XCTAssertNil(store.state.compose)
+    await store.receive(.community(.feedLoaded(.mock)))
+    XCTAssertTrue(store.state.community.hasLoaded)
+  }
+}

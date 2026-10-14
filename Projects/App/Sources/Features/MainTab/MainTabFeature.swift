@@ -50,6 +50,8 @@ struct MainTabFeature {
     var communityPath = StackState<CommunityPath.State>()
     /// 마이 탭 화면 이동(DEC-007)
     var myPath = StackState<MyPath.State>()
+    /// 게시글 작성(UI-2b) — 큰 시트
+    @Presents var compose: ComposePostFeature.State?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
     var hidesTabBar: Bool {
@@ -90,6 +92,7 @@ struct MainTabFeature {
     case relayPath(StackActionOf<RelayPath>)
     case communityPath(StackActionOf<CommunityPath>)
     case myPath(StackActionOf<MyPath>)
+    case compose(PresentationAction<ComposePostFeature.Action>)
   }
 
   var body: some ReducerOf<Self> {
@@ -157,12 +160,29 @@ struct MainTabFeature {
         state.myPath.pop(from: elementID)
         return .none
 
-      case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath:
+      case .community(.delegate(.showCompose)):
+        state.compose = ComposePostFeature.State()
+        return .none
+
+      case .compose(.presented(.delegate(.dismiss))):
+        state.compose = nil
+        return .none
+
+      case .compose(.presented(.delegate(.published))):
+        // 올리면 시트를 닫고 피드를 새로 불러온다
+        state.compose = nil
+        state.community.hasLoaded = false
+        return .send(.community(.onAppear))
+
+      case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath, .compose:
         return .none
       }
     }
     .forEach(\.relayPath, action: \.relayPath)
     .forEach(\.communityPath, action: \.communityPath)
     .forEach(\.myPath, action: \.myPath)
+    .ifLet(\.$compose, action: \.compose) {
+      ComposePostFeature()
+    }
   }
 }

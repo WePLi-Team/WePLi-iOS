@@ -32,6 +32,10 @@ struct MainTabView: View {
       }
       .ignoresSafeArea(.keyboard)
       .background(WePLiColor.background.ignoresSafeArea())
+      .sheet(item: self.$store.scope(state: \.compose, action: \.compose)) { composeStore in
+        ComposePostView(store: composeStore)
+          .wepliSheetStyle(detents: [.large])
+      }
     }
   }
 }
