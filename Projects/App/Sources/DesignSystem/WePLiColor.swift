@@ -42,6 +42,8 @@ enum WePLiColor {
   static let disabledFill = Color.white.opacity(0.08)
   /// 세그먼트 컨트롤 선택 칸 (UI-5c)
   static let segmentSelected = Color(rgbHex: 0x3A3A44)
+  /// 본문과 댓글 사이 8pt 띠 (UI-2c)
+  static let sectionBand = Color(rgbHex: 0x0E0E10)
   /// 하단 선택 트레이 바탕 rgba(30,30,36,0.9) (UI-2a)
   static let trayBackground = Color(rgbHex: 0x1E1E24, opacity: 0.9)
   /// 보조 캡슐 버튼 바탕 (10f 빈 상태 버튼)
