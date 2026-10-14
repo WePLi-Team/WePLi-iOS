@@ -58,14 +58,14 @@ struct NotificationRow: View {
   private var thumbnail: some View {
     Group {
       if self.notification.kind.showsAvatar {
-        Circle().fill(WePLiColor.surface4)
+        Circle().fill(WePLiColor.imagePlaceholder)
           .overlay {
             Image(systemName: "person.fill")
               .font(.system(size: 18))
               .foregroundStyle(WePLiColor.textQuaternary)
           }
       } else {
-        RoundedRectangle(cornerRadius: 8).fill(WePLiColor.surface4)
+        RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder)
           .overlay {
             Image(systemName: "music.note")
               .font(.system(size: 16))

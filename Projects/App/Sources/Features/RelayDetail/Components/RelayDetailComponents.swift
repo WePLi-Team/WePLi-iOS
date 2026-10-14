@@ -51,7 +51,7 @@ struct RankedSongRow: View {
   var body: some View {
     HStack(spacing: 12) {
       RoundedRectangle(cornerRadius: 4)
-        .fill(WePLiColor.surface4)
+        .fill(WePLiColor.imagePlaceholder)
         .frame(width: 52, height: 52)
         .overlay {
           Image(systemName: "music.note")

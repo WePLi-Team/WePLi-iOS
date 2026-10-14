@@ -80,7 +80,7 @@ private struct StoryRing: View {
 
   var body: some View {
     RoundedRectangle(cornerRadius: 22)
-      .fill(self.story.isFresh ? WePLiColor.accent : WePLiColor.surface4)
+      .fill(self.story.isFresh ? WePLiColor.accent : WePLiColor.imagePlaceholder)
       .frame(width: CommunityStoryRow.Metric.ring, height: CommunityStoryRow.Metric.ring)
       .overlay {
         RoundedRectangle(cornerRadius: 20)

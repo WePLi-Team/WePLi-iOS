@@ -13,7 +13,7 @@ struct SongHero: View {
   var body: some View {
     VStack(spacing: 22) {
       RoundedRectangle(cornerRadius: 14)
-        .fill(WePLiColor.surface4)
+        .fill(WePLiColor.imagePlaceholder)
         .frame(width: 264, height: 264)
         .overlay {
           Image(systemName: "music.note")

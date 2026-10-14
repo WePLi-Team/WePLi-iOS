@@ -60,7 +60,7 @@ struct PostDetailBody: View {
       // 한 곡 타입 — 높이 68 재생 카드(UI-2c)
       Button(action: self.onPlay) {
         HStack(spacing: 12) {
-          RoundedRectangle(cornerRadius: 8).fill(WePLiColor.surface4).frame(width: 48, height: 48)
+          RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
           VStack(alignment: .leading, spacing: 2) {
             Text(track.title).wepliFont(.body, weight: .semibold).foregroundStyle(Color.white).lineLimit(1)
             Text(track.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textSecondary).lineLimit(1)
@@ -84,7 +84,7 @@ struct PostDetailBody: View {
         ForEach(Array(tracks.enumerated()), id: \.offset) { index, track in
           HStack(spacing: 12) {
             Text("\(index + 1)").wepliFont(.footnote).foregroundStyle(WePLiColor.textQuaternary).frame(width: 16)
-            RoundedRectangle(cornerRadius: 4).fill(WePLiColor.surface4).frame(width: 40, height: 40)
+            RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 40, height: 40)
             VStack(alignment: .leading, spacing: 1) {
               Text(track.title).wepliFont(.subheadline).foregroundStyle(Color.white).lineLimit(1)
               Text(track.artist).wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.textTertiary)
@@ -159,7 +159,7 @@ struct CommentRow: View {
         }
         if let song = self.comment.song {
           HStack(spacing: 8) {
-            Circle().fill(WePLiColor.surface4).frame(width: 32, height: 32)
+            Circle().fill(WePLiColor.imagePlaceholder).frame(width: 32, height: 32)
               .overlay { Image(systemName: "music.note").font(.system(size: 12)).foregroundStyle(WePLiColor.accent) }
             Text("\(song.title) · \(song.artist)").wepliFont(.footnote).foregroundStyle(WePLiColor.textPrimary)
               .lineLimit(1)

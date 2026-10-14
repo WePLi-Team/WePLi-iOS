@@ -134,7 +134,7 @@ struct SongWorldCupView: View {
         .wepliFont(.footnote, weight: .semibold)
         .foregroundStyle(WePLiColor.accent)
       RoundedRectangle(cornerRadius: 18)
-        .fill(WePLiColor.surface4)
+        .fill(WePLiColor.imagePlaceholder)
         .frame(width: 230, height: 230)
         .overlay {
           Image(systemName: "music.note")

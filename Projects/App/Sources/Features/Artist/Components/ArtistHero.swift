@@ -13,7 +13,7 @@ struct ArtistHero: View {
   var body: some View {
     ZStack(alignment: .bottom) {
       // 미결정 — 아티스트 이미지(원본 노트 03: Apple Music 아티스트 이미지)가 아직 없어 자리 표시
-      WePLiColor.surface4
+      WePLiColor.imagePlaceholder
         .overlay {
           Image(systemName: "person.fill")
             .font(.system(size: 96, weight: .light))

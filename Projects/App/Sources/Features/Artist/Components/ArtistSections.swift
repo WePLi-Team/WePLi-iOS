@@ -170,7 +170,7 @@ struct ArtistRelated: View {
             } label: {
               VStack(spacing: 8) {
                 Circle()
-                  .fill(WePLiColor.surface4)
+                  .fill(WePLiColor.imagePlaceholder)
                   .frame(width: 72, height: 72)
                   .overlay {
                     Image(systemName: "person.fill")
@@ -213,7 +213,7 @@ private struct ArtistArtwork: View {
 
   var body: some View {
     RoundedRectangle(cornerRadius: self.radius)
-      .fill(WePLiColor.surface4)
+      .fill(WePLiColor.imagePlaceholder)
       .frame(width: self.size, height: self.size)
       .overlay {
         Image(systemName: "music.note")

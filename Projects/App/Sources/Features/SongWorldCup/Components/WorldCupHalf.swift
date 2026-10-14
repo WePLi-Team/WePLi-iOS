@@ -16,7 +16,7 @@ struct WorldCupHalf: View {
   var body: some View {
     Button(action: self.onTap) {
       ZStack(alignment: self.side == .top ? .bottomLeading : .topLeading) {
-        WePLiColor.surface4
+        WePLiColor.imagePlaceholder
           .overlay {
             Image(systemName: "music.note")
               .font(.system(size: 64, weight: .ultraLight))

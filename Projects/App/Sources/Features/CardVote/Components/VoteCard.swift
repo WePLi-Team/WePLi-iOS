@@ -14,7 +14,7 @@ struct VoteCard: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 2) {
       RoundedRectangle(cornerRadius: 16)
-        .fill(WePLiColor.surface4)
+        .fill(WePLiColor.imagePlaceholder)
         .frame(width: Metric.art, height: Metric.art)
         .overlay {
           Image(systemName: "music.note")

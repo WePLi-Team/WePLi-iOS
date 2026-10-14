@@ -90,7 +90,7 @@ struct MyRecommendationView: View {
 
   private func hero(_ standing: RelayStanding) -> some View {
     ZStack(alignment: .bottomLeading) {
-      WePLiColor.surface4
+      WePLiColor.imagePlaceholder
         .overlay {
           Image(systemName: "music.note")
             .font(.system(size: 80, weight: .ultraLight))

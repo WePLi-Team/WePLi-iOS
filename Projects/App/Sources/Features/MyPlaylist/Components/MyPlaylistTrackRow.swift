@@ -26,7 +26,7 @@ struct MyPlaylistTrackRow: View {
         .transition(.move(edge: .leading).combined(with: .opacity))
       }
       RoundedRectangle(cornerRadius: 4)
-        .fill(WePLiColor.surface4)
+        .fill(WePLiColor.imagePlaceholder)
         .frame(width: 44, height: 44)
         .accessibilityHidden(true)
       VStack(alignment: .leading, spacing: 0) {

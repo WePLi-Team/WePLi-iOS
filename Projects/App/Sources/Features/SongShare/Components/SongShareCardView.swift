@@ -40,7 +40,7 @@ struct SongShareCardView: View {
 
   /// 미결정 — 앨범 아트 URL이 아직 없어 자리 표시 아트를 쓴다
   private var artwork: some View {
-    WePLiColor.surface4
+    WePLiColor.imagePlaceholder
       .overlay {
         Image(systemName: "music.note")
           .font(.system(size: 64, weight: .light))

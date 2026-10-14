@@ -43,7 +43,7 @@ struct PersonaList: View {
           HStack(spacing: 12) {
             // 성향 3D 아이콘(tp1–5)은 에셋이 붙기 전까지 자리 표시
             RoundedRectangle(cornerRadius: 10)
-              .fill(WePLiColor.surface4)
+              .fill(WePLiColor.imagePlaceholder)
               .frame(width: 36, height: 36)
               .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {

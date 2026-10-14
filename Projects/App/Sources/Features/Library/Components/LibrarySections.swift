@@ -53,7 +53,7 @@ private struct Cover: View {
 
   var body: some View {
     RoundedRectangle(cornerRadius: self.radius)
-      .fill(WePLiColor.surface4)
+      .fill(WePLiColor.imagePlaceholder)
       .frame(width: self.size, height: self.size)
       .overlay {
         Image(systemName: self.systemImage).font(.system(size: self.size * 0.3))
@@ -277,7 +277,7 @@ private struct AvatarCircle: View {
   let name: String
 
   var body: some View {
-    Circle().fill(WePLiColor.surface4).frame(width: 40, height: 40)
+    Circle().fill(WePLiColor.imagePlaceholder).frame(width: 40, height: 40)
       .overlay {
         Text(self.name.prefix(1).uppercased()).wepliFont(.subheadline, weight: .semibold)
           .foregroundStyle(WePLiColor.textPrimary.opacity(0.85))
