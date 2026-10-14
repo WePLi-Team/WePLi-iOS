@@ -11,6 +11,9 @@ struct SongNavigation: Reducer {
   @Dependency(\.date.now)
   var now
 
+  @Dependency(\.continuousClock)
+  var clock
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -39,14 +42,7 @@ struct SongNavigation: Reducer {
 
       case let .searchPath(.element(id: elementID, action: .songDetail(.delegate(.share)))):
         guard let song = state.searchPath[id: elementID, case: \.songDetail]?.song else { return .none }
-        state.songShare = SongShareFeature.State(card: SongShareCard(
-          songID: song.id,
-          title: song.title,
-          artist: song.artist,
-          sharerName: state.my.profile?.nickname,
-          sharerPersona: state.my.profile?.persona?.name,
-          today: self.now
-        ))
+        state.songShare = SongShareFeature.State(card: self.card(for: song, in: state))
         return .none
 
       case .songShare(.presented(.delegate(.dismiss))):
@@ -57,9 +53,14 @@ struct SongNavigation: Reducer {
         // 게시글로 공유하기 → 이 곡을 담은 게시글 작성
         guard let card = state.songShare?.card else { return .none }
         state.songShare = nil
-        state.compose = ComposePostFeature.State(
-          tracks: [ComposeTrack(id: card.songID, title: card.title, artist: card.artist)]
-        )
+        return self.presentAfterSheet(.compose(ComposeTrack(id: card.songID, title: card.title, artist: card.artist)))
+
+      case let .presentAfterSheet(.share(card)):
+        state.songShare = SongShareFeature.State(card: card)
+        return .none
+
+      case let .presentAfterSheet(.compose(track)):
+        state.compose = ComposePostFeature.State(tracks: [track])
         return .none
 
       default:
@@ -67,4 +68,29 @@ struct SongNavigation: Reducer {
       }
     }
   }
+
+  /// 공유 카드 — 공유자는 마이 탭에서 불러온 프로필(없으면 공유 화면이 불러온다)
+  func card(for song: SongDetail, in state: State) -> SongShareCard {
+    SongShareCard(
+      songID: song.id,
+      title: song.title,
+      artist: song.artist,
+      sharerName: state.my.profile?.nickname,
+      sharerPersona: state.my.profile?.persona?.name,
+      today: self.now
+    )
+  }
+
+  func presentAfterSheet(_ followUp: SongFollowUp) -> Effect<Action> {
+    .run { send in
+      try await self.clock.sleep(for: .milliseconds(450))
+      await send(.presentAfterSheet(followUp))
+    }
+  }
+}
+
+/// 시트를 닫은 뒤 이어서 띄울 화면
+enum SongFollowUp: Equatable {
+  case share(SongShareCard)
+  case compose(ComposeTrack)
 }

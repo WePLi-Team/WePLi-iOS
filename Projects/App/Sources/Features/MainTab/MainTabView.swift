@@ -40,6 +40,10 @@ struct MainTabView: View {
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])
       }
+      .sheet(item: self.$store.scope(state: \.songMenu, action: \.songMenu)) { menuStore in
+        SongMenuView(store: menuStore)
+          .wepliSheetStyle(detents: [.height(SongMenuView.height)])
+      }
       .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
         SongShareView(store: shareStore)
       }

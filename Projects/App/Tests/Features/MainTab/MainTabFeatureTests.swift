@@ -249,6 +249,7 @@ final class SongNavigationTests: XCTestCase {
       MainTabFeature()
     } withDependencies: {
       $0.date.now = Date(timeIntervalSince1970: 1791991800)
+      $0.continuousClock = ImmediateClock()
     }
     store.exhaustivity = .off
 
@@ -265,7 +266,56 @@ final class SongNavigationTests: XCTestCase {
     await store.send(.songShare(.presented(.shareAsPostTapped)))
     await store.receive(.songShare(.presented(.delegate(.shareAsPost(songID: song.id)))))
     XCTAssertNil(store.state.songShare)
+    await store.receive(.presentAfterSheet(.compose(ComposeTrack(id: song.id, title: song.title, artist: song.artist))))
     XCTAssertEqual(store.state.compose?.tracks.map(\.title), [song.title])
+  }
+
+  private func menuStore() -> (TestStoreOf<MainTabFeature>, StackElementID, SongDetail) {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .search
+    let song = SongDetail.mock(id: "밤편지|아이유")
+    initial.searchPath.append(.songDetail(SongDetailFeature.State(songID: song.id, song: song)))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.continuousClock = ImmediateClock()
+      $0.date.now = Date(timeIntervalSince1970: 1791991800)
+      $0.songDetailClient.setLiked = { _, _ in throw URLError(.timedOut) }
+    }
+    store.exhaustivity = .off
+    return (store, initial.searchPath.ids[0], song)
+  }
+
+  func testSongMenu_opensFromMoreAndSyncsLikeWithDetail() async {
+    let (store, id, song) = self.menuStore()
+
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.moreButtonTapped))))
+    await store.receive(.searchPath(.element(id: id, action: .songDetail(.delegate(.more(songID: song.id))))))
+    XCTAssertEqual(store.state.songMenu?.title, song.title)
+
+    // 시트에서 좋아요 → 곡 상세가 저장 → 실패하면 둘 다 되돌린다
+    await store.send(.songMenu(.presented(.likeButtonTapped)))
+    await store.receive(.searchPath(.element(id: id, action: .songDetail(.likeButtonTapped))))
+    await store.receive(.searchPath(.element(id: id, action: .songDetail(.likeFailed(restore: song.isLiked)))))
+    XCTAssertEqual(store.state.songMenu?.isLiked, song.isLiked)
+    XCTAssertEqual(store.state.searchPath[id: id, case: \.songDetail]?.song?.isLiked, song.isLiked)
+  }
+
+  func testSongMenu_artistPushesAndInstagramOpensShareCard() async {
+    let (store, id, song) = self.menuStore()
+
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.moreButtonTapped))))
+    await store.send(.songMenu(.presented(.itemTapped(.artist))))
+    await store.receive(.songMenu(.presented(.delegate(.selected(.artist)))))
+    XCTAssertNil(store.state.songMenu)
+    XCTAssertEqual(store.state.searchPath.count, 2)
+
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.moreButtonTapped))))
+    await store.send(.songMenu(.presented(.itemTapped(.instagram))))
+    await store.receive(.songMenu(.presented(.delegate(.selected(.instagram)))))
+    XCTAssertNil(store.state.songMenu)
+    await store.skipReceivedActions()
+    XCTAssertEqual(store.state.songShare?.card.title, song.title)
   }
 
   func testSongDetailArtist_opensArtistThenRelatedArtistAndSong() async {
