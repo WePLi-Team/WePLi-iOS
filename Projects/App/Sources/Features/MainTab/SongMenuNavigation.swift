@@ -7,31 +7,17 @@ import Foundation
 struct SongMenuNavigation: Reducer {
   typealias State = MainTabFeature.State
   typealias Action = MainTabFeature.Action
+  typealias Path = MainTabFeature.Path
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
+      if let (source, pathAction) = action.pathElement {
+        return self.fromDetail(pathAction, source, &state)
+      }
       switch action {
-      case let .searchPath(.element(id: elementID, action: .songDetail(.delegate(.more)))):
-        guard let song = state.searchPath[id: elementID, case: \.songDetail]?.song else { return .none }
-        state.songMenuSource = elementID
-        state.songMenu = SongMenuFeature.State(
-          songID: song.id,
-          title: song.title,
-          artist: song.artist,
-          isLiked: song.isLiked
-        )
-        return .none
-
-      case let .searchPath(.element(id: elementID, action: .songDetail(.likeFailed(restore)))):
-        // 곡 상세가 좋아요를 되돌리면 열린 시트도 맞춘다
-        if elementID == state.songMenuSource {
-          state.songMenu?.isLiked = restore
-        }
-        return .none
-
       case .songMenu(.presented(.delegate(.toggleLike))):
         guard let source = state.songMenuSource else { return .none }
-        return .send(.searchPath(.element(id: source, action: .songDetail(.likeButtonTapped))))
+        return .send(.path(source, .songDetail(.likeButtonTapped)))
 
       case .songMenu(.presented(.delegate(.dismiss))):
         self.close(&state)
@@ -46,14 +32,34 @@ struct SongMenuNavigation: Reducer {
     }
   }
 
+  /// 곡 상세 ··· → 시트, 곡 상세가 좋아요를 되돌리면 열린 시트도 맞춘다
+  private func fromDetail(_ action: Path.Action, _ source: PathSource, _ state: inout State) -> Effect<Action> {
+    switch action {
+    case .songDetail(.delegate(.more)):
+      guard let song = state[stack: source.tab][id: source.id, case: \.songDetail]?.song else { return .none }
+      state.songMenuSource = source
+      state.songMenu = SongMenuFeature.State(
+        songID: song.id,
+        title: song.title,
+        artist: song.artist,
+        isLiked: song.isLiked
+      )
+    case let .songDetail(.likeFailed(restore)) where source == state.songMenuSource:
+      state.songMenu?.isLiked = restore
+    default:
+      break
+    }
+    return .none
+  }
+
   private func route(_ item: SongMenuItem, _ state: inout State) -> Effect<Action> {
     guard let source = state.songMenuSource,
-          let song = state.searchPath[id: source, case: \.songDetail]?.song
+          let song = state[stack: source.tab][id: source.id, case: \.songDetail]?.song
     else { return .none }
     switch item {
     case .artist:
       self.close(&state)
-      state.searchPath.append(.artist(ArtistFeature.State(artistID: song.artist)))
+      state[stack: source.tab].append(.artist(ArtistFeature.State(artistID: song.artist)))
       return .none
 
     case .instagram, .screenshot:

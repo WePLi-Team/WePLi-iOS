@@ -45,25 +45,25 @@ struct MainTabFeature {
     var community = CommunityFeedFeature.State()
     var search = SearchFeature.State()
     /// 릴레이 탭 화면 이동(DEC-007)
-    var relayPath = StackState<RelayPath.State>()
+    var relayPath = StackState<Path.State>()
     /// 커뮤니티 탭 화면 이동(DEC-007)
-    var communityPath = StackState<CommunityPath.State>()
+    var communityPath = StackState<Path.State>()
     /// 마이 탭 화면 이동(DEC-007)
-    var myPath = StackState<MyPath.State>()
+    var myPath = StackState<Path.State>()
     /// 검색 탭 화면 이동(DEC-007)
-    var searchPath = StackState<SearchPath.State>()
+    var searchPath = StackState<Path.State>()
     /// 게시글 작성(UI-2b) — 큰 시트
     @Presents var compose: ComposePostFeature.State?
     /// 「노래로 답하기」 곡 검색 시트(UI-2a)와 곡을 받을 게시글 상세
     @Presents var replySongPicker: SongPickerFeature.State?
-    var replySongTarget: StackElementID?
+    var replySongTarget: PathSource?
     /// 곡 공유 카드(UI-3g) — 전체 화면
     @Presents var songShare: SongShareFeature.State?
     /// 곡 메뉴 시트(UI-1b)와 시트를 연 곡 상세
     @Presents var songMenu: SongMenuFeature.State?
     /// 명함 만들기(UI-2e) — 전체 화면
     @Presents var businessCard: BusinessCardFeature.State?
-    var songMenuSource: StackElementID?
+    var songMenuSource: PathSource?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
     var hidesTabBar: Bool {
@@ -77,35 +77,20 @@ struct MainTabFeature {
     }
   }
 
-  /// 릴레이 탭에서 push되는 화면
+  /// 탭에서 push되는 화면 — 모든 탭이 같은 목록을 쓰고, 스택은 탭마다 따로 둔다(DEC-007)
   @Reducer(state: .equatable, action: .equatable)
-  enum RelayPath {
-    case detail(RelayDetailFeature)
+  enum Path {
+    case relayDetail(RelayDetailFeature)
     case vote(CardVoteFeature)
-  }
-
-  /// 커뮤니티 탭에서 push되는 화면
-  @Reducer(state: .equatable, action: .equatable)
-  enum CommunityPath {
     case notifications(NotificationsFeature)
     case postDetail(PostDetailFeature)
-  }
-
-  /// 마이 탭에서 push되는 화면
-  @Reducer(state: .equatable, action: .equatable)
-  enum MyPath {
     case editProfile(EditProfileFeature)
     case library(LibraryFeature)
-    case vote(CardVoteFeature)
     case notificationSettings(NotificationSettingsFeature)
     case myPlaylist(MyPlaylistFeature)
-  }
-
-  /// 검색 탭에서 push되는 화면
-  @Reducer(state: .equatable, action: .equatable)
-  enum SearchPath {
     case songDetail(SongDetailFeature)
     case artist(ArtistFeature)
+    case playlistDetail(PlaylistDetailFeature)
   }
 
   enum Action: Equatable {
@@ -114,10 +99,10 @@ struct MainTabFeature {
     case my(MyFeature.Action)
     case community(CommunityFeedFeature.Action)
     case search(SearchFeature.Action)
-    case relayPath(StackActionOf<RelayPath>)
-    case communityPath(StackActionOf<CommunityPath>)
-    case myPath(StackActionOf<MyPath>)
-    case searchPath(StackActionOf<SearchPath>)
+    case relayPath(StackActionOf<Path>)
+    case communityPath(StackActionOf<Path>)
+    case myPath(StackActionOf<Path>)
+    case searchPath(StackActionOf<Path>)
     case songShare(PresentationAction<SongShareFeature.Action>)
     case songMenu(PresentationAction<SongMenuFeature.Action>)
     case businessCard(PresentationAction<BusinessCardFeature.Action>)
@@ -152,9 +137,9 @@ struct MainTabFeature {
       self.tabs
       // 하위 화면 reducer(forEach · ifLet)보다 먼저 돌아야 해서 같은 묶음에 넣는다
       CombineReducers {
-        RelayNavigation()
-        CommunityNavigation()
-        MyNavigation()
+        TabRootNavigation()
+        SheetNavigation()
+        ContentNavigation()
         SongNavigation()
         SongMenuNavigation()
         Reduce { state, action in
