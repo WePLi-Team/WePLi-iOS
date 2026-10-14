@@ -125,6 +125,24 @@ final class MyNavigationTests: XCTestCase {
     await store.receive(.myPath(.element(id: id, action: .editProfile(.delegate(.dismiss)))))
     XCTAssertTrue(store.state.myPath.isEmpty)
   }
+
+  func testNotificationSettings_pushesAndPops() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.my(.menuTapped(.notificationSettings)))
+    await store.receive(.my(.delegate(.show(.notificationSettings))))
+    guard let id = store.state.myPath.ids.first else { return XCTFail("알림 설정이 열리지 않음") }
+    XCTAssertTrue(store.state.hidesTabBar)
+
+    await store.send(.myPath(.element(id: id, action: .notificationSettings(.backButtonTapped))))
+    await store.receive(.myPath(.element(id: id, action: .notificationSettings(.delegate(.dismiss)))))
+    XCTAssertTrue(store.state.myPath.isEmpty)
+  }
 }
 
 @MainActor
@@ -215,8 +233,52 @@ final class LibraryNavigationTests: XCTestCase {
       MainTabFeature()
     }
     store.exhaustivity = .off
-    await store.send(.my(.menuTapped(.notificationSettings)))
-    await store.receive(.my(.delegate(.show(.notificationSettings))))
+    await store.send(.my(.menuTapped(.serviceGuide)))
+    await store.receive(.my(.delegate(.show(.serviceGuide))))
     XCTAssertTrue(store.state.myPath.isEmpty)
+  }
+}
+
+@MainActor
+final class SongNavigationTests: XCTestCase {
+  func testSearchSong_opensDetailThenShareCardThenCompose() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .search
+    let song = SongDetail.mock(id: "밤편지|아이유")
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.date.now = Date(timeIntervalSince1970: 1791991800)
+    }
+    store.exhaustivity = .off
+
+    await store.send(.search(.delegate(.showSong("밤편지|아이유"))))
+    guard let id = store.state.searchPath.ids.first else { return XCTFail("곡 상세가 열리지 않음") }
+    XCTAssertTrue(store.state.hidesTabBar)
+
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.loaded(song)))))
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.shareButtonTapped))))
+    await store.receive(.searchPath(.element(id: id, action: .songDetail(.delegate(.share(songID: song.id))))))
+    XCTAssertEqual(store.state.songShare?.card.title, song.title)
+    XCTAssertEqual(store.state.songShare?.card.day, "15")
+
+    await store.send(.songShare(.presented(.shareAsPostTapped)))
+    await store.receive(.songShare(.presented(.delegate(.shareAsPost(songID: song.id)))))
+    XCTAssertNil(store.state.songShare)
+    XCTAssertEqual(store.state.compose?.tracks.map(\.title), [song.title])
+  }
+
+  func testSongDetailBack_pops() async {
+    var initial = MainTabFeature.State()
+    initial.searchPath.append(.songDetail(SongDetailFeature.State(songID: "s")))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    guard let id = store.state.searchPath.ids.first else { return XCTFail("경로 없음") }
+
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.backButtonTapped))))
+    await store.receive(.searchPath(.element(id: id, action: .songDetail(.delegate(.dismiss)))))
+    XCTAssertTrue(store.state.searchPath.isEmpty)
   }
 }
