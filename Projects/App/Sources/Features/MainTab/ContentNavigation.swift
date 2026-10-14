@@ -27,7 +27,8 @@ struct ContentNavigation: Reducer {
   /// 뒤로 — 모든 화면 공통
   static func isDismiss(_ action: Path.Action) -> Bool {
     switch action {
-    case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .notifications(.delegate(.dismiss)),
+    case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
+         .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
          .notificationSettings(.delegate(.dismiss)), .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)):
@@ -69,8 +70,13 @@ struct ContentNavigation: Reducer {
     switch action {
     case let .relayDetail(.delegate(.showVote(relayID))):
       // 상세 제목은 줄바꿈이 있어 투표 화면 주제에서는 한 줄로 보인다
-      let title = stack[id: source.id, case: \.relayDetail]?.detail?.title ?? ""
-      return .vote(CardVoteFeature.State(relayID: relayID, topic: title.replacingOccurrences(of: "\n", with: " ")))
+      let detail = stack[id: source.id, case: \.relayDetail]?.detail
+      let topic = (detail?.title ?? "").replacingOccurrences(of: "\n", with: " ")
+      // 투표 방식은 릴레이를 만들 때 정한다(6a) — 곡 월드컵이면 8b, 아니면 카드 넘기기(3b)
+      if detail?.voteFormat == .worldCup {
+        return .worldCup(SongWorldCupFeature.State(relayID: relayID, topic: topic))
+      }
+      return .vote(CardVoteFeature.State(relayID: relayID, topic: topic))
     case let .library(.delegate(.continueVoting(relayID))):
       let topic = stack[id: source.id, case: \.library]?.library?.liveRelays.first { $0.id == relayID }?.title ?? ""
       return .vote(CardVoteFeature.State(relayID: relayID, topic: topic))

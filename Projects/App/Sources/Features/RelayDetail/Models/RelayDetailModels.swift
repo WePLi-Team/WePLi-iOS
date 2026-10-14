@@ -33,6 +33,8 @@ struct RelayDetail: Equatable, Identifiable, Sendable {
   let participantCount: Int
   let totalSongCount: Int
   let ranking: [RankedSong]
+  /// 투표 방식 — 투표 버튼이 카드 넘기기(UI-3b) · 곡 월드컵(UI-8b) 중 어디로 갈지 정한다
+  var voteFormat: Relay.VoteFormat = .card
 
   var endsAt: Date? {
     switch self.status {

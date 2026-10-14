@@ -51,7 +51,9 @@ extension RelayDetail {
       status: .live(endsAt: now.addingTimeInterval(36 * 3600 + 10 * 60 + 15)),
       participantCount: 132,
       totalSongCount: 18,
-      ranking: songs.enumerated().map { RankedSong(rank: $0.offset + 1, title: $0.element.0, artist: $0.element.1) }
+      ranking: songs.enumerated().map { RankedSong(rank: $0.offset + 1, title: $0.element.0, artist: $0.element.1) },
+      // 릴레이 탭 목업(UI-10a)의 월드컵 릴레이와 맞춘다
+      voteFormat: ["summer-idol", "wake-up"].contains(id) ? .worldCup : .card
     )
   }
 }

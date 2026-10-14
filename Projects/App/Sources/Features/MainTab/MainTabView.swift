@@ -93,6 +93,7 @@ extension MainTabView {
     case let .postDetail(store): PostDetailView(store: store)
     case let .relayDetail(store): RelayDetailView(store: store)
     case let .vote(store): CardVoteView(store: store)
+    case let .worldCup(store): SongWorldCupView(store: store)
     default: accountDestination(store)
     }
   }
