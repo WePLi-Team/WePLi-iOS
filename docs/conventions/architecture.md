@@ -60,11 +60,16 @@ Projects/Core/{DesignSystem,Network,Utils}  미결정 — 아직 빈 모듈. 옮
 3. `Tests/Features/<F>/<F>FeatureTests.swift` — `TestStore`로 Action → State 변화 · Client 호출 확인
 4. 파일 머리에 관련 ID: `// REQ-012 · UI-2c`
 
-## 내비게이션
+## 내비게이션 (DEC-007)
 
-- 지금: `AppFeature.isLoggedIn`으로 로그인 ↔ 메인을 바꾼다(임시, 커밋 5361938).
-- 탭 구조는 홈 · 릴레이 · 커뮤니티 · 마이 + 검색(원본 공통 규칙).
-- 미결정 — 화면 push(`StackState` vs `NavigationStack` path) · 시트(`@Presents`) 방식. 첫 탭 바 이슈에서 DEC로 정한다.
+- 로그인 ↔ 메인 전환: `AppFeature.isLoggedIn`(PR #13).
+- 메인 탭: `MainTabFeature`가 홈 · 릴레이 · 커뮤니티 · 마이 + 검색을 갖는다(UI-12d).
+- **push 이동은 TCA StackState**. 탭마다 `StackState<<Tab>Path.State>`를 두고, 화면은 `NavigationStack(path: $store.scope(state: \.<tab>Path, action: \.<tab>Path))`로 그린다.
+  - push되는 화면은 `@Reducer(state: .equatable, action: .equatable) enum <Tab>Path { case detail(…) }`의 case로 추가한다.
+  - 하위 화면은 이동을 직접 하지 않고 `delegate`로 알린다. 부모(`MainTabFeature`)가 `append` · `pop(from:)` 한다.
+  - 예: 릴레이 탭 → 상세(UI-3c) → 투표(UI-3b). 하위 화면에서는 탭 바를 숨긴다(`hidesTabBar`).
+- 시트 · 전체 화면 모달은 `@Presents` + `.sheet(item:)` / `.fullScreenCover(item:)`.
+- 흐름은 TestStore로 테스트한다(`RelayNavigationTests`).
 
 ## OS 버전별 UI (DEC-005)
 
