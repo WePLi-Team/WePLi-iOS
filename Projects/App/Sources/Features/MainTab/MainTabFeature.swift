@@ -44,6 +44,43 @@ struct MainTabFeature {
     var my = MyFeature.State()
     var community = CommunityFeedFeature.State()
     var search = SearchFeature.State()
+    /// 릴레이 탭 화면 이동(DEC-007)
+    var relayPath = StackState<RelayPath.State>()
+    /// 커뮤니티 탭 화면 이동(DEC-007)
+    var communityPath = StackState<CommunityPath.State>()
+    /// 마이 탭 화면 이동(DEC-007)
+    var myPath = StackState<MyPath.State>()
+    /// 게시글 작성(UI-2b) — 큰 시트
+    @Presents var compose: ComposePostFeature.State?
+
+    /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
+    var hidesTabBar: Bool {
+      switch self.selectedTab {
+      case .relay: !self.relayPath.isEmpty
+      case .community: !self.communityPath.isEmpty
+      case .my: !self.myPath.isEmpty
+      case .home, .search: false
+      }
+    }
+  }
+
+  /// 릴레이 탭에서 push되는 화면
+  @Reducer(state: .equatable, action: .equatable)
+  enum RelayPath {
+    case detail(RelayDetailFeature)
+    case vote(CardVoteFeature)
+  }
+
+  /// 커뮤니티 탭에서 push되는 화면
+  @Reducer(state: .equatable, action: .equatable)
+  enum CommunityPath {
+    case notifications(NotificationsFeature)
+  }
+
+  /// 마이 탭에서 push되는 화면
+  @Reducer(state: .equatable, action: .equatable)
+  enum MyPath {
+    case editProfile(EditProfileFeature)
   }
 
   enum Action: Equatable {
@@ -52,6 +89,10 @@ struct MainTabFeature {
     case my(MyFeature.Action)
     case community(CommunityFeedFeature.Action)
     case search(SearchFeature.Action)
+    case relayPath(StackActionOf<RelayPath>)
+    case communityPath(StackActionOf<CommunityPath>)
+    case myPath(StackActionOf<MyPath>)
+    case compose(PresentationAction<ComposePostFeature.Action>)
   }
 
   var body: some ReducerOf<Self> {
@@ -81,9 +122,67 @@ struct MainTabFeature {
         state.selectedTab = .home
         return .none
 
-      case .relay, .my, .community, .search:
+      case let .relay(.delegate(.showRelay(id))):
+        state.relayPath.append(.detail(RelayDetailFeature.State(relayID: id)))
+        return .none
+
+      case let .relayPath(.element(id: elementID, action: .detail(.delegate(.showVote(relayID))))):
+        // 상세 제목은 줄바꿈이 있어 투표 화면 주제에서는 한 줄로 보인다
+        let title = state.relayPath[id: elementID, case: \.detail]?.detail?.title ?? ""
+        let topic = title.replacingOccurrences(of: "\n", with: " ")
+        state.relayPath.append(.vote(CardVoteFeature.State(relayID: relayID, topic: topic)))
+        return .none
+
+      case let .relayPath(.element(id: elementID, action: .detail(.delegate(.dismiss)))),
+           let .relayPath(.element(id: elementID, action: .vote(.delegate(.dismiss)))):
+        state.relayPath.pop(from: elementID)
+        return .none
+
+      case .community(.delegate(.showNotifications)):
+        state.communityPath.append(.notifications(NotificationsFeature.State()))
+        return .none
+
+      case let .communityPath(.element(id: elementID, action: .notifications(.delegate(.dismiss)))):
+        state.communityPath.pop(from: elementID)
+        return .none
+
+      case .my(.delegate(.editProfile)):
+        guard let profile = state.my.profile else { return .none }
+        state.myPath.append(.editProfile(EditProfileFeature.State(profile: profile)))
+        return .none
+
+      case let .myPath(.element(id: _, action: .editProfile(.delegate(.profileUpdated(profile))))):
+        // 저장하면 마이 탭 프로필 카드에 바로 반영한다
+        state.my.profile = profile
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))):
+        state.myPath.pop(from: elementID)
+        return .none
+
+      case .community(.delegate(.showCompose)):
+        state.compose = ComposePostFeature.State()
+        return .none
+
+      case .compose(.presented(.delegate(.dismiss))):
+        state.compose = nil
+        return .none
+
+      case .compose(.presented(.delegate(.published))):
+        // 올리면 시트를 닫고 피드를 새로 불러온다
+        state.compose = nil
+        state.community.hasLoaded = false
+        return .send(.community(.onAppear))
+
+      case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath, .compose:
         return .none
       }
+    }
+    .forEach(\.relayPath, action: \.relayPath)
+    .forEach(\.communityPath, action: \.communityPath)
+    .forEach(\.myPath, action: \.myPath)
+    .ifLet(\.$compose, action: \.compose) {
+      ComposePostFeature()
     }
   }
 }

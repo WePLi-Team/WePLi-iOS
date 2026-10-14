@@ -51,7 +51,6 @@ develop 기준 PR(DEC-003). 브랜치 `<type>/<issue>-<slug>`, 커밋 `[Feat]: �
 ## 미결정 (정해지기 전에 임의로 정하지 않는다)
 
 - 로그인 시안(UI-1a · 3f), 카카오 로그인 포함 여부
-- 내비게이션 방식(StackState · NavigationStack path · @Presents)
 - 백엔드: 미정. Supabase 직접 사용인지, 자체 API(Moya, `API_BASE_URL`)인지, 실시간(순위 · SharePlay 방) 방식. 정해지기 전까지 Client는 목업 `liveValue`로 둔다
 - **정책 · 문구 충돌은 사용자가 나중에 다시 묻기로 함** — 해당 기능 이슈를 시작할 때 아래 항목을 먼저 질문한다
   - 신고 · 차단 콘텐츠 정책(UI-5a · 7e · 11d), 이용 제한 단계, 탈퇴 유예 · 재가입 제한
