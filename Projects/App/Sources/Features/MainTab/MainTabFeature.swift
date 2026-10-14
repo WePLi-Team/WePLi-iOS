@@ -52,6 +52,9 @@ struct MainTabFeature {
     var myPath = StackState<MyPath.State>()
     /// 게시글 작성(UI-2b) — 큰 시트
     @Presents var compose: ComposePostFeature.State?
+    /// 「노래로 답하기」 곡 검색 시트(UI-2a)와 곡을 받을 게시글 상세
+    @Presents var replySongPicker: SongPickerFeature.State?
+    var replySongTarget: StackElementID?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
     var hidesTabBar: Bool {
@@ -75,12 +78,15 @@ struct MainTabFeature {
   @Reducer(state: .equatable, action: .equatable)
   enum CommunityPath {
     case notifications(NotificationsFeature)
+    case postDetail(PostDetailFeature)
   }
 
   /// 마이 탭에서 push되는 화면
   @Reducer(state: .equatable, action: .equatable)
   enum MyPath {
     case editProfile(EditProfileFeature)
+    case library(LibraryFeature)
+    case vote(CardVoteFeature)
   }
 
   enum Action: Equatable {
@@ -93,6 +99,7 @@ struct MainTabFeature {
     case communityPath(StackActionOf<CommunityPath>)
     case myPath(StackActionOf<MyPath>)
     case compose(PresentationAction<ComposePostFeature.Action>)
+    case replySongPicker(PresentationAction<SongPickerFeature.Action>)
   }
 
   var body: some ReducerOf<Self> {
@@ -156,8 +163,28 @@ struct MainTabFeature {
         state.my.profile = profile
         return .none
 
-      case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))):
+      case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))),
+           let .myPath(.element(id: elementID, action: .library(.delegate(.dismiss)))),
+           let .myPath(.element(id: elementID, action: .vote(.delegate(.dismiss)))):
         state.myPath.pop(from: elementID)
+        return .none
+
+      case let .my(.delegate(.show(menu))):
+        // 마이의 「내 활동」 세 메뉴는 보관함의 해당 세그먼트로(UI-5c 노트 01)
+        let segment: LibrarySegment? = switch menu {
+        case .myPlaylists: .playlists
+        case .joinedRelays: .relays
+        case .likesAndSaves: .likes
+        case .notificationSettings, .serviceGuide, .noticesAndTerms, .developerMode: nil
+        }
+        guard let segment else { return .none }
+        state.myPath.append(.library(LibraryFeature.State(segment: segment)))
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .library(.delegate(.continueVoting(relayID))))):
+        let topic = state.myPath[id: elementID, case: \.library]?.library?.liveRelays
+          .first { $0.id == relayID }?.title ?? ""
+        state.myPath.append(.vote(CardVoteFeature.State(relayID: relayID, topic: topic)))
         return .none
 
       case .community(.delegate(.showCompose)):
@@ -174,7 +201,33 @@ struct MainTabFeature {
         state.community.hasLoaded = false
         return .send(.community(.onAppear))
 
-      case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath, .compose:
+      case let .community(.delegate(.showPost(id))):
+        state.communityPath.append(.postDetail(PostDetailFeature.State(postID: id)))
+        return .none
+
+      case let .communityPath(.element(id: elementID, action: .postDetail(.delegate(.dismiss)))):
+        state.communityPath.pop(from: elementID)
+        return .none
+
+      case let .communityPath(.element(id: elementID, action: .postDetail(.delegate(.pickReplySong)))):
+        state.replySongTarget = elementID
+        state.replySongPicker = SongPickerFeature.State()
+        return .none
+
+      case let .replySongPicker(.presented(.delegate(.add(tracks)))):
+        // 댓글에는 한 곡만 붙인다 — 처음 고른 곡
+        state.replySongPicker = nil
+        guard let track = tracks.first, let target = state.replySongTarget else { return .none }
+        state.replySongTarget = nil
+        let song = Track(title: track.title, artist: track.artist)
+        return .send(.communityPath(.element(id: target, action: .postDetail(.replySongPicked(song)))))
+
+      case .replySongPicker(.presented(.delegate(.dismiss))):
+        state.replySongPicker = nil
+        state.replySongTarget = nil
+        return .none
+
+      case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath, .compose, .replySongPicker:
         return .none
       }
     }
@@ -183,6 +236,9 @@ struct MainTabFeature {
     .forEach(\.myPath, action: \.myPath)
     .ifLet(\.$compose, action: \.compose) {
       ComposePostFeature()
+    }
+    .ifLet(\.$replySongPicker, action: \.replySongPicker) {
+      SongPickerFeature()
     }
   }
 }
