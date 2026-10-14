@@ -26,6 +26,8 @@ enum WePLiFont {
   enum Style: CaseIterable {
     /// 34 Bold — 큰 제목(커뮤니티 · 알림 · 검색)
     case largeTitle
+    /// 32 Bold — 탭 첫 화면 제목(릴레이, UI-10a)
+    case screenTitle
     /// 28 SemiBold — 화면 머리말
     case title1
     /// 22 Bold — 홈 섹션 제목
@@ -50,6 +52,7 @@ enum WePLiFont {
     var size: CGFloat {
       switch self {
       case .largeTitle: 34
+      case .screenTitle: 32
       case .title1: 28
       case .title2: 22
       case .title3: 20
@@ -65,7 +68,7 @@ enum WePLiFont {
 
     var weight: Weight {
       switch self {
-      case .largeTitle, .title2: .bold
+      case .largeTitle, .screenTitle, .title2: .bold
       case .title1, .title3, .headline, .button: .semibold
       case .callout, .body, .subheadline, .footnote, .caption: .regular
       }
@@ -73,7 +76,7 @@ enum WePLiFont {
 
     var relativeTo: Font.TextStyle {
       switch self {
-      case .largeTitle: .largeTitle
+      case .largeTitle, .screenTitle: .largeTitle
       case .title1: .title
       case .title2: .title2
       case .title3: .title3

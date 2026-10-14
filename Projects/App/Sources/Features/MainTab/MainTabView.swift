@@ -13,8 +13,7 @@ struct MainTabView: View {
         ForEach(MainTabFeature.Tab.allCases, id: \.self) { tab in
           let isSelected = self.store.selectedTab == tab
           NavigationStack {
-            TabPlaceholder(tab: tab)
-              .navigationTitle(tab.title)
+            self.root(for: tab)
           }
           .opacity(isSelected ? 1 : 0)
           .allowsHitTesting(isSelected)
@@ -29,6 +28,19 @@ struct MainTabView: View {
       }
       .ignoresSafeArea(.keyboard)
       .background(WePLiColor.background.ignoresSafeArea())
+    }
+  }
+}
+
+extension MainTabView {
+  @ViewBuilder
+  private func root(for tab: MainTabFeature.Tab) -> some View {
+    switch tab {
+    case .relay:
+      RelayListView(store: self.store.scope(state: \.relay, action: \.relay))
+    case .home, .community, .my, .search:
+      TabPlaceholder(tab: tab)
+        .navigationTitle(tab.title)
     }
   }
 }
