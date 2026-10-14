@@ -48,13 +48,16 @@ struct MainTabFeature {
     var relayPath = StackState<RelayPath.State>()
     /// 커뮤니티 탭 화면 이동(DEC-007)
     var communityPath = StackState<CommunityPath.State>()
+    /// 마이 탭 화면 이동(DEC-007)
+    var myPath = StackState<MyPath.State>()
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
     var hidesTabBar: Bool {
       switch self.selectedTab {
       case .relay: !self.relayPath.isEmpty
       case .community: !self.communityPath.isEmpty
-      case .home, .my, .search: false
+      case .my: !self.myPath.isEmpty
+      case .home, .search: false
       }
     }
   }
@@ -72,6 +75,12 @@ struct MainTabFeature {
     case notifications(NotificationsFeature)
   }
 
+  /// 마이 탭에서 push되는 화면
+  @Reducer(state: .equatable, action: .equatable)
+  enum MyPath {
+    case editProfile(EditProfileFeature)
+  }
+
   enum Action: Equatable {
     case tabSelected(Tab)
     case relay(RelayListFeature.Action)
@@ -80,6 +89,7 @@ struct MainTabFeature {
     case search(SearchFeature.Action)
     case relayPath(StackActionOf<RelayPath>)
     case communityPath(StackActionOf<CommunityPath>)
+    case myPath(StackActionOf<MyPath>)
   }
 
   var body: some ReducerOf<Self> {
@@ -133,11 +143,26 @@ struct MainTabFeature {
         state.communityPath.pop(from: elementID)
         return .none
 
-      case .relay, .my, .community, .search, .relayPath, .communityPath:
+      case .my(.delegate(.editProfile)):
+        guard let profile = state.my.profile else { return .none }
+        state.myPath.append(.editProfile(EditProfileFeature.State(profile: profile)))
+        return .none
+
+      case let .myPath(.element(id: _, action: .editProfile(.delegate(.profileUpdated(profile))))):
+        // 저장하면 마이 탭 프로필 카드에 바로 반영한다
+        state.my.profile = profile
+        return .none
+
+      case let .myPath(.element(id: elementID, action: .editProfile(.delegate(.dismiss)))):
+        state.myPath.pop(from: elementID)
+        return .none
+
+      case .relay, .my, .community, .search, .relayPath, .communityPath, .myPath:
         return .none
       }
     }
     .forEach(\.relayPath, action: \.relayPath)
     .forEach(\.communityPath, action: \.communityPath)
+    .forEach(\.myPath, action: \.myPath)
   }
 }

@@ -95,3 +95,34 @@ final class CommunityNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.communityPath.isEmpty)
   }
 }
+
+@MainActor
+final class MyNavigationTests: XCTestCase {
+  func testProfileCard_pushesEditAndSavedProfileUpdatesMyTab() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    initial.my.profile = .mock
+    var updated = MyProfile.mock
+    updated.nickname = "새 이름"
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.editProfileClient.save = { $0 }
+    }
+    store.exhaustivity = .off
+
+    await store.send(.my(.profileTapped))
+    await store.receive(.my(.delegate(.editProfile)))
+    guard let id = store.state.myPath.ids.first else { return XCTFail("내 정보 수정이 열리지 않음") }
+    XCTAssertTrue(store.state.hidesTabBar)
+
+    await store.send(.myPath(.element(id: id, action: .editProfile(.nicknameChanged("새 이름")))))
+    await store.send(.myPath(.element(id: id, action: .editProfile(.doneButtonTapped))))
+    await store.receive(.myPath(.element(id: id, action: .editProfile(.delegate(.profileUpdated(updated))))))
+    XCTAssertEqual(store.state.my.profile?.nickname, "새 이름")
+
+    await store.send(.myPath(.element(id: id, action: .editProfile(.backButtonTapped))))
+    await store.receive(.myPath(.element(id: id, action: .editProfile(.delegate(.dismiss)))))
+    XCTAssertTrue(store.state.myPath.isEmpty)
+  }
+}

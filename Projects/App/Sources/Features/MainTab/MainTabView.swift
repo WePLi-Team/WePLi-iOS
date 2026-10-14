@@ -61,7 +61,16 @@ extension MainTabView {
           NotificationsView(store: store)
         }
       }
-    case .home, .my, .search:
+    case .my:
+      NavigationStack(path: self.$store.scope(state: \.myPath, action: \.myPath)) {
+        self.root(for: tab)
+      } destination: { store in
+        switch store.case {
+        case let .editProfile(store):
+          EditProfileView(store: store)
+        }
+      }
+    case .home, .search:
       NavigationStack {
         self.root(for: tab)
       }
