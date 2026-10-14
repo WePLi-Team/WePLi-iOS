@@ -35,6 +35,7 @@ struct RelayDetailFeature {
     case voteButtonTapped
     case playAllButtonTapped
     case addToMyPlaylistButtonTapped
+    case exportButtonTapped
     case songPlayTapped(RankedSong.ID)
     case delegate(Delegate)
   }
@@ -48,6 +49,8 @@ struct RelayDetailFeature {
     case showVote(relayID: String)
     case playAll(relayID: String)
     case addToMyPlaylist(relayID: String)
+    /// 내 음악 앱으로 내보내기(UI-14c) — 14차 흐름이 생기면 잇는다
+    case export(relayID: String)
     case playSong(RankedSong.ID)
   }
 
@@ -113,6 +116,9 @@ struct RelayDetailFeature {
 
       case .addToMyPlaylistButtonTapped:
         return .send(.delegate(.addToMyPlaylist(relayID: state.relayID)))
+
+      case .exportButtonTapped:
+        return .send(.delegate(.export(relayID: state.relayID)))
 
       case let .songPlayTapped(id):
         return .send(.delegate(.playSong(id)))

@@ -5,6 +5,7 @@ import SwiftUI
 struct RelayDetailHeader: View {
   let detail: RelayDetail
   let display: RelayDisplayState
+  let now: Date
 
   var body: some View {
     ZStack(alignment: .bottomLeading) {
@@ -25,22 +26,43 @@ struct RelayDetailHeader: View {
         Spacer()
       }
       VStack(alignment: .leading, spacing: 8) {
-        Text("RelayList")
+        // 2026-10-15: 상태별 라벨 — 곡 없음도 「진행 중」
+        Text(self.display == .completed ? "RelayList · 완성" : "RelayList · 진행 중")
           .wepliFont(.footnote, weight: .semibold)
-          .foregroundStyle(WePLiColor.accent)
+          .foregroundStyle(self.display == .completed ? WePLiColor.textTertiary : WePLiColor.accent)
         Text(self.detail.title)
           .wepliFont(.title1)
           .foregroundStyle(Color.white)
           .fixedSize(horizontal: false, vertical: true)
-        Text("\(self.detail.openedOn) • 총 \(self.display == .empty ? 0 : self.detail.totalSongCount)곡")
-          .wepliFont(.subheadline, weight: .light)
-          .foregroundStyle(WePLiColor.textSecondary)
+        self.meta
       }
       .padding(.horizontal, 20)
       .padding(.bottom, 6)
     }
     .frame(height: RelayDetailView.Metric.coverHeight)
     .clipped()
+  }
+
+  /// 진행 중 · 곡 없음: 「● {남은 시간} 남음 · 총 N곡 · 2024.05.03 시작」, 완성: 「총 N곡 · 2024.05.03 시작」
+  private var meta: some View {
+    let count = self.display == .empty ? 0 : self.detail.totalSongCount
+    let rest = Text("총 \(count)곡 · \(self.detail.openedOn) 시작")
+      .font(.custom(WePLiFont.Weight.light.postScriptName, size: 14, relativeTo: .subheadline))
+      .foregroundColor(WePLiColor.textSecondary)
+    return HStack(spacing: 6) {
+      if let endsAt = self.detail.endsAt, self.display != .completed {
+        Circle().fill(WePLiGradient.vsRing).frame(width: 7, height: 7)
+        (Text("\(CountdownFormatter.string(from: self.now, to: endsAt)) 남음")
+          .font(.custom(WePLiFont.Weight.semibold.postScriptName, size: 14, relativeTo: .subheadline))
+          .foregroundColor(WePLiColor.accent)
+          + Text(" · ").foregroundColor(WePLiColor.textDisabled)
+          + rest)
+          .monospacedDigit()
+      } else {
+        rest
+      }
+    }
+    .accessibilityElement(children: .combine)
   }
 }
 
@@ -77,7 +99,7 @@ struct RankedSongRow: View {
       Button(action: self.onPlay) {
         Image(systemName: "play")
           .font(.system(size: 13))
-          .foregroundStyle(WePLiColor.textPrimary)
+          .foregroundStyle(WePLiColor.textMuted)
           .frame(width: 36, height: 44)
       }
       .buttonStyle(.plain)
@@ -88,28 +110,21 @@ struct RankedSongRow: View {
   }
 }
 
+/// 곡 없음 — 글자만(2026-10-15 갱신)
 struct RelayEmptySongsCard: View {
   var body: some View {
-    VStack(spacing: 8) {
-      Image(systemName: "music.note.list")
-        .font(.system(size: 22))
-        .foregroundStyle(WePLiColor.accent)
-        .frame(width: 56, height: 56)
-        .background(WePLiColor.accentStrong.opacity(0.14), in: Circle())
-        .padding(.bottom, 6)
-      Text("아직 등록된 곡이 없어요.")
+    VStack(spacing: 6) {
+      Text("아직 추천된 곡이 없어요")
         .wepliFont(.button)
         .foregroundStyle(WePLiColor.textPrimary)
-      Text("주제에 맞는 명곡을 다른 사람들에게 추천해주세요!")
-        .wepliFont(.subheadline)
+      Text("첫 곡을 추천하면 순위가 여기서 시작돼요")
+        .wepliFont(.subheadline, weight: .light)
         .foregroundStyle(WePLiColor.textTertiary)
     }
     .multilineTextAlignment(.center)
     .frame(maxWidth: .infinity)
-    .padding(.horizontal, 20)
-    .padding(.top, 36)
-    .padding(.bottom, 28)
-    .background(WePLiColor.surface1, in: RoundedRectangle(cornerRadius: 22))
+    .padding(.top, 32)
+    .padding(.bottom, 12)
   }
 }
 
