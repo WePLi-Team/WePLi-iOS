@@ -40,6 +40,8 @@ enum WePLiColor {
   // MARK: 상태 · 오버레이
 
   static let disabledFill = Color.white.opacity(0.08)
+  /// 하단 선택 트레이 바탕 rgba(30,30,36,0.9) (UI-2a)
+  static let trayBackground = Color(rgbHex: 0x1E1E24, opacity: 0.9)
   /// 보조 캡슐 버튼 바탕 (10f 빈 상태 버튼)
   static let secondaryButtonFill = Color.white.opacity(0.1)
   /// 릴레이 완성 배지 안쪽 (UI-3c)
