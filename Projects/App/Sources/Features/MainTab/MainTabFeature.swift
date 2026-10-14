@@ -98,6 +98,7 @@ struct MainTabFeature {
     case library(LibraryFeature)
     case vote(CardVoteFeature)
     case notificationSettings(NotificationSettingsFeature)
+    case myPlaylist(MyPlaylistFeature)
   }
 
   /// 검색 탭에서 push되는 화면

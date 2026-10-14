@@ -109,6 +109,7 @@ extension MainTabView {
       case let .library(store): LibraryView(store: store)
       case let .vote(store): CardVoteView(store: store)
       case let .notificationSettings(store): NotificationSettingsView(store: store)
+      case let .myPlaylist(store): MyPlaylistView(store: store)
       }
     }
   }
