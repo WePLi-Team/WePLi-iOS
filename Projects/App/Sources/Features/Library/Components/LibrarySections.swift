@@ -2,34 +2,18 @@ import SwiftUI
 
 // UI-5c 세그먼트 · 상태 배지 · 세그먼트별 목록
 
+/// 세그먼트 → 밑줄 탭(디자인 원칙 · DEC-009)
 struct LibrarySegmentControl: View {
   let selected: LibrarySegment
   let onSelect: (LibrarySegment) -> Void
 
   var body: some View {
-    HStack(spacing: 0) {
-      ForEach(LibrarySegment.allCases, id: \.self) { segment in
-        let isOn = segment == self.selected
-        Button {
-          self.onSelect(segment)
-        } label: {
-          Text(segment.title)
-            .wepliFont(.footnote, weight: isOn ? .semibold : .medium)
-            .foregroundStyle(isOn ? Color.white : WePLiColor.textTertiary)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
-              if isOn {
-                RoundedRectangle(cornerRadius: 8).fill(WePLiColor.segmentSelected)
-              }
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
-      }
-    }
-    .padding(2)
-    .frame(height: 36)
-    .background(WePLiColor.surface2, in: RoundedRectangle(cornerRadius: 10))
+    WePLiUnderlineTabs(
+      items: LibrarySegment.allCases,
+      selected: self.selected,
+      title: \.title,
+      onSelect: self.onSelect
+    )
   }
 }
 

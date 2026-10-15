@@ -58,34 +58,18 @@ struct FollowListView: View {
     .frame(height: 48)
   }
 
+  /// 세그먼트 → 밑줄 탭(디자인 원칙 · DEC-009)
   private var segment: some View {
-    HStack(spacing: 0) {
-      self.segmentItem(.followers, title: "팔로워 \(CountFormatter.string(self.store.lists?.followerCount ?? 0))")
-      self.segmentItem(.following, title: "팔로잉 \(CountFormatter.string(self.store.lists?.followingCount ?? 0))")
-    }
-    .padding(2)
-    .frame(height: 36)
-    .background(WePLiColor.surface2, in: RoundedRectangle(cornerRadius: 10))
-  }
-
-  private func segmentItem(_ tab: FollowListFeature.Tab, title: String) -> some View {
-    let isOn = self.store.tab == tab
-    return Button {
-      self.store.send(.tabSelected(tab))
-    } label: {
-      Text(title)
-        .wepliFont(.subheadline, weight: isOn ? .semibold : .regular)
-        .foregroundStyle(isOn ? WePLiColor.textPrimary : WePLiColor.textTertiary)
-        .monospacedDigit()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-          if isOn {
-            RoundedRectangle(cornerRadius: 8).fill(WePLiColor.segmentSelected)
-          }
-        }
-    }
-    .buttonStyle(.plain)
-    .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
+    WePLiUnderlineTabs(
+      items: [FollowListFeature.Tab.followers, .following],
+      selected: self.store.tab,
+      title: { tab in
+        tab == .followers
+          ? "팔로워 \(CountFormatter.string(self.store.lists?.followerCount ?? 0))"
+          : "팔로잉 \(CountFormatter.string(self.store.lists?.followingCount ?? 0))"
+      },
+      onSelect: { self.store.send(.tabSelected($0)) }
+    )
   }
 }
 
