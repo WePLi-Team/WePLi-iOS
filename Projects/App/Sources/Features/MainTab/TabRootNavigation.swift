@@ -96,6 +96,7 @@ struct TabRootNavigation: Reducer {
     case .joinedRelays: state.myPath.append(.library(LibraryFeature.State(segment: .relays)))
     case .likesAndSaves: state.myPath.append(.library(LibraryFeature.State(segment: .likes)))
     case .notificationSettings: state.myPath.append(.notificationSettings(NotificationSettingsFeature.State()))
+    case .musicServices: state.myPath.append(.musicServices(MusicServicesFeature.State()))
     // 원본에 화면이 없다(서비스 이용 가이드 · 공지 · 개발자 모드)
     case .serviceGuide, .noticesAndTerms, .developerMode: break
     }
