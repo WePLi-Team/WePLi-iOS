@@ -36,6 +36,10 @@ struct TabRootNavigation: Reducer {
         self.openMyMenu(menu, &state)
         return .none
 
+      case .my(.delegate(.showAppInfo)):
+        state.myPath.append(.appInfo(AppInfoFeature.State(isDeveloperModeEnabled: state.my.isDeveloperModeEnabled)))
+        return .none
+
       case .my(.delegate(.editProfile)):
         guard let profile = state.my.profile else { return .none }
         state.myPath.append(.editProfile(EditProfileFeature.State(profile: profile)))
