@@ -52,7 +52,7 @@ struct RelayCoverSwatch: View {
   private var colors: [Color] {
     switch self.index {
     case 0: [WePLiColor.accentStrong, WePLiColor.surface2]
-    case 1: [WePLiColor.highlight.opacity(0.7), WePLiColor.surface2]
+    case 1: [WePLiColor.accent.opacity(0.6), WePLiColor.surface2]
     case 2: [WePLiColor.positive.opacity(0.6), WePLiColor.surface2]
     default: [WePLiColor.accentChip, WePLiColor.surface1]
     }
@@ -101,35 +101,17 @@ struct CreateRelayCoverPicker: View {
   }
 }
 
+/// 진행 기간 — 세그먼트 대신 칩(디자인 원칙 · DEC-009)
 struct CreateRelayDurationPicker: View {
   let selected: RelayDuration
   let onSelect: (RelayDuration) -> Void
 
   var body: some View {
-    HStack(spacing: 0) {
+    HStack(spacing: 8) {
       ForEach(RelayDuration.allCases, id: \.self) { duration in
-        let isOn = duration == self.selected
-        Button {
-          self.onSelect(duration)
-        } label: {
-          Text(duration.title)
-            .wepliFont(.subheadline, weight: isOn ? .semibold : .regular)
-            .foregroundStyle(isOn ? WePLiColor.textPrimary : WePLiColor.textTertiary)
-            .frame(maxWidth: .infinity)
-            .frame(height: 34)
-            .background {
-              if isOn {
-                RoundedRectangle(cornerRadius: 8).fill(WePLiColor.segmentSelected)
-              }
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isOn ? .isSelected : [])
+        WePLiChip(title: duration.title, isOn: duration == self.selected) { self.onSelect(duration) }
       }
     }
-    .padding(2)
-    .background(WePLiColor.surface3, in: RoundedRectangle(cornerRadius: 10))
   }
 }
 
