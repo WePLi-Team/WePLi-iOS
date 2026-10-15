@@ -87,19 +87,27 @@ struct TabRootNavigation: Reducer {
     return .none
   }
 
-  /// 홈에서 push하는 화면
+  /// 홈에서 push하는 화면 — 릴레이 쪽
   private static func homeScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
     switch delegate {
-    case .showNotifications: .notifications(NotificationsFeature.State())
     case let .showRelay(id): .relayDetail(RelayDetailFeature.State(relayID: id))
-    case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
     case let .showMyRecommendation(relayID): .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
+    case let .showCompletedPlaylist(id): .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
+    case let .showPrediction(relayID): .topPrediction(TopPredictionFeature.State(relayID: relayID))
+    case let .showBaton(id): .batonRelay(BatonRelayFeature.State(relayID: id))
+    default: homeContentScreen(delegate)
+    }
+  }
+
+  /// 홈에서 push하는 화면 — 알림 · 곡 · 아티스트 · 게시글 · 플리
+  private static func homeContentScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
+    switch delegate {
+    case .showNotifications: .notifications(NotificationsFeature.State())
+    case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
     case let .showArtist(name): .artist(ArtistFeature.State(artistID: name))
     case let .showPost(id): .postDetail(PostDetailFeature.State(postID: id))
     case let .showPlaylist(id): .playlistDetail(PlaylistDetailFeature.State(playlistID: id))
-    case let .showCompletedPlaylist(id): .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
-    case let .showPrediction(relayID): .topPrediction(TopPredictionFeature.State(relayID: relayID))
-    case .switchTab, .songMenu: nil
+    default: nil
     }
   }
 

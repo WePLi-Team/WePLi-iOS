@@ -102,3 +102,15 @@ extension MainTabFeatureTests {
     guard case .batonRelay? = store.state.relayPath.last else { return XCTFail("바통 화면이 열려야 한다") }
   }
 }
+
+extension MainTabFeatureTests {
+  func testHomeBatonHero_opensBatonScreen() async {
+    var initial = MainTabFeature.State()
+    initial.home.feed = .mock(now: Date(timeIntervalSince1970: 1800000000))
+    let store = TestStore(initialState: initial) { MainTabFeature() }
+    store.exhaustivity = .off
+    await store.send(.home(.heroTapped("rainy-night")))
+    await store.skipReceivedActions()
+    guard case .batonRelay? = store.state.homePath.last else { return XCTFail("바통 화면이 열려야 한다") }
+  }
+}
