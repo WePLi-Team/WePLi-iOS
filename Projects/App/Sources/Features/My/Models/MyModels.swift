@@ -48,6 +48,8 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
   case notificationSettings
   /// 음악 서비스 연결 · 내보낸 플레이리스트(UI-11b 「마이 › 설정 › 음악 서비스」)
   case musicServices
+  /// 지금 듣는 음악 연결 · 공개 범위(UI-13a 「마이 › 설정」)
+  case listeningShare
   case serviceGuide
   case noticesAndTerms
   case developerMode
@@ -59,6 +61,7 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
     case .likesAndSaves: "좋아요 • 저장"
     case .notificationSettings: "알림 설정"
     case .musicServices: "음악 서비스"
+    case .listeningShare: "지금 듣는 음악"
     case .serviceGuide: "서비스 이용 가이드"
     case .noticesAndTerms: "공지 • 이용약관"
     case .developerMode: "개발자 모드"
@@ -72,6 +75,7 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
     case .likesAndSaves: "heart"
     case .notificationSettings: "bell"
     case .musicServices: "music.note"
+    case .listeningShare: "headphones"
     case .serviceGuide: "book.closed"
     case .noticesAndTerms: "doc.text"
     case .developerMode: "terminal"
@@ -99,7 +103,7 @@ enum MyMenuSection: CaseIterable, Equatable {
   func menus(isDeveloperModeEnabled: Bool) -> [MyMenu] {
     switch self {
     case .activity: [.myPlaylists, .joinedRelays, .likesAndSaves]
-    case .settings: [.notificationSettings, .musicServices]
+    case .settings: [.notificationSettings, .musicServices, .listeningShare]
     case .appInfo: [.serviceGuide, .noticesAndTerms]
     case .etc: isDeveloperModeEnabled ? [.developerMode] : []
     }
