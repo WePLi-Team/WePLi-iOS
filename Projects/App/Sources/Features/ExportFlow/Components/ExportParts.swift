@@ -47,7 +47,7 @@ struct ExportSheetNavBar: View {
 /// 제목 · 설명 · 스위치(14d · 14k) — 최소 높이 64, 아래 구분선
 struct ExportToggleRow: View {
   let title: String
-  let detail: String
+  var detail: String?
   let isOn: Bool
   let onChange: (Bool) -> Void
 
@@ -55,7 +55,9 @@ struct ExportToggleRow: View {
     Toggle(isOn: Binding(get: { self.isOn }, set: self.onChange)) {
       VStack(alignment: .leading, spacing: 2) {
         Text(self.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
-        Text(self.detail).wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.textQuaternary)
+        if let detail = self.detail {
+          Text(detail).wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.textQuaternary)
+        }
       }
     }
     .tint(WePLiColor.accent)
