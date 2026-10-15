@@ -58,6 +58,8 @@ struct TabRootNavigation: Reducer {
       state.homePath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
     case let .showSong(id):
       state.homePath.append(.songDetail(SongDetailFeature.State(songID: id)))
+    case let .showMyRecommendation(relayID):
+      state.homePath.append(.myRecommendation(MyRecommendationFeature.State(relayID: relayID)))
     case let .songMenu(song):
       state.songMenuSource = nil
       state.songMenu = SongMenuFeature.State(
