@@ -91,7 +91,10 @@ struct ArtistFeature {
         }
 
       // 원본에 동작이 정해지지 않은 버튼(공유 · 전체 재생 · 인기곡 전체 · 곡 메뉴 · 앨범) — 화면이 생기면 잇는다
-      case .shareButtonTapped, .playAllTapped, .popularSongsTapped, .songMenuTapped, .albumTapped, .delegate:
+      case .playAllTapped:
+        return .send(.delegate(.playAll))
+
+      case .shareButtonTapped, .popularSongsTapped, .songMenuTapped, .albumTapped, .delegate:
         return .none
       }
     }
@@ -117,4 +120,6 @@ enum ArtistDelegate: Equatable {
   case showSong(ArtistDetail.Song.ID)
   case showPlaylist(ArtistDetail.Place.ID)
   case showPost(ArtistDetail.Place.ID)
+  /// 인기곡 전체 재생 → 미리듣기 플레이어(UI-4b)
+  case playAll
 }
