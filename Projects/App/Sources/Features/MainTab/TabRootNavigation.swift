@@ -16,12 +16,16 @@ struct TabRootNavigation: Reducer {
 
       case let .relay(.delegate(.showRelay(id))):
         // 완성된 릴레이는 완성 플리 기준 화면(UI-14b 「8e·3c·4a의 완성된 플리가 모두 여기로」)
-        let isCompleted = state.relay.relays.first { $0.id == id }.map { !$0.isLive } ?? false
-        state.relayPath.append(
-          isCompleted
-            ? .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
-            : .relayDetail(RelayDetailFeature.State(relayID: id))
-        )
+        let relay = state.relay.relays.first { $0.id == id }
+        let isCompleted = relay.map { !$0.isLive } ?? false
+        if isCompleted {
+          state.relayPath.append(.completedPlaylist(CompletedPlaylistFeature.State(relayID: id)))
+        } else if relay?.voteFormat == .baton {
+          // 진행 중 바통 릴레이는 바통 화면(UI-8c) — 순위 · 투표가 없다
+          state.relayPath.append(.batonRelay(BatonRelayFeature.State(relayID: id)))
+        } else {
+          state.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
+        }
         return .none
 
       case .community(.delegate(.showNotifications)):

@@ -35,6 +35,7 @@ struct ContentNavigation: Reducer {
   static func isDismiss(_ action: Path.Action) -> Bool {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
+         .batonRelay(.delegate(.dismiss)),
          .myRecommendation(.delegate(.dismiss)),
          .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
