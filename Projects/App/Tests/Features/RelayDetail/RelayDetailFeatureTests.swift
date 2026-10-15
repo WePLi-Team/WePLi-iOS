@@ -88,6 +88,8 @@ final class RelayDetailFeatureTests: XCTestCase {
     await store.receive(.delegate(.playAll(relayID: "r")))
     await store.send(.addToMyPlaylistButtonTapped)
     await store.receive(.delegate(.addToMyPlaylist(relayID: "r")))
+    await store.send(.exportButtonTapped)
+    await store.receive(.delegate(.export(relayID: "r")))
     await store.send(.backButtonTapped)
     await store.receive(.delegate(.dismiss))
   }

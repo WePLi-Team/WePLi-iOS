@@ -8,7 +8,6 @@ struct RelayDetailView: View {
 
   enum Metric {
     static let coverHeight: CGFloat = 410
-    static let capsuleHeight: CGFloat = 52
     static let rowHeight: CGFloat = 52
     static let buttonHeight: CGFloat = 54
   }
@@ -19,9 +18,11 @@ struct RelayDetailView: View {
         ScrollView {
           if let detail = self.store.detail, let display = self.store.displayState {
             VStack(alignment: .leading, spacing: 0) {
-              RelayDetailHeader(detail: detail, display: display)
+              RelayDetailHeader(detail: detail, display: display, now: self.store.now)
               VStack(alignment: .leading, spacing: 36) {
-                self.statusCapsule(detail: detail, display: display)
+                if display == .completed {
+                  self.completedActions
+                }
                 self.ranking(detail: detail, display: display)
               }
               .padding(.horizontal, 20)
@@ -106,35 +107,32 @@ struct RelayDetailView: View {
     }
   }
 
-  // MARK: 타이머 · 완성 배지
+  // MARK: 완성 — 위쪽 「전체 재생 · 내 음악 앱으로」(2026-10-15 갱신)
 
-  @ViewBuilder
-  private func statusCapsule(detail: RelayDetail, display: RelayDisplayState) -> some View {
-    if display == .completed {
-      Text("릴레이리스트가 완성되었어요 🎉")
-        .wepliFont(.callout, weight: .semibold)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .frame(maxWidth: .infinity)
-        .frame(height: Metric.capsuleHeight - 2)
-        .background(WePLiColor.completionBadgeFill, in: Capsule())
-        .padding(1)
-        .background(WePLiColor.accentStrong.opacity(0.32), in: Capsule())
-    } else if let endsAt = detail.endsAt {
-      HStack {
-        Text("완성까지 남은 시간")
+  private var completedActions: some View {
+    HStack(spacing: 10) {
+      Button {
+        self.store.send(.playAllButtonTapped)
+      } label: {
+        Label("전체 재생", systemImage: "play.fill")
+          .wepliFont(.callout, weight: .semibold)
+          .foregroundStyle(WePLiColor.textOnCTA)
+          .frame(maxWidth: .infinity)
+          .frame(height: 50)
+          .background(Capsule().fill(WePLiGradient.cta))
+      }
+      .buttonStyle(.plain)
+      Button {
+        self.store.send(.exportButtonTapped)
+      } label: {
+        Text("내 음악 앱으로")
           .wepliFont(.callout, weight: .semibold)
           .foregroundStyle(WePLiColor.textPrimary)
-        Spacer()
-        Text(CountdownFormatter.string(from: self.store.now, to: endsAt))
-          .wepliFont(.subheadline)
-          .foregroundStyle(WePLiColor.timerText)
-          .monospacedDigit()
+          .frame(maxWidth: .infinity)
+          .frame(height: 50)
+          .background(WePLiColor.secondaryButtonFill, in: Capsule())
       }
-      .padding(.horizontal, 20)
-      .frame(height: Metric.capsuleHeight)
-      .background(Capsule().fill(WePLiGradient.brand).opacity(0.05))
-      .background(Capsule().fill(WePLiColor.timerGlow))
-      .accessibilityElement(children: .combine)
+      .buttonStyle(.plain)
     }
   }
 

@@ -109,12 +109,12 @@ struct CardVoteView: View {
         .padding(.top, 4)
       HStack(spacing: 8) {
         Text("\(self.store.index + 1) / \(self.store.candidates.count)")
-          .wepliFont(.caption, weight: .bold)
+          .wepliFont(.footnote, weight: .bold)
           .foregroundStyle(WePLiColor.accent)
           .monospacedDigit()
-          .padding(.horizontal, 10)
-          .frame(height: 24)
-          .background(WePLiColor.accentStrong.opacity(0.18), in: Capsule())
+        Text("·")
+          .wepliFont(.footnote)
+          .foregroundStyle(WePLiColor.textDisabled)
         Text("총 \(CardVoteCount.string(current.voteCount))표 획득")
           .wepliFont(.footnote)
           .foregroundStyle(WePLiColor.textSecondary)
@@ -124,25 +124,27 @@ struct CardVoteView: View {
   }
 
   private func cardStack(_ current: VoteCandidate) -> some View {
-    ZStack {
-      if let next = self.store.next {
-        VoteCard(candidate: next, onPlay: nil)
+    ZStack(alignment: .top) {
+      if self.store.next != nil {
+        // 뒤 카드는 아트만, 위로 살짝 비친다(UI-3b 2026-10-15)
+        VoteArt()
           .scaleEffect(0.92)
-          .offset(y: 18)
-          .opacity(0.45)
+          .offset(y: -16)
+          .opacity(0.3)
           .accessibilityHidden(true)
       }
-      VoteCard(candidate: current) { self.store.send(.playTapped(current.id)) }
-        .overlay(alignment: .topLeading) { VoteStamp(choice: .fits, opacity: self.stampOpacity(.fits)) }
-        .overlay(alignment: .topTrailing) {
-          VoteStamp(choice: .doesNotFit, opacity: self.stampOpacity(.doesNotFit))
-        }
-        .offset(x: self.offset)
-        .rotationEffect(.degrees(self.reduceMotion ? 0 : CardSwipe.rotation(for: self.offset)))
-        .gesture(self.dragGesture)
-        .id(current.id)
-        .accessibilityAction(named: "주제와 어울려요") { self.vote(.fits) }
-        .accessibilityAction(named: "별로인 것 같아요") { self.vote(.doesNotFit) }
+      VoteCard(
+        candidate: current,
+        onPlay: { self.store.send(.playTapped(current.id)) },
+        fitsOpacity: self.stampOpacity(.fits),
+        missOpacity: self.stampOpacity(.doesNotFit)
+      )
+      .offset(x: self.offset)
+      .rotationEffect(.degrees(self.reduceMotion ? 0 : CardSwipe.rotation(for: self.offset)))
+      .gesture(self.dragGesture)
+      .id(current.id)
+      .accessibilityAction(named: "주제와 어울려요") { self.vote(.fits) }
+      .accessibilityAction(named: "별로인 것 같아요") { self.vote(.doesNotFit) }
     }
   }
 
@@ -151,12 +153,16 @@ struct CardVoteView: View {
       Button {
         self.vote(.doesNotFit)
       } label: {
-        Label("별로인 것 같아요", systemImage: "hand.thumbsdown")
-          .wepliFont(.body, weight: .semibold)
-          .foregroundStyle(WePLiColor.textPrimary)
-          .frame(maxWidth: .infinity)
-          .frame(height: 56)
-          .wepliGlass(in: Capsule())
+        HStack(spacing: 6) {
+          Image(systemName: "hand.thumbsdown")
+            .foregroundStyle(WePLiColor.textMuted)
+          Text("별로인 것 같아요")
+            .foregroundStyle(WePLiColor.textPrimary)
+        }
+        .wepliFont(.body, weight: .semibold)
+        .frame(maxWidth: .infinity)
+        .frame(height: 56)
+        .wepliGlass(in: Capsule())
       }
       .buttonStyle(.plain)
       Button {

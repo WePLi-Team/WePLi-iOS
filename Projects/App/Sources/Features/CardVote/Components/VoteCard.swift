@@ -1,26 +1,21 @@
 import SwiftUI
 
-// UI-3b 카드 — 폭 300 · 모서리 26 · 아트 276(모서리 16) · 재생 44 · 도장(어울려요 #A4FFFF -12° / 별로예요 #FE82DB +12°)
+// UI-3b 카드(2026-10-15 갱신) — 카드 상자 없이 아트 300(모서리 16) + 그림자, 아래 곡명 · 가수
+// 끌면 아트 전체를 덮는 표시: 어울려요 = 라벤더 그라디언트 + 「어울려요」 · 별로예요 = 검정 60% + 「별로예요」
 
 struct VoteCard: View {
   let candidate: VoteCandidate
   let onPlay: (() -> Void)?
+  var fitsOpacity: Double = 0
+  var missOpacity: Double = 0
 
   enum Metric {
-    static let width: CGFloat = 300
-    static let art: CGFloat = 276
+    static let art: CGFloat = 300
   }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 2) {
-      RoundedRectangle(cornerRadius: 16)
-        .fill(WePLiColor.imagePlaceholder)
-        .frame(width: Metric.art, height: Metric.art)
-        .overlay {
-          Image(systemName: "music.note")
-            .font(.system(size: 48, weight: .light))
-            .foregroundStyle(WePLiColor.textQuaternary)
-        }
+      VoteArt(fitsOpacity: self.fitsOpacity, missOpacity: self.missOpacity)
         .overlay(alignment: .bottomTrailing) {
           if let onPlay = self.onPlay {
             Button(action: onPlay) {
@@ -48,33 +43,53 @@ struct VoteCard: View {
         .lineLimit(1)
         .padding(.horizontal, 4)
     }
-    .padding(.horizontal, 12)
-    .padding(.top, 12)
-    .padding(.bottom, 18)
-    .frame(width: Metric.width)
-    .background(WePLiColor.surface1, in: RoundedRectangle(cornerRadius: 26))
-    .overlay(RoundedRectangle(cornerRadius: 26).strokeBorder(Color.white.opacity(0.08), lineWidth: 0.5))
-    .shadow(color: .black.opacity(0.5), radius: 30, y: 24)
+    .frame(width: Metric.art)
   }
 }
 
-struct VoteStamp: View {
-  let choice: VoteChoice
-  let opacity: Double
+/// 앨범 아트 300 — 끄는 방향에 따라 아트 전체를 덮는다
+struct VoteArt: View {
+  var fitsOpacity: Double = 0
+  var missOpacity: Double = 0
 
   var body: some View {
-    let isFits = self.choice == .fits
-    let color = isFits ? WePLiColor.positive : WePLiColor.highlight
-    Text(isFits ? "어울려요" : "별로예요")
-      .font(.custom(WePLiFont.Weight.bold.postScriptName, size: 18))
-      .foregroundStyle(color)
-      .padding(.horizontal, 10)
-      .padding(.vertical, 4)
-      .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(color, lineWidth: 2.5))
-      .rotationEffect(.degrees(isFits ? -12 : 12))
-      .padding(.top, 16)
-      .padding(.horizontal, 14)
-      .opacity(self.opacity)
+    RoundedRectangle(cornerRadius: 16)
+      .fill(WePLiColor.imagePlaceholder)
+      .frame(width: VoteCard.Metric.art, height: VoteCard.Metric.art)
+      .overlay {
+        Image(systemName: "music.note")
+          .font(.system(size: 48, weight: .light))
+          .foregroundStyle(WePLiColor.textQuaternary)
+      }
+      .overlay(alignment: .bottomLeading) {
+        ZStack(alignment: .bottomLeading) {
+          LinearGradient(
+            stops: [
+              .init(color: WePLiColor.accent.opacity(0), location: 0.3),
+              .init(color: WePLiColor.accentStrong.opacity(0.55), location: 1),
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+          )
+          Text("어울려요")
+            .font(.custom(WePLiFont.Weight.bold.postScriptName, size: 20, relativeTo: .title3))
+            .foregroundStyle(WePLiColor.textPrimary)
+            .padding(18)
+        }
+        .opacity(self.fitsOpacity)
+      }
+      .overlay(alignment: .bottomTrailing) {
+        ZStack(alignment: .bottomTrailing) {
+          Color.black.opacity(0.6)
+          Text("별로예요")
+            .font(.custom(WePLiFont.Weight.bold.postScriptName, size: 20, relativeTo: .title3))
+            .foregroundStyle(WePLiColor.textSecondary)
+            .padding(18)
+        }
+        .opacity(self.missOpacity)
+      }
+      .clipShape(RoundedRectangle(cornerRadius: 16))
+      .shadow(color: .black.opacity(0.55), radius: 30, y: 24)
       .accessibilityHidden(true)
   }
 }

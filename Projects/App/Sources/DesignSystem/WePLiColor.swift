@@ -57,8 +57,6 @@ enum WePLiColor {
   static let trayBackground = Color(rgbHex: 0x1E1E24, opacity: 0.9)
   /// 보조 캡슐 버튼 바탕 (10f 빈 상태 버튼)
   static let secondaryButtonFill = Color.white.opacity(0.1)
-  /// 릴레이 완성 배지 안쪽 (UI-3c)
-  static let completionBadgeFill = Color(rgbHex: 0x0C0C12)
   /// 릴레이 타이머 숫자 (UI-3c)
   static let timerText = Color(rgbHex: 0xC2C2C2)
   /// 타이머 캡슐 안쪽 빛 rgba(78,80,122) (UI-3c)
