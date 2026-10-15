@@ -12,6 +12,9 @@ struct CommunityFeedFeature {
     var isLoading = false
     var loadFailed = false
     var hasLoaded = false
+    /// 게시글 / 친구(UI-13b)
+    var segment: CommunitySegment = .posts
+    var friends = FriendFeedFeature.State()
   }
 
   enum Action: Equatable {
@@ -29,6 +32,8 @@ struct CommunityFeedFeature {
     case postTapped(Post.ID)
     case authorTapped(String)
     case storyTapped(Story.ID)
+    case segmentSelected(CommunitySegment)
+    case friends(FriendFeedFeature.Action)
     case delegate(Delegate)
   }
 
@@ -48,6 +53,9 @@ struct CommunityFeedFeature {
   var communityClient
 
   var body: some ReducerOf<Self> {
+    Scope(state: \.friends, action: \.friends) {
+      FriendFeedFeature()
+    }
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -114,7 +122,11 @@ struct CommunityFeedFeature {
       case let .storyTapped(id):
         return .send(.delegate(.showStory(id)))
 
-      case .delegate:
+      case let .segmentSelected(segment):
+        state.segment = segment
+        return .none
+
+      case .friends, .delegate:
         return .none
       }
     }
@@ -137,6 +149,19 @@ struct CommunityFeedFeature {
       } catch {
         await send(.feedFailed)
       }
+    }
+  }
+}
+
+/// 커뮤니티 위 밑줄 탭 — 게시글(UI-1d) · 친구(UI-13b)
+enum CommunitySegment: CaseIterable, Equatable, Hashable, Sendable {
+  case posts
+  case friends
+
+  var title: String {
+    switch self {
+    case .posts: "게시글"
+    case .friends: "친구"
     }
   }
 }

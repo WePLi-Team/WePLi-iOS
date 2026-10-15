@@ -28,6 +28,15 @@ struct TabRootNavigation: Reducer {
         }
         return .none
 
+      case .community(.friends(.delegate(.showListeningShare))):
+        // 친구 피드의 「나」 → 연결과 공개 범위(UI-13a)
+        state.listeningShare = ListeningShareFeature.State(nickname: state.my.profile?.nickname ?? "")
+        return .none
+
+      case let .community(.friends(.delegate(.showSong(id)))):
+        state.communityPath.append(.songDetail(SongDetailFeature.State(songID: id)))
+        return .none
+
       case .community(.delegate(.showNotifications)):
         state.communityPath.append(.notifications(NotificationsFeature.State()))
         return .none

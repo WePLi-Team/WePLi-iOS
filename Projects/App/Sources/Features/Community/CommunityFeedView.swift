@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-// REQ-060 · UI-1d — 커뮤니티 피드
+// REQ-060 · UI-1d — 커뮤니티 피드 · REQ-079 · UI-13b 친구 탭
 
 struct CommunityFeedView: View {
   let store: StoreOf<CommunityFeedFeature>
@@ -11,11 +11,20 @@ struct CommunityFeedView: View {
       ScrollView {
         LazyVStack(alignment: .leading, spacing: 0) {
           self.header
-          self.content
+          if self.store.segment == .friends {
+            FriendFeedView(store: self.store.scope(state: \.friends, action: \.friends))
+          } else {
+            self.content
+          }
         }
       }
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
+      .wepliToast(Binding(get: { self.store.friends.toast }, set: {
+        if $0 == nil {
+          self.store.send(.friends(.toastDismissed))
+        }
+      }))
       .onAppear { self.store.send(.onAppear) }
     }
   }
@@ -50,6 +59,11 @@ struct CommunityFeedView: View {
         .padding(.top, 2)
         .padding(.bottom, 14)
         .accessibilityAddTraits(.isHeader)
+      // UI-13b — 제목 아래 밑줄 탭. 게시글은 지금 피드(1d) 그대로
+      WePLiUnderlineTabs(items: CommunitySegment.allCases, selected: self.store.segment, title: \.title) {
+        self.store.send(.segmentSelected($0))
+      }
+      .padding(.horizontal, 20)
     }
   }
 
