@@ -11,6 +11,9 @@ struct TabRootNavigation: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case let .home(.delegate(delegate)):
+        return self.openFromHome(delegate, &state)
+
       case let .relay(.delegate(.showRelay(id))):
         state.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
         return .none
@@ -44,6 +47,28 @@ struct TabRootNavigation: Reducer {
         return .none
       }
     }
+  }
+
+  /// 홈(UI-12a) — 알림 · 릴레이 · 곡 · 곡 메뉴
+  private func openFromHome(_ delegate: HomeDelegate, _ state: inout State) -> Effect<Action> {
+    switch delegate {
+    case .showNotifications:
+      state.homePath.append(.notifications(NotificationsFeature.State()))
+    case let .showRelay(id):
+      state.homePath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
+    case let .showSong(id):
+      state.homePath.append(.songDetail(SongDetailFeature.State(songID: id)))
+    case let .songMenu(song):
+      state.songMenuSource = nil
+      state.songMenu = SongMenuFeature.State(
+        songID: song.id,
+        title: song.title,
+        artist: song.artist,
+        isLiked: false,
+        savesLike: true
+      )
+    }
+    return .none
   }
 
   /// 마이 메뉴 — 「내 활동」 세 메뉴는 보관함의 해당 세그먼트로(UI-5c 노트 01)

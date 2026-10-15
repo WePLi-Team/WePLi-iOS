@@ -67,7 +67,7 @@ extension MainTabView {
     case .community: self.tabStack(.community, state: \.communityPath, action: \.communityPath)
     case .my: self.tabStack(.my, state: \.myPath, action: \.myPath)
     case .search: self.tabStack(.search, state: \.searchPath, action: \.searchPath)
-    case .home: NavigationStack { self.root(for: tab) }
+    case .home: self.tabStack(.home, state: \.homePath, action: \.homePath)
     }
   }
 
@@ -124,22 +124,8 @@ extension MainTabView {
     case .search:
       SearchView(store: self.store.scope(state: \.search, action: \.search))
     case .home:
-      TabPlaceholder(tab: tab)
-        .navigationTitle(tab.title)
+      HomeView(store: self.store.scope(state: \.home, action: \.home))
     }
-  }
-}
-
-private struct TabPlaceholder: View {
-  let tab: MainTabFeature.Tab
-
-  var body: some View {
-    WePLiEmptyState(
-      systemImage: self.tab.systemImage,
-      title: "\(self.tab.title) 화면을 준비하고 있어요",
-      message: "곧 이 탭에서 만나요."
-    )
-    .background(WePLiColor.background)
   }
 }
 

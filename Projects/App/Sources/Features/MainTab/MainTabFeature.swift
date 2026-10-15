@@ -40,10 +40,13 @@ struct MainTabFeature {
   @ObservableState
   struct State: Equatable {
     var selectedTab: Tab = .home
+    var home = HomeFeature.State()
     var relay = RelayListFeature.State()
     var my = MyFeature.State()
     var community = CommunityFeedFeature.State()
     var search = SearchFeature.State()
+    /// 홈 탭 화면 이동(DEC-007)
+    var homePath = StackState<Path.State>()
     /// 릴레이 탭 화면 이동(DEC-007)
     var relayPath = StackState<Path.State>()
     /// 커뮤니티 탭 화면 이동(DEC-007)
@@ -74,7 +77,7 @@ struct MainTabFeature {
       case .community: !self.communityPath.isEmpty
       case .my: !self.myPath.isEmpty
       case .search: !self.searchPath.isEmpty
-      case .home: false
+      case .home: !self.homePath.isEmpty
       }
     }
   }
@@ -99,10 +102,12 @@ struct MainTabFeature {
 
   enum Action: Equatable {
     case tabSelected(Tab)
+    case home(HomeFeature.Action)
     case relay(RelayListFeature.Action)
     case my(MyFeature.Action)
     case community(CommunityFeedFeature.Action)
     case search(SearchFeature.Action)
+    case homePath(StackActionOf<Path>)
     case relayPath(StackActionOf<Path>)
     case communityPath(StackActionOf<Path>)
     case myPath(StackActionOf<Path>)
@@ -165,6 +170,7 @@ struct MainTabFeature {
           }
         }
       }
+      .forEach(\.homePath, action: \.homePath)
       .forEach(\.relayPath, action: \.relayPath)
       .forEach(\.communityPath, action: \.communityPath)
       .forEach(\.myPath, action: \.myPath)
@@ -174,6 +180,9 @@ struct MainTabFeature {
 
   private var tabs: some ReducerOf<Self> {
     CombineReducers {
+      Scope(state: \.home, action: \.home) {
+        HomeFeature()
+      }
       Scope(state: \.relay, action: \.relay) {
         RelayListFeature()
       }
