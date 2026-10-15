@@ -77,12 +77,14 @@ extension ExportClient: DependencyKey {
     fetchExported: { id in
       @Dependency(\.date.now)
       var now
+      // 음악 서비스 설정(11b)의 「내보낸 플레이리스트」 예시와 맞춘다 — 완료된 플리는 마감이 없다
+      let row = MusicServiceSettings.mock.exported.first { $0.id == id }
       return .mock(
         id: id,
-        relayID: "cafe-bgm",
-        title: "손님들이 물어보는 카페 BGM",
-        service: .appleMusic,
-        endsAt: now.addingTimeInterval(2 * 86400 + 4 * 3600)
+        relayID: row?.id ?? "cafe-bgm",
+        title: row?.title ?? "손님들이 물어보는 카페 BGM",
+        service: row?.service ?? .appleMusic,
+        endsAt: row?.state == .done ? nil : now.addingTimeInterval(2 * 86400 + 4 * 3600)
       )
     },
     setSync: { _, _ in },

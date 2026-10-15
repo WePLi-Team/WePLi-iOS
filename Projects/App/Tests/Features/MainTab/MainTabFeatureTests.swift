@@ -538,3 +538,25 @@ extension MainTabFeatureTests {
     XCTAssertEqual(exported.playlistID, "p")
   }
 }
+
+extension MainTabFeatureTests {
+  func testMusicServicesMenu_opensSettingsThenExportedPlaylist() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.my(.menuTapped(.musicServices)))
+    await store.receive(.my(.delegate(.show(.musicServices))))
+    XCTAssertEqual(store.state.myPath.count, 1)
+    let id = store.state.myPath.ids[0]
+    await store.send(.myPath(.element(id: id, action: .musicServices(.exportedTapped("summer-work")))))
+    await store.receive(.myPath(.element(
+      id: id,
+      action: .musicServices(.delegate(.showExported(playlistID: "summer-work")))
+    )))
+    XCTAssertEqual(store.state.myPath.count, 2)
+  }
+}

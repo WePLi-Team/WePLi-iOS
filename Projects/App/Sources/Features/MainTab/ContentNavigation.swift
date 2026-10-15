@@ -34,7 +34,8 @@ struct ContentNavigation: Reducer {
          .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
-         .notificationSettings(.delegate(.dismiss)), .myPlaylist(.delegate(.dismiss)),
+         .notificationSettings(.delegate(.dismiss)), .musicServices(.delegate(.dismiss)),
+         .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)):
       true
     default:
@@ -95,7 +96,7 @@ struct ContentNavigation: Reducer {
     }
   }
 
-  /// 알림 → 알림 종류에 맞는 화면
+  /// 알림 → 알림 종류에 맞는 화면 · 완성 플리 → 비슷한 플리 · 음악 서비스 → 내보낸 플리
   private func notice(_ action: Path.Action, _ source: PathSource, _ state: State) -> Path.State? {
     let stack = state[stack: source.tab]
     switch action {
@@ -109,6 +110,9 @@ struct ContentNavigation: Reducer {
       case .relayCompleted: return .completedPlaylist(CompletedPlaylistFeature.State(relayID: relayID))
       default: return .relayDetail(RelayDetailFeature.State(relayID: relayID))
       }
+    case let .musicServices(.delegate(.showExported(id))):
+      // 「내보낸 플레이리스트」 한 줄 → 내보낸 플리(UI-14m)
+      return .exportedPlaylist(ExportedPlaylistFeature.State(playlistID: id))
     case let .completedPlaylist(.delegate(.showPlaylist(id))):
       return .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
     default:
