@@ -104,6 +104,8 @@ struct MainTabFeature {
     case library(LibraryFeature)
     case notificationSettings(NotificationSettingsFeature)
     case musicServices(MusicServicesFeature)
+    case notices(NoticesFeature)
+    case appInfo(AppInfoFeature)
     case myPlaylist(MyPlaylistFeature)
     case songDetail(SongDetailFeature)
     case artist(ArtistFeature)

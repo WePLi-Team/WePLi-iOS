@@ -88,9 +88,19 @@ extension MainTabView {
     case let .exportedPlaylist(store): ExportedPlaylistView(store: store)
     case let .editProfile(store): EditProfileView(store: store)
     case let .library(store): LibraryView(store: store)
+    case let .myPlaylist(store): MyPlaylistView(store: store)
+    default: settingsDestination(store)
+    }
+  }
+
+  /// 마이 설정 · 앱 정보 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
+  @ViewBuilder
+  private static func settingsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+    switch store.case {
     case let .notificationSettings(store): NotificationSettingsView(store: store)
     case let .musicServices(store): MusicServicesView(store: store)
-    case let .myPlaylist(store): MyPlaylistView(store: store)
+    case let .notices(store): NoticesView(store: store)
+    case let .appInfo(store): AppInfoView(store: store)
     default: EmptyView()
     }
   }

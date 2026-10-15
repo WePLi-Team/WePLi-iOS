@@ -22,6 +22,11 @@ struct ContentNavigation: Reducer {
         state[stack: source.tab].append(next)
         return .none
       }
+      if case .appInfo(.delegate(.developerModeEnabled)) = action {
+        // 마이 「기타」에 개발자 모드 행을 보인다(UI-7g 노트 02)
+        state.my.isDeveloperModeEnabled = true
+        return .none
+      }
       return self.mine(action, source, &state)
     }
   }
@@ -35,6 +40,7 @@ struct ContentNavigation: Reducer {
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
          .notificationSettings(.delegate(.dismiss)), .musicServices(.delegate(.dismiss)),
+         .notices(.delegate(.dismiss)), .appInfo(.delegate(.dismiss)),
          .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)):
       true

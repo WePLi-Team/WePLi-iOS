@@ -79,7 +79,9 @@ struct MyView: View {
               systemImage: "info.circle",
               title: "앱 버전",
               value: self.store.appVersion,
-              showsSeparator: false
+              showsSeparator: false,
+              // 1e는 값만 보이는 행이지만, 7g 노트는 이 행에서 앱 정보를 연다
+              action: { self.store.send(.appVersionTapped) }
             )
           }
         }
