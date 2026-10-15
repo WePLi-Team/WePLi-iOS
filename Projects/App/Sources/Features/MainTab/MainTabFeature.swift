@@ -72,6 +72,8 @@ struct MainTabFeature {
     @Presents var createRelay: CreateRelayFeature.State?
     /// 내 음악 앱으로 내보내기(UI-14c–14o) — 시트
     @Presents var exportFlow: ExportFlowFeature.State?
+    /// 미리듣기 플레이어 — 미니 플레이어(UI-4a)와 지금 재생 중(UI-4b)이 함께 쓴다
+    var player = PlayerFeature.State()
     /// 진행 중 릴레이 먼저 담기(UI-14l) — 시트와 시트를 연 릴레이 상세
     @Presents var liveExport: LiveExportFeature.State?
     var liveExportSource: PathSource?
@@ -131,6 +133,7 @@ struct MainTabFeature {
     case createRelay(PresentationAction<CreateRelayFeature.Action>)
     case exportFlow(PresentationAction<ExportFlowFeature.Action>)
     case liveExport(PresentationAction<LiveExportFeature.Action>)
+    case player(PlayerFeature.Action)
     /// 시트가 닫히는 동안 다음 화면을 띄우면 무시되므로 잠시 뒤에 띄운다
     case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
@@ -179,6 +182,7 @@ struct MainTabFeature {
         ContentNavigation()
         SongNavigation()
         SongMenuNavigation()
+        PlaybackNavigation()
         Reduce { state, action in
           switch action {
           case let .tabSelected(tab):
@@ -218,6 +222,9 @@ struct MainTabFeature {
       }
       Scope(state: \.search, action: \.search) {
         SearchFeature()
+      }
+      Scope(state: \.player, action: \.player) {
+        PlayerFeature()
       }
     }
   }

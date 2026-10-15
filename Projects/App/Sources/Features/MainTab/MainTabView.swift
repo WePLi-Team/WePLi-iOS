@@ -25,8 +25,12 @@ struct MainTabView: View {
       .safeAreaInset(edge: .bottom, spacing: 0) {
         // iOS 26 검색 탭에서는 다른 탭이 홈 버튼 하나로 접히고 검색 화면이 하단 바를 그린다(UI-4c).
         if !(self.chrome == .glass && self.store.selectedTab == .search), !self.store.hidesTabBar {
-          MainTabBar(selectedTab: self.store.selectedTab) { tab in
-            self.store.send(.tabSelected(tab))
+          VStack(spacing: 0) {
+            // 재생 중이면 탭 바 위에 미니 플레이어(UI-4a 노트 02)
+            MiniPlayerView(store: self.store.scope(state: \.player, action: \.player))
+            MainTabBar(selectedTab: self.store.selectedTab) { tab in
+              self.store.send(.tabSelected(tab))
+            }
           }
         }
       }
@@ -181,6 +185,12 @@ private struct MainTabCovers: ViewModifier {
         }
         .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
           SongShareView(store: shareStore)
+        }
+        .fullScreenCover(isPresented: Binding(
+          get: { self.store.player.isExpanded },
+          set: { self.store.send(.player(.expandedChanged($0))) }
+        )) {
+          NowPlayingView(store: self.store.scope(state: \.player, action: \.player))
         }
     }
   }

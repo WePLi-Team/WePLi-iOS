@@ -91,7 +91,10 @@ struct CompletedPlaylistFeature {
         return .none
 
       // 원본에 목적지가 없다(전체듣기 · 더보기 · 댓글 · 공유) — 재생 · 화면이 생기면 잇는다
-      case .playAllTapped, .moreTapped, .commentsTapped, .shareTapped, .delegate:
+      case .playAllTapped:
+        return .send(.delegate(.playAll))
+
+      case .moreTapped, .commentsTapped, .shareTapped, .delegate:
         return .none
       }
     }
@@ -165,6 +168,8 @@ enum CompletedPlaylistDelegate: Equatable {
   case showSong(String)
   case songMenu(ComposeTrack)
   case showPlaylist(String)
+  /// 전체 듣기 → 미리듣기 플레이어(UI-4b)
+  case playAll
   /// 내 음악 앱으로 내보내기 → 어디로 담을까요(UI-14c) — 14차 흐름이 생기면 잇는다
   case export(relayID: String)
 }
