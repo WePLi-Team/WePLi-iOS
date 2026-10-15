@@ -51,6 +51,7 @@ final class ExportFlowFeatureTests: XCTestCase {
 
   func testConnectedService_skipsPermissionAndMatches() async {
     let store = TestStore(initialState: self.makeState()) { ExportFlowFeature() } withDependencies: {
+      $0.exportClient.hasSubscription = { true }
       $0.exportClient.match = { _, songs in
         AsyncStream { continuation in
           for song in songs {
@@ -63,7 +64,7 @@ final class ExportFlowFeatureTests: XCTestCase {
     store.exhaustivity = .off
     await store.send(.selectionSelected(.voted))
     await store.send(.connections([.appleMusic]))
-    await store.send(.addTapped) { $0.step = .matching }
+    await store.send(.addTapped)
     await store.skipReceivedActions()
     XCTAssertEqual(store.state.step, .review)
     XCTAssertEqual(store.state.matchedCount, 5)
@@ -148,11 +149,18 @@ final class ExportFlowFeatureTests: XCTestCase {
     }
     let created = LockIsolated<[String]>([])
     let store = TestStore(initialState: state) { ExportFlowFeature() } withDependencies: {
-      $0.exportClient.createPlaylist = { _, _, ids in created.setValue(ids) }
+      $0.exportClient.addSongs = { _, _, ids in
+        created.setValue(ids)
+        return "p1"
+      }
     }
-    await store.send(.addFoundOnlyTapped) { $0.isAdding = true }
-    await store.receive(.added(10)) {
+    await store.send(.addFoundOnlyTapped) {
+      $0.isAdding = true
+      $0.pendingSongIDs = $0.foundSongs.map(\.id)
+    }
+    await store.receive(.added(playlistID: "p1")) {
       $0.isAdding = false
+      $0.playlistID = "p1"
       $0.addedCount = 10
       $0.step = .done
     }
@@ -174,5 +182,129 @@ final class ExportFlowFeatureTests: XCTestCase {
     await clock.advance(by: .milliseconds(1))
     await store.receive(.copyReset) { $0.isCopied = false }
     XCTAssertEqual(copied.value?.components(separatedBy: "\n").first, "1. Supernova - aespa")
+  }
+
+  // MARK: 14f · 14n
+
+  private func reviewState() -> ExportFlowFeature.State {
+    var state = self.makeState()
+    state.step = .review
+    state.connected = [.appleMusic, .spotify]
+    for song in state.songs {
+      state.matches[song.id] = .found
+    }
+    return state
+  }
+
+  func testNoSubscription_showsSubscriptionNeeded() async {
+    var state = self.makeState()
+    state.step = .settings
+    state.connected = [.appleMusic]
+    let store = TestStore(initialState: state) { ExportFlowFeature() } withDependencies: {
+      $0.exportClient.hasSubscription = { false }
+    }
+    await store.send(.addTapped)
+    await store.receive(.subscriptionChecked(false)) { $0.step = .subscriptionNeeded }
+    await store.send(.subscriptionOfferTapped) { $0.showsSubscriptionOffer = true }
+    await store.send(.subscriptionOfferChanged(false)) { $0.showsSubscriptionOffer = false }
+    await store.send(.copyListTapped) { $0.step = .copyList }
+  }
+
+  func testInterrupted_resumesRemainingSongsInSamePlaylist() async {
+    let calls = LockIsolated<[ExportTarget]>([])
+    let store = TestStore(initialState: self.reviewState()) { ExportFlowFeature() } withDependencies: {
+      $0.exportClient.addSongs = { _, target, ids in
+        calls.withValue { $0.append(target) }
+        if case .new = target {
+          throw ExportError.interrupted(playlistID: "p1", added: 8)
+        }
+        XCTAssertEqual(ids.count, 4)
+        return "p1"
+      }
+    }
+    store.exhaustivity = .off
+    await store.send(.confirmTapped)
+    await store.receive(.addStopped(.interrupted(playlistID: "p1", added: 8))) {
+      $0.isAdding = false
+      $0.playlistID = "p1"
+      $0.addedCount = 8
+      $0.step = .problem(.interrupted)
+    }
+    XCTAssertEqual(store.state.remainingSongIDs.count, 4)
+    await store.send(.resumeTapped) { $0.isAdding = true }
+    await store.receive(.added(playlistID: "p1")) {
+      $0.isAdding = false
+      $0.addedCount = 12
+      $0.step = .done
+    }
+    XCTAssertEqual(calls.value.last, .append(playlistID: "p1"))
+  }
+
+  func testExpired_reconnectsThenResumes() async {
+    var state = self.reviewState()
+    state.service = .spotify
+    let store = TestStore(initialState: state) { ExportFlowFeature() } withDependencies: {
+      $0.exportClient.connect = { _ in true }
+      $0.exportClient.addSongs = { _, target, _ in
+        guard case .append = target else { throw ExportError.expired(playlistID: "p2", added: 3) }
+        return "p2"
+      }
+    }
+    store.exhaustivity = .off
+    await store.send(.confirmTapped)
+    await store.receive(.addStopped(.expired(playlistID: "p2", added: 3))) {
+      $0.connected = [.appleMusic]
+      $0.step = .problem(.expired)
+    }
+    await store.send(.reconnectTapped) { $0.isConnecting = true }
+    await store.receive(.connectResult(true)) { $0.connected = [.appleMusic, .spotify] }
+    await store.receive(.added(playlistID: "p2")) {
+      $0.addedCount = 12
+      $0.step = .done
+    }
+  }
+
+  func testAlreadyExported_updateMatchesAgainAndReplaces() async {
+    let record = ExportRecord(service: .appleMusic, playlistID: "am-1", exportedOn: "10월 12일", songCount: 12)
+    var state = self.makeState()
+    state = ExportFlowFeature.State(
+      relayID: state.relayID,
+      title: state.title,
+      recommenderCount: 248,
+      songs: state.songs,
+      exported: record
+    )
+    XCTAssertEqual(state.step, .problem(.alreadyExported(record)))
+    let target = LockIsolated<ExportTarget?>(nil)
+    let store = TestStore(initialState: state) { ExportFlowFeature() } withDependencies: {
+      $0.exportClient.hasSubscription = { true }
+      $0.exportClient.match = { _, _ in AsyncStream { $0.finish() } }
+      $0.exportClient.addSongs = { _, value, _ in
+        target.setValue(value)
+        return "am-1"
+      }
+    }
+    store.exhaustivity = .off
+    await store.send(.reExportContinueTapped) {
+      $0.updatesExisting = true
+      $0.playlistID = "am-1"
+    }
+    await store.receive(.subscriptionChecked(true))
+    await store.receive(.matchingFinished) { $0.step = .review }
+  }
+
+  func testAlreadyExported_newGoesToSettings() async {
+    let record = ExportRecord(service: .spotify, playlistID: "sp-1", exportedOn: "10월 12일", songCount: 12)
+    let state = ExportFlowFeature.State(
+      relayID: "r1",
+      title: "졸릴 때 잠 깨는 청량맛 노동요",
+      recommenderCount: 248,
+      songs: ExportSample.songs,
+      exported: record
+    )
+    let store = TestStore(initialState: state) { ExportFlowFeature() }
+    XCTAssertEqual(store.state.service, .spotify)
+    await store.send(.reExportSelected(.new)) { $0.reExport = .new }
+    await store.send(.reExportContinueTapped) { $0.step = .settings }
   }
 }
