@@ -102,8 +102,9 @@ struct TabRootNavigation: Reducer {
     case .notificationSettings: state.myPath.append(.notificationSettings(NotificationSettingsFeature.State()))
     case .musicServices: state.myPath.append(.musicServices(MusicServicesFeature.State()))
     case .serviceGuide: state.serviceGuide = ServiceGuideFeature.State()
-    // 공지 · 이용약관(7a · 7g) · 개발자 모드는 다음 이슈에서 잇는다
-    case .noticesAndTerms, .developerMode: break
+    // 「공지 • 이용약관」은 공지(7a)로 — 약관은 앱 정보(7g, 「앱 버전」)에 있다
+    case .noticesAndTerms: state.myPath.append(.notices(NoticesFeature.State()))
+    case .developerMode: state.myPath.append(.appInfo(AppInfoFeature.State(isDeveloperModeEnabled: true)))
     }
   }
 

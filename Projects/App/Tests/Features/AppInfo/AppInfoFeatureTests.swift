@@ -62,3 +62,30 @@ final class AppInfoFeatureTests: XCTestCase {
     await store.receive(.delegate(.dismiss))
   }
 }
+
+extension MainTabFeatureTests {
+  func testMyMenus_openNoticesAndAppInfo_developerModeShowsRow() async throws {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    let store = TestStore(initialState: initial) { MainTabFeature() } withDependencies: {
+      $0.continuousClock = ImmediateClock()
+    }
+    store.exhaustivity = .off
+    await store.send(.my(.menuTapped(.noticesAndTerms)))
+    await store.receive(.my(.delegate(.show(.noticesAndTerms))))
+    guard case .notices? = store.state.myPath.last else { return XCTFail("공지가 열려야 한다") }
+
+    await store.send(.my(.appVersionTapped))
+    await store.receive(.my(.delegate(.showAppInfo)))
+    let id = try XCTUnwrap(store.state.myPath.ids.last)
+    for _ in 0 ..< 7 {
+      await store.send(.myPath(.element(id: id, action: .appInfo(.versionTapped))))
+    }
+    await store.receive(.myPath(.element(id: id, action: .appInfo(.delegate(.developerModeEnabled)))))
+    XCTAssertTrue(store.state.my.isDeveloperModeEnabled)
+    XCTAssertEqual(
+      MyMenuSection.etc.menus(isDeveloperModeEnabled: store.state.my.isDeveloperModeEnabled),
+      [.developerMode]
+    )
+  }
+}
