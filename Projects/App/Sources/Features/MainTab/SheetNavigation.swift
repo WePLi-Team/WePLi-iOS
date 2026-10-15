@@ -91,6 +91,10 @@ struct SheetNavigation: Reducer {
         state.serviceGuide = nil
         return .none
 
+      case .listeningShare(.presented(.delegate(.dismiss))):
+        state.listeningShare = nil
+        return .none
+
       default:
         return .none
       }

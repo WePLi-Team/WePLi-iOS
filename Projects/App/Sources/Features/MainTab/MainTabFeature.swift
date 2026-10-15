@@ -68,6 +68,8 @@ struct MainTabFeature {
     @Presents var businessCard: BusinessCardFeature.State?
     /// 서비스 이용 가이드(UI-7f) — 전체 화면
     @Presents var serviceGuide: ServiceGuideFeature.State?
+    /// 지금 듣는 음악 — 연결과 공개 범위(UI-13a) · 전체 화면
+    @Presents var listeningShare: ListeningShareFeature.State?
     /// 릴레이리스트 만들기(UI-6a) — 시트
     @Presents var createRelay: CreateRelayFeature.State?
     /// 내 음악 앱으로 내보내기(UI-14c–14o) — 시트
@@ -133,6 +135,7 @@ struct MainTabFeature {
     case songMenu(PresentationAction<SongMenuFeature.Action>)
     case businessCard(PresentationAction<BusinessCardFeature.Action>)
     case serviceGuide(PresentationAction<ServiceGuideFeature.Action>)
+    case listeningShare(PresentationAction<ListeningShareFeature.Action>)
     case createRelay(PresentationAction<CreateRelayFeature.Action>)
     case exportFlow(PresentationAction<ExportFlowFeature.Action>)
     case liveExport(PresentationAction<LiveExportFeature.Action>)
@@ -162,6 +165,9 @@ struct MainTabFeature {
       }
       .ifLet(\.$serviceGuide, action: \.serviceGuide) {
         ServiceGuideFeature()
+      }
+      .ifLet(\.$listeningShare, action: \.listeningShare) {
+        ListeningShareFeature()
       }
       .ifLet(\.$createRelay, action: \.createRelay) {
         CreateRelayFeature()
