@@ -87,6 +87,10 @@ struct SheetNavigation: Reducer {
         state.businessCard = nil
         return .none
 
+      case .serviceGuide(.presented(.delegate(.dismiss))):
+        state.serviceGuide = nil
+        return .none
+
       default:
         return .none
       }

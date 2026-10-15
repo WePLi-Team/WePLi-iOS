@@ -176,6 +176,9 @@ private struct MainTabCovers: ViewModifier {
         .fullScreenCover(item: self.$store.scope(state: \.businessCard, action: \.businessCard)) { cardStore in
           BusinessCardFlowView(store: cardStore)
         }
+        .fullScreenCover(item: self.$store.scope(state: \.serviceGuide, action: \.serviceGuide)) { guideStore in
+          ServiceGuideView(store: guideStore)
+        }
         .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
           SongShareView(store: shareStore)
         }
