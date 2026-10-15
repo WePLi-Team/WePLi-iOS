@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import Foundation
 
-// REQ-050 · UI-14c–14k · UI-14o · DEC-004 — 내 음악 앱으로 내보내기(시트)
+// REQ-050 · UI-14c–14o(14l · 14m 제외) · DEC-004 — 내 음악 앱으로 내보내기(시트)
 // 서비스 고르기 → 담기 설정 → 처음이면 연결 → 곡 맞추기 → 확인 → 완료. 멜론 · 지니 · FLO 등은 곡 목록 복사.
 // 곡을 먼저 다 맞추고, 확인을 받은 뒤 한 번에 담는다(원본 충돌 2 — 14i 「담기 전에 확인」을 따른다).
 
@@ -28,18 +28,37 @@ struct ExportFlowFeature {
     var pick: ExportResolution?
     var isConnecting = false
     var isAdding = false
+    /// 담은 곡 수 — 멈췄으면 거기까지
     var addedCount = 0
+    /// 담는 중인 곡(이어 담기 기준) · 만든 플리
+    var pendingSongIDs: [String] = []
+    var playlistID: String?
+    /// 이미 담은 플리를 최종 순위로 맞추는 중(14n)
+    var updatesExisting = false
+    var reExport: ExportReExport = .update
+    var showsSubscriptionOffer = false
     var autoExport = true
     var listFormat: ExportListFormat = .titleFirst
     var isCopied = false
     var toast: String?
 
-    init(relayID: String, title: String, recommenderCount: Int, songs: [ExportSong]) {
+    init(
+      relayID: String,
+      title: String,
+      recommenderCount: Int,
+      songs: [ExportSong],
+      exported: ExportRecord? = nil
+    ) {
       self.relayID = relayID
       self.title = title
       self.recommenderCount = recommenderCount
       self.songs = songs
       self.name = String("WePLi · \(title)".prefix(ExportText.nameLimit))
+      // 같은 릴레이를 다시 내보내면 새로 만들지, 기존 플리를 맞출지 먼저 묻는다(14n)
+      if let exported {
+        self.service = exported.service
+        self.step = .problem(.alreadyExported(exported))
+      }
     }
   }
 
@@ -65,8 +84,19 @@ struct ExportFlowFeature {
     case alternativesClosed
     case confirmTapped
     case addFoundOnlyTapped
-    case added(Int)
+    case added(playlistID: String)
+    case addStopped(ExportError)
     case addFailed
+    case subscriptionChecked(Bool)
+    case subscriptionOfferTapped
+    case subscriptionOfferChanged(Bool)
+    case otherServiceTapped
+    case copyListTapped
+    case resumeTapped
+    case reconnectTapped
+    case problemLaterTapped
+    case reExportSelected(ExportReExport)
+    case reExportContinueTapped
     case autoExportToggled(Bool)
     case openInServiceTapped
     case listFormatSelected(ExportListFormat)
@@ -109,8 +139,13 @@ struct ExportFlowFeature {
         return self.matchingStep(&state, action)
       case .changeTapped, .alternativePicked, .alternativeConfirmTapped, .alternativesClosed:
         return self.alternativesStep(&state, action)
-      case .confirmTapped, .addFoundOnlyTapped, .added, .addFailed:
+      case .confirmTapped, .addFoundOnlyTapped, .added, .addStopped, .addFailed:
         return self.addStep(&state, action)
+      case .subscriptionChecked, .subscriptionOfferTapped, .subscriptionOfferChanged, .otherServiceTapped,
+           .copyListTapped:
+        return self.subscriptionStep(&state, action)
+      case .resumeTapped, .reconnectTapped, .problemLaterTapped, .reExportSelected, .reExportContinueTapped:
+        return self.problemStep(&state, action)
       case .autoExportToggled, .openInServiceTapped, .listFormatSelected, .copyTapped, .copyReset:
         return self.doneStep(&state, action)
       case .toastDismissed:
@@ -164,7 +199,7 @@ struct ExportFlowFeature {
       guard !state.selectedSongs.isEmpty else { return .none }
       // 연결해 둔 서비스면 연결 단계를 건너뛴다(원본 2절)
       if state.connected.contains(state.service) {
-        return self.startMatching(&state)
+        return self.beginExport(&state)
       }
       // Apple Music은 시스템 알림 전에 설명(14e), Spotify · YouTube는 시스템 보안 로그인 창이 바로 뜬다(14g)
       guard state.service == .appleMusic else { return self.connect(&state) }
@@ -189,7 +224,11 @@ struct ExportFlowFeature {
         return .none
       }
       state.connected.insert(state.service)
-      return self.startMatching(&state)
+      // 연결이 만료돼 멈췄으면 멈춘 곳부터 잇는다(14n)
+      if state.step == .problem(.expired) {
+        return self.resume(&state)
+      }
+      return self.beginExport(&state)
     case .laterTapped:
       state.step = .settings
       return .none
@@ -198,7 +237,7 @@ struct ExportFlowFeature {
     }
   }
 
-  private func connect(_ state: inout State) -> Effect<Action> {
+  func connect(_ state: inout State) -> Effect<Action> {
     guard !state.isConnecting else { return .none }
     state.isConnecting = true
     let service = state.service
@@ -210,7 +249,7 @@ struct ExportFlowFeature {
 
   // MARK: 14h 곡 맞추기
 
-  private func startMatching(_ state: inout State) -> Effect<Action> {
+  func startMatching(_ state: inout State) -> Effect<Action> {
     state.step = .matching
     state.matches = [:]
     state.resolutions = [:]
@@ -259,45 +298,6 @@ struct ExportFlowFeature {
       break
     }
     return .none
-  }
-
-  // MARK: 14i → 14k 담기
-
-  private func addStep(_ state: inout State, _ action: Action) -> Effect<Action> {
-    switch action {
-    case .confirmTapped:
-      return self.add(&state, songIDs: state.exportSongIDs)
-    case .addFoundOnlyTapped:
-      // 「확인할 곡은 빼고 N곡만 담기」
-      return self.add(&state, songIDs: state.foundSongs.map(\.id))
-    case let .added(count):
-      state.isAdding = false
-      state.addedCount = count
-      state.step = .done
-      return .none
-    case .addFailed:
-      state.isAdding = false
-      // 원본에 없는 문구 — 문제가 생겼을 때(14n)는 2단계에서 만든다
-      state.toast = "\(state.service.name)에 담지 못했어요. 다시 시도해 주세요"
-      return .none
-    default:
-      return .none
-    }
-  }
-
-  private func add(_ state: inout State, songIDs: [String]) -> Effect<Action> {
-    guard !state.isAdding, !songIDs.isEmpty else { return .none }
-    state.isAdding = true
-    let service = state.service
-    let name = state.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? state.title : state.name
-    return .run { send in
-      do {
-        try await self.client.createPlaylist(service, name, songIDs)
-        await send(.added(songIDs.count))
-      } catch {
-        await send(.addFailed)
-      }
-    }
   }
 
   // MARK: 14k 완료 · 14o 곡 목록
@@ -374,6 +374,16 @@ extension ExportFlowFeature.State {
 
   var pickingSong: ExportSong? {
     self.picking.flatMap { id in self.songs.first { $0.id == id } }
+  }
+
+  /// 비워 두면 릴레이 제목으로 담는다
+  var exportName: String {
+    self.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? self.title : self.name
+  }
+
+  /// 아직 담지 못한 곡(14n 「나머지 N곡 이어서 담기」)
+  var remainingSongIDs: [String] {
+    Array(self.pendingSongIDs.dropFirst(self.addedCount))
   }
 
   var pickingAlternatives: [ExportAlternative] {

@@ -12,8 +12,11 @@ struct ExportClient {
   var connect: @Sendable (_ service: ExportService) async throws -> Bool
   /// 곡마다 맞춘 결과를 차례로 돌려준다
   var match: @Sendable (_ service: ExportService, _ songs: [ExportSong]) -> AsyncStream<ExportMatchEvent>
-  /// 플레이리스트를 만들고 담는다
-  var createPlaylist: @Sendable (_ service: ExportService, _ name: String, _ songIDs: [String]) async throws -> Void
+  /// Apple Music 구독 — 없으면 보관함에 플리를 만들 수 없다(14f)
+  var hasSubscription: @Sendable () async -> Bool
+  /// 플레이리스트를 만들거나(새로) 이미 담은 플리에 곡을 이어 담는다 · 최종 순위로 맞춘다. 플리 id를 돌려준다.
+  /// 중간에 멈추면 `ExportError`로 담긴 곡 수를 알린다(14n).
+  var addSongs: @Sendable (_ service: ExportService, _ target: ExportTarget, _ songIDs: [String]) async throws -> String
   var setAutoExport: @Sendable (_ service: ExportService, _ isOn: Bool) async -> Void
   var copy: @Sendable (_ text: String) async -> Void
 }
@@ -42,7 +45,13 @@ extension ExportClient: DependencyKey {
         continuation.onTermination = { _ in task.cancel() }
       }
     },
-    createPlaylist: { _, _, _ in },
+    hasSubscription: { true },
+    addSongs: { _, target, _ in
+      switch target {
+      case .new: "playlist-\(UUID().uuidString)"
+      case let .append(id), let .replace(id): id
+      }
+    },
     setAutoExport: { _, _ in },
     copy: { text in await MainActor.run { UIPasteboard.general.string = text } }
   )
@@ -53,7 +62,8 @@ extension ExportClient: DependencyKey {
     isConnected: unimplemented("ExportClient.isConnected", placeholder: false),
     connect: unimplemented("ExportClient.connect", placeholder: false),
     match: unimplemented("ExportClient.match", placeholder: AsyncStream { $0.finish() }),
-    createPlaylist: unimplemented("ExportClient.createPlaylist"),
+    hasSubscription: unimplemented("ExportClient.hasSubscription", placeholder: true),
+    addSongs: unimplemented("ExportClient.addSongs", placeholder: ""),
     setAutoExport: unimplemented("ExportClient.setAutoExport"),
     copy: unimplemented("ExportClient.copy")
   )

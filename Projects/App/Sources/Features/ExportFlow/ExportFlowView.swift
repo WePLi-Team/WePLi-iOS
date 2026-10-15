@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-// REQ-050 · UI-14c–14k · UI-14o — 내 음악 앱으로 내보내기
+// REQ-050 · UI-14c–14k · UI-14n · UI-14o — 내 음악 앱으로 내보내기
 // 원본은 단계마다 떠 있는 시트(14c · 14e · 14j)와 전체 높이 시트(14d · 14h · 14i · 14o), 전체 화면(14k)을 오간다.
 // 한 시트 안에서 단계를 바꾸고, 다른 버전 고르기(14j)만 시트 위 시트로 연다.
 
@@ -42,6 +42,8 @@ struct ExportFlowView: View {
       case .review: ExportReviewStep(store: self.store)
       case .done: ExportDoneStep(store: self.store)
       case .copyList: ExportCopyListStep(store: self.store)
+      case .subscriptionNeeded: ExportSubscriptionStep(store: self.store)
+      case let .problem(problem): ExportProblemStep(store: self.store, problem: problem)
       }
     }
     .transition(.opacity)
