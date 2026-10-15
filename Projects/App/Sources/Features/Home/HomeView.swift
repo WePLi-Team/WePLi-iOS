@@ -145,7 +145,11 @@ struct HomeView: View {
       )
     }
     if !feed.liveListening.songs.isEmpty {
-      HomeLiveListeningSection(live: feed.liveListening) { self.store.send(.liveSongTapped($0)) }
+      HomeLiveListeningSection(
+        live: feed.liveListening,
+        onOpen: { self.store.send(.liveHeaderTapped) },
+        onTap: { self.store.send(.liveSongTapped($0)) }
+      )
     }
   }
 }

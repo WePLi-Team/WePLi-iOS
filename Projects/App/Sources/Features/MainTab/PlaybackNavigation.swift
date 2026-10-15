@@ -73,6 +73,9 @@ struct PlaybackNavigation: Reducer {
       guard let playlist = owned.playlist else { return nil }
       let queue = playlist.tracks.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
       return Request(queue: queue, source: playlist.name)
+    case let (.liveTrend(.delegate(.play(song))), _):
+      let track = PlayerTrack(id: song.id, title: song.title, artist: song.artist)
+      return Request(queue: [track], source: "지금 위플리")
     case let (.postDetail(.delegate(.play)), .postDetail(detail)):
       return detail.post.flatMap { Self.attachment($0.attachment) }
     default:

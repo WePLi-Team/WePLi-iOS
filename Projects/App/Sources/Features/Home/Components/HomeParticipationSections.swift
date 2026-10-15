@@ -272,12 +272,13 @@ struct HomeFriendsSection: View {
 /// 지금 위플리에서 듣는 중 — 「● 1,284명이 듣고 있어요 · 실시간」, 곡마다 「N명」
 struct HomeLiveListeningSection: View {
   let live: HomeLiveListening
+  let onOpen: () -> Void
   let onTap: (HomeLiveListening.Song.ID) -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
       VStack(alignment: .leading, spacing: 4) {
-        HomeSectionHeader(title: "지금 위플리에서 듣는 중")
+        HomeSectionHeader(title: "지금 위플리에서 듣는 중", onTap: self.onOpen)
         HStack(spacing: 6) {
           Circle().fill(WePLiGradient.vsRing).frame(width: 6, height: 6)
           Text("\(HomeText.count(self.live.total))명이 듣고 있어요 · 실시간")
