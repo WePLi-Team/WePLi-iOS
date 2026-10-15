@@ -104,6 +104,7 @@ extension MainTabView {
     switch store.case {
     case let .notifications(store): NotificationsView(store: store)
     case let .myRecommendation(store): MyRecommendationView(store: store)
+    case let .completedPlaylist(store): CompletedPlaylistView(store: store)
     case let .editProfile(store): EditProfileView(store: store)
     case let .library(store): LibraryView(store: store)
     case let .notificationSettings(store): NotificationSettingsView(store: store)
