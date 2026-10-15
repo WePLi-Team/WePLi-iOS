@@ -16,7 +16,9 @@ struct ContentNavigation: Reducer {
         state[stack: source.tab].pop(from: source.id)
         return .none
       }
-      if let next = self.music(action, source, state) ?? self.relay(action, source, state) {
+      let next = self.music(action, source, state) ?? self.relay(action, source, state)
+        ?? self.notice(action, source, state)
+      if let next {
         state[stack: source.tab].append(next)
         return .none
       }
@@ -29,6 +31,7 @@ struct ContentNavigation: Reducer {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
          .myRecommendation(.delegate(.dismiss)),
+         .completedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
          .notificationSettings(.delegate(.dismiss)), .myPlaylist(.delegate(.dismiss)),
@@ -47,6 +50,7 @@ struct ContentNavigation: Reducer {
       let song = state[stack: source.tab][id: source.id, case: \.songDetail]?.song
       return song.map { .artist(ArtistFeature.State(artistID: $0.artist)) }
     case let .songDetail(.delegate(.showSong(id))),
+         let .completedPlaylist(.delegate(.showSong(id))),
          let .artist(.delegate(.showSong(id))),
          let .playlistDetail(.delegate(.showTrack(id))):
       return .songDetail(SongDetailFeature.State(songID: id))
@@ -83,17 +87,30 @@ struct ContentNavigation: Reducer {
       return .vote(CardVoteFeature.State(relayID: relayID, topic: topic))
     case let .library(.delegate(.showRelay(id))):
       return .relayDetail(RelayDetailFeature.State(relayID: id))
-    case let .notifications(.delegate(.open(id))):
-      // 「내 추천곡 순위 변동」 → 내 추천곡 실시간 순위(UI-8a), 마감 · 완성 알림 → 릴레이 상세
-      guard let notice = stack[id: source.id, case: \.notifications]?.notifications[id: id],
-            let relayID = notice.relayID
-      else { return nil }
-      return notice.kind == .rankChanged
-        ? .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
-        : .relayDetail(RelayDetailFeature.State(relayID: relayID))
     case let .library(.delegate(.showPlaylist(id))):
       // 보관함 「내 플레이리스트」 → 내 플레이리스트 · 편집(UI-10d)
       return .myPlaylist(MyPlaylistFeature.State(playlistID: id))
+    default:
+      return nil
+    }
+  }
+
+  /// 알림 → 알림 종류에 맞는 화면
+  private func notice(_ action: Path.Action, _ source: PathSource, _ state: State) -> Path.State? {
+    let stack = state[stack: source.tab]
+    switch action {
+    case let .notifications(.delegate(.open(id))):
+      // 「내 추천곡 순위 변동」 → 내 추천곡(UI-8a) · 완성 알림 → 완성 플리(UI-14b) · 마감 알림 → 릴레이 상세
+      guard let notice = stack[id: source.id, case: \.notifications]?.notifications[id: id],
+            let relayID = notice.relayID
+      else { return nil }
+      switch notice.kind {
+      case .rankChanged: return .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
+      case .relayCompleted: return .completedPlaylist(CompletedPlaylistFeature.State(relayID: relayID))
+      default: return .relayDetail(RelayDetailFeature.State(relayID: relayID))
+      }
+    case let .completedPlaylist(.delegate(.showPlaylist(id))):
+      return .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
     default:
       return nil
     }
@@ -113,6 +130,15 @@ struct ContentNavigation: Reducer {
       }
     case let .myPlaylist(.delegate(.shareAsPost(tracks))):
       state.compose = ComposePostFeature.State(tracks: tracks)
+    case let .completedPlaylist(.delegate(.songMenu(song))):
+      state.songMenuSource = nil
+      state.songMenu = SongMenuFeature.State(
+        songID: song.id,
+        title: song.title,
+        artist: song.artist,
+        isLiked: false,
+        savesLike: true
+      )
     case .postDetail(.delegate(.pickReplySong)):
       state.replySongTarget = source
       state.replySongPicker = SongPickerFeature.State()

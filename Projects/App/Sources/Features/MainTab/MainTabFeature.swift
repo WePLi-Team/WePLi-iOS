@@ -89,6 +89,7 @@ struct MainTabFeature {
     case vote(CardVoteFeature)
     case worldCup(SongWorldCupFeature)
     case myRecommendation(MyRecommendationFeature)
+    case completedPlaylist(CompletedPlaylistFeature)
     case notifications(NotificationsFeature)
     case postDetail(PostDetailFeature)
     case editProfile(EditProfileFeature)

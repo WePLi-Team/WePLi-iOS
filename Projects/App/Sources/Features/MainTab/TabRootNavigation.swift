@@ -15,7 +15,13 @@ struct TabRootNavigation: Reducer {
         return self.openFromHome(delegate, &state)
 
       case let .relay(.delegate(.showRelay(id))):
-        state.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
+        // 완성된 릴레이는 완성 플리 기준 화면(UI-14b 「8e·3c·4a의 완성된 플리가 모두 여기로」)
+        let isCompleted = state.relay.relays.first { $0.id == id }.map { !$0.isLive } ?? false
+        state.relayPath.append(
+          isCompleted
+            ? .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
+            : .relayDetail(RelayDetailFeature.State(relayID: id))
+        )
         return .none
 
       case .community(.delegate(.showNotifications)):
@@ -66,6 +72,8 @@ struct TabRootNavigation: Reducer {
       state.homePath.append(.postDetail(PostDetailFeature.State(postID: id)))
     case let .showPlaylist(id):
       state.homePath.append(.playlistDetail(PlaylistDetailFeature.State(playlistID: id)))
+    case let .showCompletedPlaylist(id):
+      state.homePath.append(.completedPlaylist(CompletedPlaylistFeature.State(relayID: id)))
     case let .switchTab(tab):
       state.selectedTab = tab
     case let .songMenu(song):
