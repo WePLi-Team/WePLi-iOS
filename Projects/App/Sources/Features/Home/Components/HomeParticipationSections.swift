@@ -5,11 +5,23 @@ import SwiftUI
 /// 내 추천곡 · 지금 몇 위 — 줄 64, 오른쪽 순위 20 Bold + 「위」, 변동 ▲#A4FFFF · – #6B6B7C
 struct HomeMyRecommendationsSection: View {
   let items: [HomeMyRecommendation]
+  let isNewUser: Bool
   let onTap: (HomeMyRecommendation.ID) -> Void
+  let onRecommendFirst: () -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
-      HomeSectionHeader(title: "내 추천곡", subtitle: "추천한 곡이 지금 몇 위인지 보여드려요")
+      HomeSectionHeader(
+        title: "내 추천곡",
+        subtitle: self.isNewUser ? "곡을 추천하면 순위가 여기 실시간으로 떠요" : "추천한 곡이 지금 몇 위인지 보여드려요"
+      )
+      if self.isNewUser {
+        HomeNewUserPrompt(
+          message: "지금 투표 중인 릴레이에 첫 곡을 추천해보세요.",
+          button: "첫 곡 추천하기",
+          action: self.onRecommendFirst
+        )
+      }
       VStack(spacing: 0) {
         ForEach(self.items) { item in
           Button {
@@ -182,27 +194,43 @@ struct HomePredictionSection: View {
 /// 친구가 지금 듣는 중 — 가로, 칸 72 · 아바타 68(듣는 중이면 홀로그램 링) · 커버 배지 26
 struct HomeFriendsSection: View {
   let friends: [HomeFriendListening]
+  let isNewUser: Bool
   let onTap: (HomeFriendListening.ID) -> Void
+  let onFindFriends: () -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 14) {
       HomeSectionHeader(
         title: "친구가 지금 듣는 중",
-        subtitle: "친구 \(self.friends.filter(\.isLive).count)명이 지금 듣고 있어요"
+        subtitle: self.isNewUser
+          ? "팔로우한 친구가 듣는 곡이 여기 보여요"
+          : "친구 \(self.friends.filter(\.isLive).count)명이 지금 듣고 있어요"
       )
-      ScrollView(.horizontal, showsIndicators: false) {
-        HStack(alignment: .top, spacing: 14) {
-          ForEach(self.friends) { friend in
-            Button {
-              self.onTap(friend.id)
-            } label: {
-              self.item(friend)
-            }
-            .buttonStyle(.plain)
-          }
-        }
-        .padding(.horizontal, 20)
+      if self.isNewUser {
+        HomeNewUserPrompt(
+          message: "친구를 팔로우하면 지금 듣는 곡을 바로 볼 수 있어요.",
+          button: "친구 찾기",
+          action: self.onFindFriends
+        )
+      } else {
+        self.list
       }
+    }
+  }
+
+  private var list: some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+      HStack(alignment: .top, spacing: 14) {
+        ForEach(self.friends) { friend in
+          Button {
+            self.onTap(friend.id)
+          } label: {
+            self.item(friend)
+          }
+          .buttonStyle(.plain)
+        }
+      }
+      .padding(.horizontal, 20)
     }
   }
 

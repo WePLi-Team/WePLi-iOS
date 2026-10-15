@@ -184,3 +184,56 @@ final class HomeParticipationTests: XCTestCase {
     await store.receive(.delegate(.showSong("how-sweet")))
   }
 }
+
+@MainActor
+final class HomeDiscoveryTests: XCTestCase {
+  func testTimeOfDay_titlesAndSubtitle() {
+    XCTAssertEqual(HomeTimeOfDay(hour: 0).title, "잠 안 오는 새벽에")
+    XCTAssertEqual(HomeTimeOfDay.subtitle(hour: 0), "새벽 12시 · 이 시간에 위플리에서 많이 들은 곡")
+    XCTAssertEqual(HomeTimeOfDay(hour: 9).title, "출근길에 듣기 좋은")
+    XCTAssertEqual(HomeTimeOfDay.subtitle(hour: 15), "오후 3시 · 이 시간에 위플리에서 많이 들은 곡")
+    XCTAssertEqual(HomeTimeOfDay(hour: 18).title, "퇴근길에 듣기 좋은")
+    XCTAssertEqual(HomeTimeOfDay(hour: 22).title, "하루를 마무리하며")
+    // 2026-10-14 15:30 UTC = 10-15 00:30 KST
+    XCTAssertEqual(HomeTimeOfDay.hour(of: Date(timeIntervalSince1970: 1791991800)), 0)
+  }
+
+  func testPostMeta() {
+    let post = HomePopularPost(id: "p", title: "", body: "", author: "dlwlrma", likeCount: 10123, commentCount: 923)
+    XCTAssertEqual(post.meta, "dlwlrma · 좋아요 10,123 · 댓글 923")
+  }
+
+  func testTaps_delegate() async {
+    var initial = HomeFeature.State()
+    initial.feed = .mock(now: Date(timeIntervalSince1970: 0))
+    let store = TestStore(initialState: initial) {
+      HomeFeature()
+    }
+
+    await store.send(.todayPickTapped("bampyeonji"))
+    await store.receive(.delegate(.showSong("bampyeonji")))
+    await store.send(.favoriteArtistTapped)
+    await store.receive(.delegate(.showArtist("로이킴")))
+    await store.send(.favoriteArtistPlayTapped) { $0.isFavoriteArtistPlaying = true }
+    await store.send(.popularPostTapped("post-1"))
+    await store.receive(.delegate(.showPost("post-1")))
+    await store.send(.playlistTapped("p1"))
+    await store.receive(.delegate(.showPlaylist("p1")))
+    await store.send(.newUserActionTapped(.recommendFirstSong))
+    await store.receive(.delegate(.switchTab(.relay)))
+  }
+
+  func testHomeRoutes_inHomeTab() async {
+    let store = TestStore(initialState: MainTabFeature.State()) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.home(.delegate(.showArtist("로이킴"))))
+    await store.send(.home(.delegate(.showPost("post-1"))))
+    await store.send(.home(.delegate(.showPlaylist("p1"))))
+    XCTAssertEqual(store.state.homePath.count, 3)
+    await store.send(.home(.delegate(.switchTab(.search))))
+    XCTAssertEqual(store.state.selectedTab, .search)
+  }
+}

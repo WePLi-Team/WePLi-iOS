@@ -60,6 +60,18 @@ struct HomeFeed: Equatable, Sendable {
   var prediction: HomePrediction?
   var friends: [HomeFriendListening] = []
   var liveListening = HomeLiveListening(total: 0, songs: [])
+  var todayPicks: [HomeTodayPick] = []
+  /// 시간대 추천 — 3줄씩 묶은 칸
+  var timeOfDayColumns: [[HomeChartSong]] = []
+  var favoriteArtist: HomeFavoriteArtist?
+  var favorites = HomeFavorites(totalCount: 0, songs: [])
+  var popularPosts: [HomePopularPost] = []
+  var popularArtists: [String] = []
+  var recommendedPlaylists: [HomePlaylistCard] = []
+  var themePlaylists: [HomePlaylistCard] = []
+  var videos: [HomeVideo] = []
+  /// 참여 기록이 없는 새 사용자 — 내 추천곡 · 친구 · 최애 가수 · Fa♥orite 자리에 첫 참여 안내
+  var isNewUser = false
 }
 
 enum HomeCountdown {
