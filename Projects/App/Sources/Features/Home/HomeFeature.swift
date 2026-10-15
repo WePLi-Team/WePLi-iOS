@@ -13,6 +13,8 @@ struct HomeFeature {
     var now = Date()
     var loadFailed = false
     var toast: String?
+    /// 내 최애 가수 PLAY — 재생 중이면 일시정지 모양
+    var isFavoriteArtistPlaying = false
   }
 
   enum Action: Equatable {
@@ -40,6 +42,16 @@ struct HomeFeature {
     case liveSongTapped(HomeLiveListening.Song.ID)
     case friendTapped(HomeFriendListening.ID)
     case toastDismissed
+    case todayPickTapped(HomeTodayPick.ID)
+    case timeOfDaySongTapped(HomeChartSong.ID)
+    case favoriteArtistTapped
+    case favoriteArtistPlayTapped
+    case favoriteSongTapped(HomeChartSong.ID)
+    case popularPostTapped(HomePopularPost.ID)
+    case popularArtistTapped(String)
+    case playlistTapped(HomePlaylistCard.ID)
+    case videoTapped(HomeVideo.ID)
+    case newUserActionTapped(HomeNewUserAction)
     case delegate(HomeDelegate)
   }
 
@@ -149,6 +161,41 @@ struct HomeFeature {
       return .none
 
     default:
+      return self.discovery(action, &state)
+    }
+  }
+
+  /// 발견 · 내 취향 섹션(#103) — 이름으로 분명한 목적지만 잇는다
+  private func discovery(_ action: Action, _ state: inout State) -> Effect<Action> {
+    switch action {
+    case let .todayPickTapped(id), let .timeOfDaySongTapped(id), let .favoriteSongTapped(id):
+      return .send(.delegate(.showSong(id)))
+
+    case .favoriteArtistTapped:
+      guard let artist = state.feed?.favoriteArtist else { return .none }
+      return .send(.delegate(.showArtist(artist.name)))
+
+    case let .popularArtistTapped(name):
+      return .send(.delegate(.showArtist(name)))
+
+    case .favoriteArtistPlayTapped:
+      state.isFavoriteArtistPlaying.toggle()
+      return .none
+
+    case let .popularPostTapped(id):
+      return .send(.delegate(.showPost(id)))
+
+    case let .playlistTapped(id):
+      return .send(.delegate(.showPlaylist(id)))
+
+    // 새 사용자 안내 — 첫 곡 추천은 릴레이 탭, 친구 찾기는 검색 탭으로(원본에 목적지 없음)
+    case .newUserActionTapped(.recommendFirstSong):
+      return .send(.delegate(.switchTab(.relay)))
+
+    case .newUserActionTapped(.findFriends):
+      return .send(.delegate(.switchTab(.search)))
+
+    default:
       return .none
     }
   }
@@ -224,4 +271,16 @@ enum HomeDelegate: Equatable {
   case songMenu(ComposeTrack)
   /// 내 추천곡 → 내 추천곡 실시간 순위(UI-8a)
   case showMyRecommendation(relayID: String)
+  case showArtist(String)
+  case showPost(String)
+  case showPlaylist(String)
+  case switchTab(MainTabFeature.Tab)
+}
+
+/// 새 사용자 안내 버튼(원본 newUser)
+enum HomeNewUserAction: Equatable, Sendable {
+  case recommendFirstSong
+  case findFriends
+  case pickFavoriteArtist
+  case listenTop100
 }
