@@ -140,10 +140,8 @@ struct ContentNavigation: Reducer {
         savesLike: true
       )
     case .completedPlaylist(.delegate(.export)):
-      // 이미 담은 플리(「Apple Music에서 열기」 · 다시 내보내기 14n)는 2단계에서 잇는다
-      guard let playlist = state[stack: source.tab][id: source.id, case: \.completedPlaylist]?.playlist,
-            playlist.exportedTo == nil
-      else { break }
+      // 이미 담은 플리면 기존 플리를 맞출지 새로 만들지 먼저 묻는다(14n)
+      guard let playlist = state[stack: source.tab][id: source.id, case: \.completedPlaylist]?.playlist else { break }
       state.exportFlow = ExportFlowFeature.State(playlist)
     case .postDetail(.delegate(.pickReplySong)):
       state.replySongTarget = source
