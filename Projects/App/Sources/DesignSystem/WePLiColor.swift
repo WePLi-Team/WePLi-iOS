@@ -40,6 +40,9 @@ enum WePLiColor {
   // MARK: 상태 · 오버레이
 
   static let disabledFill = Color.white.opacity(0.08)
+  /// 선택 칩 · HOST 배지 바탕 rgba(200,207,255,0.16) / 꺼진 칩 흰색 6% (디자인 시스템)
+  static let chipOn = Color(rgbHex: 0xC8CFFF, opacity: 0.16)
+  static let chipOff = Color.white.opacity(0.06)
   /// 이미지 자리 · 로딩 중 커버 · 아바타 (디자인 시스템 surface2)
   static let imagePlaceholder = Self.surface2
   /// 입력 오류 — 위험 동작(#FF453A)과 구분한다 (모션 35)
@@ -49,8 +52,6 @@ enum WePLiColor {
   /// 명함 카드 면 · 테두리 · 말풍선 (UI-2e)
   static let cardFace = Color(rgbHex: 0x030303)
   static let cardLine = Color(rgbHex: 0x2F2F38)
-  /// 세그먼트 컨트롤 선택 칸 (UI-5c)
-  static let segmentSelected = Color(rgbHex: 0x3A3A44)
   /// 본문과 댓글 사이 8pt 띠 (UI-2c)
   static let sectionBand = Color(rgbHex: 0x0E0E10)
   /// 하단 선택 트레이 바탕 rgba(30,30,36,0.9) (UI-2a)
