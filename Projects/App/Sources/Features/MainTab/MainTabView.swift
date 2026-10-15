@@ -44,6 +44,10 @@ struct MainTabView: View {
         ExportFlowView(store: exportStore)
           .wepliSheetStyle(detents: [.large])
       }
+      .sheet(item: self.$store.scope(state: \.liveExport, action: \.liveExport)) { liveStore in
+        LiveExportView(store: liveStore)
+          .wepliSheetStyle(detents: [.large])
+      }
       .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])
@@ -109,6 +113,7 @@ extension MainTabView {
     case let .notifications(store): NotificationsView(store: store)
     case let .myRecommendation(store): MyRecommendationView(store: store)
     case let .completedPlaylist(store): CompletedPlaylistView(store: store)
+    case let .exportedPlaylist(store): ExportedPlaylistView(store: store)
     case let .editProfile(store): EditProfileView(store: store)
     case let .library(store): LibraryView(store: store)
     case let .notificationSettings(store): NotificationSettingsView(store: store)

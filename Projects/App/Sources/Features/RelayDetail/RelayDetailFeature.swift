@@ -49,7 +49,7 @@ struct RelayDetailFeature {
     case showVote(relayID: String)
     case playAll(relayID: String)
     case addToMyPlaylist(relayID: String)
-    /// 내 음악 앱으로 내보내기(UI-14c) — 14차 흐름이 생기면 잇는다
+    /// 내 음악 앱으로 내보내기 — 완성이면 UI-14c, 진행 중이면 먼저 담기 UI-14l
     case export(relayID: String)
     case playSong(RankedSong.ID)
   }

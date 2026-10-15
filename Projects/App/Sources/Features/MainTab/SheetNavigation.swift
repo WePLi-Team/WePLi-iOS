@@ -67,6 +67,22 @@ struct SheetNavigation: Reducer {
         state.exportFlow = nil
         return .none
 
+      case .liveExport(.presented(.delegate(.dismiss))):
+        state.liveExport = nil
+        state.liveExportSource = nil
+        return .none
+
+      case let .liveExport(.presented(.delegate(.exported(playlist)))):
+        // 먼저 담았으면 시트를 닫고, 릴레이 상세가 있는 탭에 내보낸 플리(14m)를 연다
+        state.liveExport = nil
+        let tab = state.liveExportSource?.tab ?? state.selectedTab
+        state.liveExportSource = nil
+        state[stack: tab].append(.exportedPlaylist(ExportedPlaylistFeature.State(
+          playlistID: playlist.id,
+          playlist: playlist
+        )))
+        return .none
+
       case .businessCard(.presented(.delegate(.dismiss))):
         state.businessCard = nil
         return .none

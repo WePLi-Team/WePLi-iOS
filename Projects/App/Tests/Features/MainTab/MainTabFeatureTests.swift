@@ -496,3 +496,45 @@ extension MainTabFeatureTests {
     XCTAssertNil(store.state.exportFlow)
   }
 }
+
+extension MainTabFeatureTests {
+  func testRelayDetailExport_completedOpensExportFlow_liveOpensLiveExportThenExportedPlaylist() async {
+    let now = Date(timeIntervalSince1970: 1800000000)
+    let live = RelayDetail.mock(id: "cafe", now: now)
+    var completed = live
+    completed.status = .completed
+    var liveState = RelayDetailFeature.State(relayID: "cafe", detail: live)
+    liveState.now = now
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .relay
+    initial.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: "done", detail: completed)))
+    initial.relayPath.append(.relayDetail(liveState))
+    let playlist = ExportedPlaylist.mock(id: "p", relayID: "cafe", title: "카페", service: .appleMusic, endsAt: now)
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.exportClient.exportLive = { _, _, _, _ in playlist }
+    }
+    store.exhaustivity = .off
+    let doneID = initial.relayPath.ids[0]
+    let liveID = initial.relayPath.ids[1]
+
+    await store.send(.relayPath(.element(id: doneID, action: .relayDetail(.delegate(.export(relayID: "done"))))))
+    XCTAssertNotNil(store.state.exportFlow)
+    XCTAssertNil(store.state.liveExport)
+    await store.send(.exportFlow(.dismiss))
+
+    await store.send(.relayPath(.element(id: liveID, action: .relayDetail(.delegate(.export(relayID: "cafe"))))))
+    XCTAssertNotNil(store.state.liveExport)
+    XCTAssertEqual(store.state.liveExportSource, PathSource(tab: .relay, id: liveID))
+
+    await store.send(.liveExport(.presented(.exportTapped)))
+    await store.receive(.liveExport(.presented(.delegate(.exported(playlist)))))
+    XCTAssertNil(store.state.liveExport)
+    XCTAssertEqual(store.state.relayPath.count, 3)
+    guard case let .exportedPlaylist(exported)? = store.state.relayPath.last else {
+      return XCTFail("내보낸 플리가 열려야 한다")
+    }
+    XCTAssertEqual(exported.playlistID, "p")
+  }
+}
