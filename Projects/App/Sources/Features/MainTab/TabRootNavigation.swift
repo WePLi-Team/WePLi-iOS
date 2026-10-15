@@ -60,6 +60,14 @@ struct TabRootNavigation: Reducer {
       state.homePath.append(.songDetail(SongDetailFeature.State(songID: id)))
     case let .showMyRecommendation(relayID):
       state.homePath.append(.myRecommendation(MyRecommendationFeature.State(relayID: relayID)))
+    case let .showArtist(name):
+      state.homePath.append(.artist(ArtistFeature.State(artistID: name)))
+    case let .showPost(id):
+      state.homePath.append(.postDetail(PostDetailFeature.State(postID: id)))
+    case let .showPlaylist(id):
+      state.homePath.append(.playlistDetail(PlaylistDetailFeature.State(playlistID: id)))
+    case let .switchTab(tab):
+      state.selectedTab = tab
     case let .songMenu(song):
       state.songMenuSource = nil
       state.songMenu = SongMenuFeature.State(

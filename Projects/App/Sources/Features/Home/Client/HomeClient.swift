@@ -58,9 +58,93 @@ extension HomeFeed {
       votingRelays: self.mockVotingRelays(now: now),
       prediction: self.mockPrediction,
       friends: self.mockFriends,
-      liveListening: .mock(now: now)
+      liveListening: .mock(now: now),
+      todayPicks: self.mockTodayPicks,
+      timeOfDayColumns: self.mockTimeOfDay,
+      favoriteArtist: HomeFavoriteArtist(name: "로이킴", rank: 1),
+      favorites: HomeFavorites(totalCount: 32, songs: self.mockFavorites),
+      popularPosts: self.mockPosts,
+      popularArtists: ["비투비", "BIGBANG (빅뱅)", "윤하(Younha/ユンナ)", "엔플라잉(N.Flying)"],
+      recommendedPlaylists: [
+        HomePlaylistCard(id: "p1", title: "끈적달달한 체리위스키를 머금은 힙합 R&B"),
+        HomePlaylistCard(id: "p2", title: "노을처럼 번지는 아날로그 무드"),
+        HomePlaylistCard(id: "p3", title: "추위를 녹이는 음색의 보이스"),
+      ],
+      themePlaylists: [
+        HomePlaylistCard(id: "t1", title: "초여름 청량한 케이팝 댄스"),
+        HomePlaylistCard(id: "t2", title: "청량함 가득 여름 국힙"),
+        HomePlaylistCard(id: "t3", title: "뼛속까지 청량해지는 K-pop"),
+      ],
+      videos: self.mockVideos
     )
   }
+
+  private static let mockTodayPicks: [HomeTodayPick] = [
+    HomeTodayPick(
+      id: "nerd",
+      artistTag: "#너드커넥션(Nerd Connection)",
+      title: "그대만 있다면 (여름날 우리 X 너드커넥션 (Nerd Connection))"
+    ),
+    HomeTodayPick(id: "bampyeonji", artistTag: "#아이유(IU)", title: "밤편지"),
+    HomeTodayPick(id: "adult", artistTag: "#Sondia", title: "어른"),
+  ]
+
+  private static let mockTimeOfDay: [[HomeChartSong]] = [
+    [
+      HomeChartSong(id: "rhapsody", title: "비의 랩소디", artist: "임재현"),
+      HomeChartSong(id: "bampyeonji", title: "밤편지", artist: "아이유 (IU)"),
+      HomeChartSong(id: "sonagi", title: "소나기", artist: "이클립스 (ECLIPSE)"),
+    ],
+    [
+      HomeChartSong(id: "bam", title: "밤양갱", artist: "비비 (BIBI)"),
+      HomeChartSong(id: "nerd", title: "그대만 있다면", artist: "너드커넥션 (Nerd Connection)"),
+      HomeChartSong(id: "first", title: "첫 만남은 계획대로 되지 않아", artist: "TWS (투어스)"),
+    ],
+    [
+      HomeChartSong(id: "small-girl", title: "Small girl (feat. 도경수)", artist: "이영지"),
+      HomeChartSong(id: "love119", title: "Love 119", artist: "RIIZE"),
+      HomeChartSong(id: "hype", title: "Hype Boy", artist: "NewJeans"),
+    ],
+  ]
+
+  private static let mockFavorites: [HomeChartSong] = [
+    HomeChartSong(id: "easy", title: "EASY", artist: "LE SSERAFIM (르세라핌)"),
+    HomeChartSong(id: "bampyeonji", title: "밤편지", artist: "아이유 (IU)"),
+    HomeChartSong(id: "sonagi", title: "소나기", artist: "이클립스 (ECLIPSE)"),
+  ]
+
+  private static let mockPosts: [HomePopularPost] = [
+    HomePopularPost(
+      id: "post-1",
+      title: "밤새면서 들을 수 있는 플리",
+      body: "여러분은 코딩할 때 어떤 곡을 듣나요?! 댓글로 알려주세요!",
+      author: "dlwlrma",
+      likeCount: 10123,
+      commentCount: 923
+    ),
+    HomePopularPost(
+      id: "post-2",
+      title: "너무 심심해요ㅠㅠ",
+      body: "혼자서 심심할 때 듣기 좋은 노래 추천 부탁드려요 :)",
+      author: "minnie._.",
+      likeCount: 8923,
+      commentCount: 671
+    ),
+    HomePopularPost(
+      id: "post-3",
+      title: "요즘 최애노래",
+      body: "케이윌이랑 매드클라운 조합 너무 좋아요ㅠㅠ",
+      author: "chuuuuu__",
+      likeCount: 5210,
+      commentCount: 312
+    ),
+  ]
+
+  private static let mockVideos: [HomeVideo] = [
+    HomeVideo(id: "yc", title: "슬슬 연말 분위기를 내볼까요?", channel: "roykim ∙ #팝송 #캐롤 #플레이리스트"),
+    HomeVideo(id: "y1", title: "Falling - 로이킴 [더 시즌즈-최정훈의 밤의공원]", channel: "KBS Kpop"),
+    HomeVideo(id: "y2", title: "ZICO (지코) ‘SPOT! (feat. JENNIE)’ Official MV", channel: "HYBE LABELS"),
+  ]
 
   private static func mockHeroes(now: Date) -> [HomeHero] {
     [
