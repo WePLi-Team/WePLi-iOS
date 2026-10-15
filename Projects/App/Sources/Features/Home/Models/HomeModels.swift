@@ -55,6 +55,11 @@ struct HomeFeed: Equatable, Sendable {
   var banners: [HomeBanner]
   /// 알림 배지 — 읽지 않은 알림 수
   var unreadNotifications: Int
+  var myRecommendations: [HomeMyRecommendation] = []
+  var votingRelays: [HomeVotingRelay] = []
+  var prediction: HomePrediction?
+  var friends: [HomeFriendListening] = []
+  var liveListening = HomeLiveListening(total: 0, songs: [])
 }
 
 enum HomeCountdown {
