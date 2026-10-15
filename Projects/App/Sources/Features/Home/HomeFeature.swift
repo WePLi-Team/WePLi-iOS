@@ -42,6 +42,8 @@ struct HomeFeature {
     case liveTicked
     case liveListeningLoaded(HomeLiveListening)
     case liveSongTapped(HomeLiveListening.Song.ID)
+    /// 「지금 위플리에서 듣는 중」 머리 → 지금 위플리(UI-13f)
+    case liveHeaderTapped
     case friendTapped(HomeFriendListening.ID)
     case toastDismissed
     case todayPickTapped(HomeTodayPick.ID)
@@ -147,6 +149,19 @@ struct HomeFeature {
     }
   }
 
+  /// 섹션 머리 → 지금 위플리(UI-13f) · 1위 예측(UI-8d)
+  private func sectionHeader(_ action: Action, _ state: State) -> Effect<Action> {
+    switch action {
+    case .liveHeaderTapped:
+      return .send(.delegate(.showLiveTrend))
+    case .predictionHeaderTapped:
+      guard let relayID = state.feed?.prediction?.relayID else { return .none }
+      return .send(.delegate(.showPrediction(relayID: relayID)))
+    default:
+      return .none
+    }
+  }
+
   /// 내 참여 · 사람 섹션(#102)
   private func participation(_ action: Action, _ state: inout State) -> Effect<Action> {
     switch action {
@@ -160,9 +175,8 @@ struct HomeFeature {
     case let .liveSongTapped(id):
       return .send(.delegate(.showSong(id)))
 
-    case .predictionHeaderTapped:
-      guard let relayID = state.feed?.prediction?.relayID else { return .none }
-      return .send(.delegate(.showPrediction(relayID: relayID)))
+    case .liveHeaderTapped, .predictionHeaderTapped:
+      return self.sectionHeader(action, state)
 
     case .predictionOptionTapped, .predictionLoaded, .predictionFailed:
       return self.prediction(action, &state)
@@ -294,6 +308,8 @@ enum HomeDelegate: Equatable {
   case showPrediction(relayID: String)
   /// 바통 릴레이(UI-8c)
   case showBaton(String)
+  /// 지금 위플리 · 전체 트렌드(UI-13f)
+  case showLiveTrend
   case switchTab(MainTabFeature.Tab)
 }
 

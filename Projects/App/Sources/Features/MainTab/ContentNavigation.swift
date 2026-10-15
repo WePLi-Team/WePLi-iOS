@@ -39,7 +39,7 @@ struct ContentNavigation: Reducer {
   static func isDismiss(_ action: Path.Action) -> Bool {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
-         .batonRelay(.delegate(.dismiss)),
+         .batonRelay(.delegate(.dismiss)), .liveTrend(.delegate(.dismiss)),
          .myRecommendation(.delegate(.dismiss)), .topPrediction(.delegate(.dismiss)),
          .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
@@ -62,6 +62,7 @@ struct ContentNavigation: Reducer {
       let song = state[stack: source.tab][id: source.id, case: \.songDetail]?.song
       return song.map { .artist(ArtistFeature.State(artistID: $0.artist)) }
     case let .songDetail(.delegate(.showSong(id))),
+         let .liveTrend(.delegate(.showSong(id))),
          let .completedPlaylist(.delegate(.showSong(id))),
          let .artist(.delegate(.showSong(id))),
          let .playlistDetail(.delegate(.showTrack(id))):
