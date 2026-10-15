@@ -67,3 +67,75 @@ final class CompletedPlaylistFeatureTests: XCTestCase {
     await store.receive(.delegate(.dismiss))
   }
 }
+
+@MainActor
+final class CompletedPlaylistNavigationTests: XCTestCase {
+  func testHomeCompletedHero_opensCompletedPlaylist() async {
+    var home = HomeFeature.State()
+    home.feed = .mock(now: Date(timeIntervalSince1970: 0))
+    let store = TestStore(initialState: home) {
+      HomeFeature()
+    }
+
+    await store.send(.heroTapped("wake-up"))
+    await store.receive(.delegate(.showCompletedPlaylist("wake-up")))
+    await store.send(.heroTapped("cafe-bgm"))
+    await store.receive(.delegate(.showRelay("cafe-bgm")))
+  }
+
+  func testRoutes_toCompletedPlaylist() async {
+    var initial = MainTabFeature.State()
+    initial.relay.relays = [
+      Relay(id: "wake-up", title: "졸릴 때", voteFormat: .card, participantCount: 1, status: .completed, isMine: false),
+    ]
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.home(.delegate(.showCompletedPlaylist("wake-up"))))
+    XCTAssertNotNil(store.state.homePath[id: store.state.homePath.ids[0], case: \.completedPlaylist])
+
+    await store.send(.relay(.delegate(.showRelay("wake-up"))))
+    let relayID = store.state.relayPath.ids[0]
+    XCTAssertNotNil(store.state.relayPath[id: relayID, case: \.completedPlaylist])
+
+    // 비슷한 완성 플리 → 완성 플리, 곡 → 곡 상세, ··· → 곡 메뉴
+    await store.send(.relayPath(.element(
+      id: relayID,
+      action: .completedPlaylist(.delegate(.showPlaylist("first-love")))
+    )))
+    await store.send(.relayPath(.element(id: relayID, action: .completedPlaylist(.delegate(.showSong("easy"))))))
+    XCTAssertEqual(store.state.relayPath.count, 3)
+    let song = ComposeTrack(id: "easy", title: "EASY", artist: "LE SSERAFIM (르세라핌)")
+    await store.send(.relayPath(.element(id: relayID, action: .completedPlaylist(.delegate(.songMenu(song))))))
+    XCTAssertEqual(store.state.songMenu?.title, "EASY")
+  }
+
+  func testCompletedNotification_opensCompletedPlaylist() async {
+    var initial = MainTabFeature.State()
+    var notifications = NotificationsFeature.State()
+    notifications.notifications = [
+      AppNotification(
+        id: "n6",
+        group: .thisWeek,
+        kind: .relayCompleted,
+        text: "완성",
+        timeText: "2일 전",
+        actionTitle: "듣기",
+        isRead: true,
+        relayID: "first-love"
+      ),
+    ]
+    initial.communityPath.append(.notifications(notifications))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    let id = initial.communityPath.ids[0]
+
+    await store.send(.communityPath(.element(id: id, action: .notifications(.delegate(.open("n6"))))))
+    guard let last = store.state.communityPath.ids.last else { return XCTFail("화면이 열리지 않음") }
+    XCTAssertNotNil(store.state.communityPath[id: last, case: \.completedPlaylist])
+  }
+}
