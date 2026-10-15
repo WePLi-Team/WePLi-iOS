@@ -130,7 +130,11 @@ struct HomeView: View {
       }
     }
     if let prediction = feed.prediction {
-      HomePredictionSection(prediction: prediction) { self.store.send(.predictionOptionTapped($0)) }
+      HomePredictionSection(
+        prediction: prediction,
+        onOpen: { self.store.send(.predictionHeaderTapped) },
+        onPick: { self.store.send(.predictionOptionTapped($0)) }
+      )
     }
     if feed.isNewUser || !feed.friends.isEmpty {
       HomeFriendsSection(

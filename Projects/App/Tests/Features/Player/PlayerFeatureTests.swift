@@ -104,3 +104,38 @@ extension MainTabFeatureTests {
     await store.send(.player(.collapseTapped)) { $0.player.isExpanded = false }
   }
 }
+
+extension MainTabFeatureTests {
+  func testOtherPlayButtons_startPlayer() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    initial.myPath.append(.artist(ArtistFeature.State(artistID: "아이유 (IU)", artist: .mock(id: "아이유 (IU)"))))
+    var mine = MyPlaylistFeature.State(playlistID: "p")
+    mine.playlist = .mock(id: "p")
+    initial.myPath.append(.myPlaylist(mine))
+    var vote = CardVoteFeature.State(relayID: "r", topic: "여름 밤")
+    vote.candidates = VoteCandidate.mockTopTen
+    initial.myPath.append(.vote(vote))
+    let store = TestStore(initialState: initial) { MainTabFeature() } withDependencies: {
+      $0.continuousClock = TestClock()
+    }
+    store.exhaustivity = .off
+    let ids = initial.myPath.ids
+
+    await store.send(.myPath(.element(id: ids[0], action: .artist(.playAllTapped))))
+    await store.skipReceivedActions()
+    XCTAssertEqual(store.state.player.source, "아이유 (IU)")
+    XCTAssertEqual(store.state.player.queue.count, ArtistDetail.mock(id: "아이유 (IU)").popularSongs.count)
+
+    await store.send(.myPath(.element(id: ids[1], action: .myPlaylist(.playTapped))))
+    await store.skipReceivedActions()
+    XCTAssertEqual(store.state.player.queue.map(\.id), MyPlaylist.mock(id: "p").tracks.map(\.id))
+
+    let candidate = VoteCandidate.mockTopTen[2]
+    await store.send(.myPath(.element(id: ids[2], action: .vote(.playTapped(candidate.id)))))
+    await store.skipReceivedActions()
+    XCTAssertEqual(store.state.player.current?.id, candidate.id)
+    XCTAssertEqual(store.state.player.queue.count, 1)
+    XCTAssertEqual(store.state.player.source, "여름 밤")
+  }
+}

@@ -65,23 +65,11 @@ struct TabRootNavigation: Reducer {
 
   /// 홈(UI-12a) — 알림 · 릴레이 · 곡 · 곡 메뉴
   private func openFromHome(_ delegate: HomeDelegate, _ state: inout State) -> Effect<Action> {
+    if let screen = Self.homeScreen(delegate) {
+      state.homePath.append(screen)
+      return .none
+    }
     switch delegate {
-    case .showNotifications:
-      state.homePath.append(.notifications(NotificationsFeature.State()))
-    case let .showRelay(id):
-      state.homePath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
-    case let .showSong(id):
-      state.homePath.append(.songDetail(SongDetailFeature.State(songID: id)))
-    case let .showMyRecommendation(relayID):
-      state.homePath.append(.myRecommendation(MyRecommendationFeature.State(relayID: relayID)))
-    case let .showArtist(name):
-      state.homePath.append(.artist(ArtistFeature.State(artistID: name)))
-    case let .showPost(id):
-      state.homePath.append(.postDetail(PostDetailFeature.State(postID: id)))
-    case let .showPlaylist(id):
-      state.homePath.append(.playlistDetail(PlaylistDetailFeature.State(playlistID: id)))
-    case let .showCompletedPlaylist(id):
-      state.homePath.append(.completedPlaylist(CompletedPlaylistFeature.State(relayID: id)))
     case let .switchTab(tab):
       state.selectedTab = tab
     case let .songMenu(song):
@@ -93,8 +81,26 @@ struct TabRootNavigation: Reducer {
         isLiked: false,
         savesLike: true
       )
+    default:
+      break
     }
     return .none
+  }
+
+  /// 홈에서 push하는 화면
+  private static func homeScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
+    switch delegate {
+    case .showNotifications: .notifications(NotificationsFeature.State())
+    case let .showRelay(id): .relayDetail(RelayDetailFeature.State(relayID: id))
+    case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
+    case let .showMyRecommendation(relayID): .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
+    case let .showArtist(name): .artist(ArtistFeature.State(artistID: name))
+    case let .showPost(id): .postDetail(PostDetailFeature.State(postID: id))
+    case let .showPlaylist(id): .playlistDetail(PlaylistDetailFeature.State(playlistID: id))
+    case let .showCompletedPlaylist(id): .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
+    case let .showPrediction(relayID): .topPrediction(TopPredictionFeature.State(relayID: relayID))
+    case .switchTab, .songMenu: nil
+    }
   }
 
   /// 마이 메뉴 — 「내 활동」 세 메뉴는 보관함의 해당 세그먼트로(UI-5c 노트 01)

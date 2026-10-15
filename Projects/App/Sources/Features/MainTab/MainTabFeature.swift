@@ -99,6 +99,7 @@ struct MainTabFeature {
     case worldCup(SongWorldCupFeature)
     case batonRelay(BatonRelayFeature)
     case myRecommendation(MyRecommendationFeature)
+    case topPrediction(TopPredictionFeature)
     case completedPlaylist(CompletedPlaylistFeature)
     case exportedPlaylist(ExportedPlaylistFeature)
     case notifications(NotificationsFeature)

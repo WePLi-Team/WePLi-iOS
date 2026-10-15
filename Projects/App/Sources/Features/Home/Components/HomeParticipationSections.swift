@@ -106,6 +106,7 @@ struct HomeVotingRelaysSection: View {
 /// 1위 예측 — 한 번만 고름. 고르면 비율 · 막대가 나온다(막대는 0.5초, 줄마다 0.06초 늦게)
 struct HomePredictionSection: View {
   let prediction: HomePrediction
+  let onOpen: () -> Void
   let onPick: (HomePrediction.Option.ID) -> Void
 
   @Environment(\.accessibilityReduceMotion)
@@ -113,7 +114,7 @@ struct HomePredictionSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
-      HomeSectionHeader(title: "1위 예측", subtitle: self.prediction.subtitle)
+      HomeSectionHeader(title: "1위 예측", subtitle: self.prediction.subtitle, onTap: self.onOpen)
       Text(self.prediction.question)
         .wepliFont(.body, weight: .semibold)
         .foregroundStyle(WePLiColor.textPrimary)
