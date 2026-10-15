@@ -111,3 +111,21 @@ enum ExportText {
     return songs.count > 3 ? "\(head) 외 \(songs.count - 3)곡" : head
   }
 }
+
+extension ExportFlowFeature.State {
+  /// 완성 플리(UI-14b)에서 연다
+  init(_ playlist: CompletedPlaylist) {
+    self.init(
+      relayID: playlist.id,
+      title: playlist.title.replacingOccurrences(of: "\n", with: " "),
+      recommenderCount: playlist.recommenderCount,
+      // 미결정 — 완성 플리 응답에 내가 투표한 곡 정보가 없다(14d 「내가 투표한 n곡」)
+      songs: playlist.ranking.map { ExportSong(
+        id: $0.id,
+        title: $0.title,
+        artist: $0.artist,
+        recommender: $0.recommender
+      ) }
+    )
+  }
+}

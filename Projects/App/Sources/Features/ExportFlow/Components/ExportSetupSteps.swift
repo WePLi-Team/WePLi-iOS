@@ -140,7 +140,11 @@ struct ExportSettingsStep: View {
     VStack(alignment: .leading, spacing: 12) {
       Text("담을 곡").wepliFont(.body, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
       HStack(spacing: 8) {
-        ForEach(ExportSelection.allCases, id: \.self) { selection in
+        // 투표한 곡이 없으면 「내가 투표한 0곡」은 뺀다
+        ForEach(
+          ExportSelection.allCases.filter { $0 != .voted || self.store.votedCount > 0 },
+          id: \.self
+        ) { selection in
           WePLiChip(
             title: selection.title(total: self.store.songs.count, votedCount: self.store.votedCount),
             isOn: self.store.selection == selection

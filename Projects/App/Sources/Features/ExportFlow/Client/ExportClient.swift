@@ -72,10 +72,10 @@ enum ExportSample {
   static let songs: [ExportSong] = [
     ExportSong(id: "supernova", title: "Supernova", artist: "aespa", recommender: "", isVoted: true),
     ExportSong(id: "how-sweet", title: "How Sweet", artist: "NewJeans", recommender: ""),
-    ExportSong(id: "hype-boy", title: "Hype Boy", artist: "NewJeans", recommender: "", isVoted: true),
+    ExportSong(id: "hype", title: "Hype Boy", artist: "NewJeans", recommender: "", isVoted: true),
     ExportSong(id: "easy", title: "EASY", artist: "LE SSERAFIM (르세라핌)", recommender: ""),
     ExportSong(id: "heya", title: "해야 (HEYA)", artist: "IVE (아이브)", recommender: "", isVoted: true),
-    ExportSong(id: "love-119", title: "Love 119", artist: "RIIZE", recommender: ""),
+    ExportSong(id: "love119", title: "Love 119", artist: "RIIZE", recommender: ""),
     ExportSong(id: "tws", title: "첫 만남은 계획대로 되지 않아", artist: "TWS (투어스)", recommender: "", isVoted: true),
     ExportSong(id: "nerd", title: "그대만 있다면 (여름날 우리 X 너드커넥션)", artist: "너드커넥션", recommender: "minnie._."),
     ExportSong(id: "bam", title: "밤양갱", artist: "비비 (BIBI)", recommender: ""),
