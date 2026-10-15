@@ -22,6 +22,10 @@ struct ContentNavigation: Reducer {
         state[stack: source.tab].append(next)
         return .none
       }
+      if case let .topPrediction(.delegate(.predicted(relayID, optionID))) = action {
+        Self.markHomePrediction(relayID: relayID, optionID: optionID, &state)
+        return .none
+      }
       if case .appInfo(.delegate(.developerModeEnabled)) = action {
         // 마이 「기타」에 개발자 모드 행을 보인다(UI-7g 노트 02)
         state.my.isDeveloperModeEnabled = true
@@ -35,7 +39,7 @@ struct ContentNavigation: Reducer {
   static func isDismiss(_ action: Path.Action) -> Bool {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
-         .myRecommendation(.delegate(.dismiss)),
+         .myRecommendation(.delegate(.dismiss)), .topPrediction(.delegate(.dismiss)),
          .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
@@ -182,5 +186,12 @@ struct ContentNavigation: Reducer {
         songs: songs
       )
     }
+  }
+
+  /// 1위 예측을 확정하면 홈 1위 예측도 「예측 완료」로 — 같은 릴레이 · 같은 곡이 홈 후보에 있을 때
+  private static func markHomePrediction(relayID: String, optionID: String, _ state: inout State) {
+    guard let prediction = state.home.feed?.prediction, prediction.relayID == relayID else { return }
+    guard prediction.options.contains(where: { $0.id == optionID }) else { return }
+    state.home.feed?.prediction?.pickedID = optionID
   }
 }

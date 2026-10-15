@@ -35,6 +35,8 @@ struct HomeFeature {
     case myRecommendationTapped(HomeMyRecommendation.ID)
     case votingRelayTapped(HomeVotingRelay.ID)
     case predictionOptionTapped(HomePrediction.Option.ID)
+    /// 「1위 예측」 머리 → 1위 예측(UI-8d)
+    case predictionHeaderTapped
     case predictionLoaded([HomePrediction.Option])
     case predictionFailed
     case liveTicked
@@ -154,6 +156,10 @@ struct HomeFeature {
 
     case let .liveSongTapped(id):
       return .send(.delegate(.showSong(id)))
+
+    case .predictionHeaderTapped:
+      guard let relayID = state.feed?.prediction?.relayID else { return .none }
+      return .send(.delegate(.showPrediction(relayID: relayID)))
 
     case .predictionOptionTapped, .predictionLoaded, .predictionFailed:
       return self.prediction(action, &state)
@@ -281,6 +287,8 @@ enum HomeDelegate: Equatable {
   case showPlaylist(String)
   /// 완성된 릴레이 → 완성 플리 · 기준 화면(UI-14b)
   case showCompletedPlaylist(String)
+  /// 1위 예측(UI-8d)
+  case showPrediction(relayID: String)
   case switchTab(MainTabFeature.Tab)
 }
 

@@ -78,6 +78,7 @@ extension MainTabView {
     case let .relayDetail(store): RelayDetailView(store: store)
     case let .vote(store): CardVoteView(store: store)
     case let .worldCup(store): SongWorldCupView(store: store)
+    case let .topPrediction(store): TopPredictionView(store: store)
     default: accountDestination(store)
     }
   }
