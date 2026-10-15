@@ -12,6 +12,7 @@ struct HomeFeature {
     var heroPage = 0
     var now = Date()
     var loadFailed = false
+    var toast: String?
   }
 
   enum Action: Equatable {
@@ -29,11 +30,25 @@ struct HomeFeature {
     case chartPlayAllTapped
     case completedPlayAllTapped(HomeHero.ID)
     case bannerTapped(HomeBanner.ID)
+    case myRecommendationTapped(HomeMyRecommendation.ID)
+    case votingRelayTapped(HomeVotingRelay.ID)
+    case predictionOptionTapped(HomePrediction.Option.ID)
+    case predictionLoaded([HomePrediction.Option])
+    case predictionFailed
+    case liveTicked
+    case liveListeningLoaded(HomeLiveListening)
+    case liveSongTapped(HomeLiveListening.Song.ID)
+    case friendTapped(HomeFriendListening.ID)
+    case toastDismissed
     case delegate(HomeDelegate)
   }
 
+  /// 지금 위플리에서 듣는 중 — 원본은 5초마다 수가 바뀐다
+  static let liveInterval: Duration = .seconds(5)
+
   private enum CancelID {
     case timer
+    case live
   }
 
   @Dependency(\.homeClient)
@@ -56,11 +71,17 @@ struct HomeFeature {
           }
         }
         .cancellable(id: CancelID.timer, cancelInFlight: true)
-        guard state.feed == nil else { return timer }
-        return .merge(self.load(&state), timer)
+        let live = Effect<Action>.run { send in
+          for await _ in self.clock.timer(interval: Self.liveInterval) {
+            await send(.liveTicked)
+          }
+        }
+        .cancellable(id: CancelID.live, cancelInFlight: true)
+        guard state.feed == nil else { return .merge(timer, live) }
+        return .merge(self.load(&state), timer, live)
 
       case .onDisappear:
-        return .cancel(id: CancelID.timer)
+        return .merge(.cancel(id: CancelID.timer), .cancel(id: CancelID.live))
 
       case let .loaded(feed):
         state.feed = feed
@@ -94,10 +115,92 @@ struct HomeFeature {
         guard let song = state.feed?.chart.first(where: { $0.id == id }) else { return .none }
         return .send(.delegate(.songMenu(song.track)))
 
-      // 원본에 목적지가 없다(전체듣기 · 완성된 플리 전체듣기 · 배너) — 재생 · 화면이 생기면 잇는다
-      case .chartPlayAllTapped, .completedPlayAllTapped, .bannerTapped, .delegate:
+      // 원본에 목적지가 없다(전체듣기 · 완성된 플리 전체듣기 · 배너 · 친구) — 재생 · 화면이 생기면 잇는다
+      case .chartPlayAllTapped, .completedPlayAllTapped, .bannerTapped, .friendTapped, .delegate:
         return .none
+
+      default:
+        return self.participation(action, &state)
       }
+    }
+  }
+
+  /// 내 참여 · 사람 섹션(#102)
+  private func participation(_ action: Action, _ state: inout State) -> Effect<Action> {
+    switch action {
+    case let .myRecommendationTapped(id):
+      guard let item = state.feed?.myRecommendations.first(where: { $0.id == id }) else { return .none }
+      return .send(.delegate(.showMyRecommendation(relayID: item.relayID)))
+
+    case let .votingRelayTapped(id):
+      return .send(.delegate(.showRelay(id)))
+
+    case let .liveSongTapped(id):
+      return .send(.delegate(.showSong(id)))
+
+    case .predictionOptionTapped, .predictionLoaded, .predictionFailed:
+      return self.prediction(action, &state)
+
+    case .liveTicked, .liveListeningLoaded:
+      return self.liveListening(action, &state)
+
+    case .toastDismissed:
+      state.toast = nil
+      return .none
+
+    default:
+      return .none
+    }
+  }
+
+  /// 지금 위플리에서 듣는 중 — 5초마다 서버 수를 다시 받는다
+  private func liveListening(_ action: Action, _ state: inout State) -> Effect<Action> {
+    switch action {
+    case .liveTicked:
+      guard state.feed != nil else { return .none }
+      return .run { send in
+        if let live = try? await self.client.fetchLiveListening() {
+          await send(.liveListeningLoaded(live))
+        }
+      }
+
+    case let .liveListeningLoaded(live):
+      state.feed?.liveListening = live
+      return .none
+
+    default:
+      return .none
+    }
+  }
+
+  /// 1위 예측 — 한 번만 고른다(8d). 먼저 반영하고 실패하면 되돌린다(DEC-004)
+  private func prediction(_ action: Action, _ state: inout State) -> Effect<Action> {
+    switch action {
+    case let .predictionOptionTapped(id):
+      // 한 번만 고른다 — 바꿀 수 없다(8d)
+      guard let prediction = state.feed?.prediction, prediction.pickedID == nil else { return .none }
+      state.feed?.prediction?.pickedID = id
+      let relayID = prediction.relayID
+      return .run { send in
+        do {
+          try await send(.predictionLoaded(self.client.predict(relayID, id)))
+        } catch {
+          await send(.predictionFailed)
+        }
+      }
+
+    case let .predictionLoaded(options):
+      state.feed?.prediction?.options = options
+      return .none
+
+    case .predictionFailed:
+      state.feed?.prediction?.pickedID = nil
+      // 원본에 없는 문구 — 디자인 확인 필요
+      state.toast = "예측을 저장하지 못했어요. 다시 골라 주세요"
+      return .none
+
+    default:
+      return .none
     }
   }
 
@@ -119,4 +222,6 @@ enum HomeDelegate: Equatable {
   case showSong(String)
   /// TOP 100 ··· → 곡 메뉴 시트(UI-1b)
   case songMenu(ComposeTrack)
+  /// 내 추천곡 → 내 추천곡 실시간 순위(UI-8a)
+  case showMyRecommendation(relayID: String)
 }

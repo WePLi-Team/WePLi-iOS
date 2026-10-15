@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 // REQ-020 · UI-12a(DEC-008) — 통합 홈. 히어로(위로 상태 바까지) 위에 머리가 얹히고, 아래로 섹션이 36 간격으로 이어진다.
-// 1단계: 히어로 · TOP 100 · 배너(#101). 나머지 섹션은 #102 · #103.
+// 1단계: 히어로 · TOP 100 · 배너(#101) · 2단계: 내 참여 · 사람(#102). 나머지 섹션은 #103.
 
 struct HomeView: View {
   @Perception.Bindable var store: StoreOf<HomeFeature>
@@ -31,6 +31,7 @@ struct HomeView: View {
                 onPlayAll: { self.store.send(.chartPlayAllTapped) }
               )
               HomeBannerSection(banners: feed.banners) { self.store.send(.bannerTapped($0)) }
+              self.participation(feed)
             }
             .padding(.top, 24)
             .padding(.bottom, 120)
@@ -53,8 +54,35 @@ struct HomeView: View {
       .ignoresSafeArea(edges: .top)
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
+      .wepliToast(Binding(get: { self.store.toast }, set: {
+        if $0 == nil {
+          self.store.send(.toastDismissed)
+        }
+      }))
       .onAppear { self.store.send(.onAppear) }
       .onDisappear { self.store.send(.onDisappear) }
+    }
+  }
+
+  /// 내 추천곡 → 투표 중 릴레이 → 1위 예측 → 친구 → 지금 위플리에서 듣는 중
+  @ViewBuilder
+  private func participation(_ feed: HomeFeed) -> some View {
+    if !feed.myRecommendations.isEmpty {
+      HomeMyRecommendationsSection(items: feed.myRecommendations) { self.store.send(.myRecommendationTapped($0)) }
+    }
+    if !feed.votingRelays.isEmpty {
+      HomeVotingRelaysSection(relays: feed.votingRelays, now: self.store.now) {
+        self.store.send(.votingRelayTapped($0))
+      }
+    }
+    if let prediction = feed.prediction {
+      HomePredictionSection(prediction: prediction) { self.store.send(.predictionOptionTapped($0)) }
+    }
+    if !feed.friends.isEmpty {
+      HomeFriendsSection(friends: feed.friends) { self.store.send(.friendTapped($0)) }
+    }
+    if !feed.liveListening.songs.isEmpty {
+      HomeLiveListeningSection(live: feed.liveListening) { self.store.send(.liveSongTapped($0)) }
     }
   }
 }
