@@ -96,10 +96,11 @@ struct PostDetailBody: View {
         Button(action: self.onPlay) {
           Label("전체 재생", systemImage: "play.fill")
             .wepliFont(.subheadline, weight: .semibold)
-            .foregroundStyle(Color.black)
+            .foregroundStyle(WePLiColor.textOnCTA)
             .frame(maxWidth: .infinity)
             .frame(height: 44)
-            .background(WePLiColor.textPrimary, in: Capsule())
+            // 흰 바탕 버튼 대신 CTA 그라디언트(디자인 원칙 · DEC-009)
+            .background(Capsule().fill(WePLiGradient.cta))
         }
         .buttonStyle(.plain)
         .padding(.vertical, 10)

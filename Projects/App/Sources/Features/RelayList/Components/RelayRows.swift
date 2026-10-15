@@ -48,9 +48,10 @@ struct RelayFeaturedCard: View {
 
       VStack(alignment: .leading, spacing: 6) {
         if let endsAt = self.relay.endsAt {
+          // 분홍은 좋아요 · 급상승에만(디자인 원칙 · DEC-009)
           Text("곧 마감 · \(RemainingTimeFormatter.string(from: self.now, to: endsAt)) 남음")
             .wepliFont(.caption, weight: .semibold)
-            .foregroundStyle(WePLiColor.highlight)
+            .foregroundStyle(WePLiColor.accent)
             .monospacedDigit()
         }
         Text(self.relay.title)
