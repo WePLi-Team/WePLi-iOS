@@ -32,32 +32,8 @@ struct MainTabView: View {
       }
       .ignoresSafeArea(.keyboard)
       .background(WePLiColor.background.ignoresSafeArea())
-      .sheet(item: self.$store.scope(state: \.compose, action: \.compose)) { composeStore in
-        ComposePostView(store: composeStore)
-          .wepliSheetStyle(detents: [.large])
-      }
-      .sheet(item: self.$store.scope(state: \.createRelay, action: \.createRelay)) { createStore in
-        CreateRelayView(store: createStore)
-          .wepliSheetStyle(detents: [.large])
-      }
-      .sheet(item: self.$store.scope(state: \.exportFlow, action: \.exportFlow)) { exportStore in
-        ExportFlowView(store: exportStore)
-          .wepliSheetStyle(detents: [.large])
-      }
-      .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
-        SongPickerView(store: pickerStore)
-          .wepliSheetStyle(detents: [.large])
-      }
-      .sheet(item: self.$store.scope(state: \.songMenu, action: \.songMenu)) { menuStore in
-        SongMenuView(store: menuStore)
-          .wepliSheetStyle(detents: [.height(SongMenuView.height)])
-      }
-      .fullScreenCover(item: self.$store.scope(state: \.businessCard, action: \.businessCard)) { cardStore in
-        BusinessCardFlowView(store: cardStore)
-      }
-      .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
-        SongShareView(store: shareStore)
-      }
+      .modifier(MainTabSheets(store: self.store))
+      .modifier(MainTabCovers(store: self.store))
     }
   }
 }
@@ -109,6 +85,7 @@ extension MainTabView {
     case let .notifications(store): NotificationsView(store: store)
     case let .myRecommendation(store): MyRecommendationView(store: store)
     case let .completedPlaylist(store): CompletedPlaylistView(store: store)
+    case let .exportedPlaylist(store): ExportedPlaylistView(store: store)
     case let .editProfile(store): EditProfileView(store: store)
     case let .library(store): LibraryView(store: store)
     case let .notificationSettings(store): NotificationSettingsView(store: store)
@@ -141,4 +118,56 @@ extension MainTabView {
 #Preview("iOS 16") {
   MainTabView(store: Store(initialState: MainTabFeature.State()) { MainTabFeature() })
     .environment(\.wepliChrome, .material)
+}
+
+/// 탭 위에 뜨는 시트 — Xcode 16.2가 한 식으로는 타입을 제때 못 맞춰 body에서 나눈다
+private struct MainTabSheets: ViewModifier {
+  @Perception.Bindable var store: StoreOf<MainTabFeature>
+
+  func body(content: Content) -> some View {
+    WithPerceptionTracking {
+      content
+        .sheet(item: self.$store.scope(state: \.compose, action: \.compose)) { composeStore in
+          ComposePostView(store: composeStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.createRelay, action: \.createRelay)) { createStore in
+          CreateRelayView(store: createStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.exportFlow, action: \.exportFlow)) { exportStore in
+          ExportFlowView(store: exportStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.liveExport, action: \.liveExport)) { liveStore in
+          LiveExportView(store: liveStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
+          SongPickerView(store: pickerStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.songMenu, action: \.songMenu)) { menuStore in
+          SongMenuView(store: menuStore)
+            .wepliSheetStyle(detents: [.height(SongMenuView.height)])
+        }
+    }
+  }
+}
+
+/// 탭 위에 뜨는 전체 화면
+private struct MainTabCovers: ViewModifier {
+  @Perception.Bindable var store: StoreOf<MainTabFeature>
+
+  func body(content: Content) -> some View {
+    WithPerceptionTracking {
+      content
+        .fullScreenCover(item: self.$store.scope(state: \.businessCard, action: \.businessCard)) { cardStore in
+          BusinessCardFlowView(store: cardStore)
+        }
+        .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
+          SongShareView(store: shareStore)
+        }
+    }
+  }
 }

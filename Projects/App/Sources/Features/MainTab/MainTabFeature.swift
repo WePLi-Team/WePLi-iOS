@@ -70,6 +70,9 @@ struct MainTabFeature {
     @Presents var createRelay: CreateRelayFeature.State?
     /// 내 음악 앱으로 내보내기(UI-14c–14o) — 시트
     @Presents var exportFlow: ExportFlowFeature.State?
+    /// 진행 중 릴레이 먼저 담기(UI-14l) — 시트와 시트를 연 릴레이 상세
+    @Presents var liveExport: LiveExportFeature.State?
+    var liveExportSource: PathSource?
     var songMenuSource: PathSource?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
@@ -92,6 +95,7 @@ struct MainTabFeature {
     case worldCup(SongWorldCupFeature)
     case myRecommendation(MyRecommendationFeature)
     case completedPlaylist(CompletedPlaylistFeature)
+    case exportedPlaylist(ExportedPlaylistFeature)
     case notifications(NotificationsFeature)
     case postDetail(PostDetailFeature)
     case editProfile(EditProfileFeature)
@@ -120,6 +124,7 @@ struct MainTabFeature {
     case businessCard(PresentationAction<BusinessCardFeature.Action>)
     case createRelay(PresentationAction<CreateRelayFeature.Action>)
     case exportFlow(PresentationAction<ExportFlowFeature.Action>)
+    case liveExport(PresentationAction<LiveExportFeature.Action>)
     /// 시트가 닫히는 동안 다음 화면을 띄우면 무시되므로 잠시 뒤에 띄운다
     case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
@@ -148,6 +153,9 @@ struct MainTabFeature {
       }
       .ifLet(\.$exportFlow, action: \.exportFlow) {
         ExportFlowFeature()
+      }
+      .ifLet(\.$liveExport, action: \.liveExport) {
+        LiveExportFeature()
       }
   }
 

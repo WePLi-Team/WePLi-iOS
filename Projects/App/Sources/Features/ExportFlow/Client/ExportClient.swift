@@ -17,6 +17,15 @@ struct ExportClient {
   /// 플레이리스트를 만들거나(새로) 이미 담은 플리에 곡을 이어 담는다 · 최종 순위로 맞춘다. 플리 id를 돌려준다.
   /// 중간에 멈추면 `ExportError`로 담긴 곡 수를 알린다(14n).
   var addSongs: @Sendable (_ service: ExportService, _ target: ExportTarget, _ songIDs: [String]) async throws -> String
+  /// 진행 중 릴레이를 지금 TOP으로 먼저 담는다(14l) — 자동 반영을 켜면 마감까지 순위 변동을 반영한다
+  var exportLive: @Sendable (
+    _ relayID: String,
+    _ service: ExportService,
+    _ songIDs: [String],
+    _ autoSync: Bool
+  ) async throws -> ExportedPlaylist
+  var fetchExported: @Sendable (_ playlistID: String) async throws -> ExportedPlaylist
+  var setSync: @Sendable (_ playlistID: String, _ isOn: Bool) async throws -> Void
   var setAutoExport: @Sendable (_ service: ExportService, _ isOn: Bool) async -> Void
   var copy: @Sendable (_ text: String) async -> Void
 }
@@ -52,6 +61,31 @@ extension ExportClient: DependencyKey {
       case let .append(id), let .replace(id): id
       }
     },
+    exportLive: { relayID, service, _, autoSync in
+      @Dependency(\.date.now)
+      var now
+      var playlist = ExportedPlaylist.mock(
+        id: "live-\(relayID)",
+        relayID: relayID,
+        title: "손님들이 물어보는 카페 BGM",
+        service: service,
+        endsAt: now.addingTimeInterval(2 * 86400 + 4 * 3600)
+      )
+      playlist.isSyncOn = autoSync
+      return playlist
+    },
+    fetchExported: { id in
+      @Dependency(\.date.now)
+      var now
+      return .mock(
+        id: id,
+        relayID: "cafe-bgm",
+        title: "손님들이 물어보는 카페 BGM",
+        service: .appleMusic,
+        endsAt: now.addingTimeInterval(2 * 86400 + 4 * 3600)
+      )
+    },
+    setSync: { _, _ in },
     setAutoExport: { _, _ in },
     copy: { text in await MainActor.run { UIPasteboard.general.string = text } }
   )
@@ -64,6 +98,21 @@ extension ExportClient: DependencyKey {
     match: unimplemented("ExportClient.match", placeholder: AsyncStream { $0.finish() }),
     hasSubscription: unimplemented("ExportClient.hasSubscription", placeholder: true),
     addSongs: unimplemented("ExportClient.addSongs", placeholder: ""),
+    exportLive: unimplemented("ExportClient.exportLive", placeholder: .mock(
+      id: "",
+      relayID: "",
+      title: "",
+      service: .appleMusic,
+      endsAt: nil
+    )),
+    fetchExported: unimplemented("ExportClient.fetchExported", placeholder: .mock(
+      id: "",
+      relayID: "",
+      title: "",
+      service: .appleMusic,
+      endsAt: nil
+    )),
+    setSync: unimplemented("ExportClient.setSync"),
     setAutoExport: unimplemented("ExportClient.setAutoExport"),
     copy: unimplemented("ExportClient.copy")
   )

@@ -31,7 +31,7 @@ struct ContentNavigation: Reducer {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
          .myRecommendation(.delegate(.dismiss)),
-         .completedPlaylist(.delegate(.dismiss)),
+         .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
          .notificationSettings(.delegate(.dismiss)), .myPlaylist(.delegate(.dismiss)),
@@ -143,6 +143,8 @@ struct ContentNavigation: Reducer {
       // 이미 담은 플리면 기존 플리를 맞출지 새로 만들지 먼저 묻는다(14n)
       guard let playlist = state[stack: source.tab][id: source.id, case: \.completedPlaylist]?.playlist else { break }
       state.exportFlow = ExportFlowFeature.State(playlist)
+    case .relayDetail(.delegate(.export)):
+      self.exportRelay(source, &state)
     case .postDetail(.delegate(.pickReplySong)):
       state.replySongTarget = source
       state.replySongPicker = SongPickerFeature.State()
@@ -150,5 +152,25 @@ struct ContentNavigation: Reducer {
       break
     }
     return .none
+  }
+
+  /// 릴레이 상세 「내 음악 앱으로」 — 완성됐으면 내보내기(14c), 진행 중이면 지금 순위로 먼저 담기(14l)
+  private func exportRelay(_ source: PathSource, _ state: inout State) {
+    guard let relay = state[stack: source.tab][id: source.id, case: \.relayDetail],
+          let detail = relay.detail
+    else { return }
+    let title = detail.title.replacingOccurrences(of: "\n", with: " ")
+    let songs = detail.ranking.map { ExportSong(id: $0.id, title: $0.title, artist: $0.artist, recommender: "") }
+    if let endsAt = detail.endsAt, relay.displayState != .completed {
+      state.liveExportSource = source
+      state.liveExport = LiveExportFeature.State(relayID: detail.id, title: title, endsAt: endsAt, songs: songs)
+    } else {
+      state.exportFlow = ExportFlowFeature.State(
+        relayID: detail.id,
+        title: title,
+        recommenderCount: detail.participantCount,
+        songs: songs
+      )
+    }
   }
 }
