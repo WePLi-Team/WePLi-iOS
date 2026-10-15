@@ -118,8 +118,11 @@ struct HomeFeature {
 
       case let .heroTapped(id):
         // 완성된 릴레이는 완성 플리 기준 화면(UI-14b)으로
-        let isCompleted = state.feed?.heroes.first { $0.id == id }?.isCompleted ?? false
-        return .send(.delegate(isCompleted ? .showCompletedPlaylist(id) : .showRelay(id)))
+        let hero = state.feed?.heroes.first { $0.id == id }
+        if hero?.isCompleted == true {
+          return .send(.delegate(.showCompletedPlaylist(id)))
+        }
+        return .send(.delegate(hero?.isBaton == true ? .showBaton(id) : .showRelay(id)))
 
       case let .completedPlayAllTapped(id):
         return .send(.delegate(.showCompletedPlaylist(id)))
@@ -289,6 +292,8 @@ enum HomeDelegate: Equatable {
   case showCompletedPlaylist(String)
   /// 1위 예측(UI-8d)
   case showPrediction(relayID: String)
+  /// 바통 릴레이(UI-8c)
+  case showBaton(String)
   case switchTab(MainTabFeature.Tab)
 }
 

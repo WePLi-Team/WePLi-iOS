@@ -16,12 +16,16 @@ struct TabRootNavigation: Reducer {
 
       case let .relay(.delegate(.showRelay(id))):
         // 완성된 릴레이는 완성 플리 기준 화면(UI-14b 「8e·3c·4a의 완성된 플리가 모두 여기로」)
-        let isCompleted = state.relay.relays.first { $0.id == id }.map { !$0.isLive } ?? false
-        state.relayPath.append(
-          isCompleted
-            ? .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
-            : .relayDetail(RelayDetailFeature.State(relayID: id))
-        )
+        let relay = state.relay.relays.first { $0.id == id }
+        let isCompleted = relay.map { !$0.isLive } ?? false
+        if isCompleted {
+          state.relayPath.append(.completedPlaylist(CompletedPlaylistFeature.State(relayID: id)))
+        } else if relay?.voteFormat == .baton {
+          // 진행 중 바통 릴레이는 바통 화면(UI-8c) — 순위 · 투표가 없다
+          state.relayPath.append(.batonRelay(BatonRelayFeature.State(relayID: id)))
+        } else {
+          state.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
+        }
         return .none
 
       case .community(.delegate(.showNotifications)):
@@ -83,19 +87,27 @@ struct TabRootNavigation: Reducer {
     return .none
   }
 
-  /// 홈에서 push하는 화면
+  /// 홈에서 push하는 화면 — 릴레이 쪽
   private static func homeScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
     switch delegate {
-    case .showNotifications: .notifications(NotificationsFeature.State())
     case let .showRelay(id): .relayDetail(RelayDetailFeature.State(relayID: id))
-    case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
     case let .showMyRecommendation(relayID): .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
+    case let .showCompletedPlaylist(id): .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
+    case let .showPrediction(relayID): .topPrediction(TopPredictionFeature.State(relayID: relayID))
+    case let .showBaton(id): .batonRelay(BatonRelayFeature.State(relayID: id))
+    default: homeContentScreen(delegate)
+    }
+  }
+
+  /// 홈에서 push하는 화면 — 알림 · 곡 · 아티스트 · 게시글 · 플리
+  private static func homeContentScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
+    switch delegate {
+    case .showNotifications: .notifications(NotificationsFeature.State())
+    case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
     case let .showArtist(name): .artist(ArtistFeature.State(artistID: name))
     case let .showPost(id): .postDetail(PostDetailFeature.State(postID: id))
     case let .showPlaylist(id): .playlistDetail(PlaylistDetailFeature.State(playlistID: id))
-    case let .showCompletedPlaylist(id): .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
-    case let .showPrediction(relayID): .topPrediction(TopPredictionFeature.State(relayID: relayID))
-    case .switchTab, .songMenu: nil
+    default: nil
     }
   }
 

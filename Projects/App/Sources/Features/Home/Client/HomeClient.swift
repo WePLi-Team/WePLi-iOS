@@ -164,7 +164,8 @@ extension HomeFeed {
         rankLabel: "방금 이어진 곡",
         song: "비의 랩소디",
         songMeta: "임재현",
-        status: .live(endsAt: now.addingTimeInterval(33410))
+        status: .live(endsAt: now.addingTimeInterval(33410)),
+        isBaton: true
       ),
       HomeHero(
         id: "wake-up",

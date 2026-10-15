@@ -21,6 +21,8 @@ struct HomeHero: Equatable, Identifiable, Sendable {
   /// 「Dua Lipa · Album」
   let songMeta: String
   let status: Status
+  /// 바통 릴레이 — 누르면 바통 화면(UI-8c)
+  var isBaton = false
 
   var isCompleted: Bool {
     self.status == .completed
