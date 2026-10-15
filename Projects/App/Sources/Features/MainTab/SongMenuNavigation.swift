@@ -52,32 +52,33 @@ struct SongMenuNavigation: Reducer {
     return .none
   }
 
+  /// 곡 상세에서 열었으면 그 탭, 아니면(홈 TOP 100 ···) 지금 탭에 다음 화면을 연다
   private func route(_ item: SongMenuItem, _ state: inout State) -> Effect<Action> {
-    guard let source = state.songMenuSource,
-          let song = state[stack: source.tab][id: source.id, case: \.songDetail]?.song
-    else { return .none }
+    guard let menu = state.songMenu else { return .none }
+    let source = state.songMenuSource
+    let tab = source?.tab ?? state.selectedTab
+    let song = ComposeTrack(id: menu.songID, title: menu.title, artist: menu.artist)
     switch item {
     case .artist:
       self.close(&state)
-      state[stack: source.tab].append(.artist(ArtistFeature.State(artistID: song.artist)))
+      state[stack: tab].append(.artist(ArtistFeature.State(artistID: song.artist)))
       return .none
 
     case .instagram, .screenshot:
-      let card = SongNavigation().card(for: song, in: state)
+      let card = SongNavigation().card(songID: song.id, title: song.title, artist: song.artist, in: state)
       self.close(&state)
       return SongNavigation().presentAfterSheet(.share(card))
 
     case .shareAsPost:
       self.close(&state)
-      return SongNavigation().presentAfterSheet(.compose(ComposeTrack(
-        id: song.id,
-        title: song.title,
-        artist: song.artist
-      )))
+      return SongNavigation().presentAfterSheet(.compose(song))
 
     case .info:
-      // 이미 곡 상세에서 연 시트라 닫기만 한다
+      // 곡 상세에서 연 시트면 닫기만, 아니면 곡 상세를 연다
       self.close(&state)
+      if source == nil {
+        state[stack: tab].append(.songDetail(SongDetailFeature.State(songID: song.id)))
+      }
       return .none
 
     // 원본에 목적지 화면이 없다(가사 · 플리 추가) — 화면이 생기면 잇는다. 링크는 시트가 처리한다.
