@@ -40,6 +40,10 @@ struct MainTabView: View {
         CreateRelayView(store: createStore)
           .wepliSheetStyle(detents: [.large])
       }
+      .sheet(item: self.$store.scope(state: \.exportFlow, action: \.exportFlow)) { exportStore in
+        ExportFlowView(store: exportStore)
+          .wepliSheetStyle(detents: [.large])
+      }
       .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])

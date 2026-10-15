@@ -473,3 +473,26 @@ final class SharedPathNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.searchPath.isEmpty)
   }
 }
+
+extension MainTabFeatureTests {
+  func testCompletedPlaylistExport_presentsExportFlowAndCloses() async {
+    var initial = MainTabFeature.State()
+    var completed = CompletedPlaylistFeature.State(relayID: "summer")
+    completed.playlist = .mock(id: "summer")
+    initial.homePath.append(.completedPlaylist(completed))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    let id = initial.homePath.ids[0]
+
+    await store.send(.homePath(.element(id: id, action: .completedPlaylist(.exportTapped))))
+    await store.receive(.homePath(.element(id: id, action: .completedPlaylist(.delegate(.export(relayID: "summer"))))))
+    XCTAssertEqual(store.state.exportFlow?.title, "졸릴 때 잠 깨는 청량맛 노동요")
+    XCTAssertEqual(store.state.exportFlow?.songs.count, 6)
+
+    await store.send(.exportFlow(.presented(.closeTapped)))
+    await store.receive(.exportFlow(.presented(.delegate(.dismiss))))
+    XCTAssertNil(store.state.exportFlow)
+  }
+}
