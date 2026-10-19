@@ -7,6 +7,10 @@ struct TopPredictionClient {
   var fetch: @Sendable (_ relayID: String) async throws -> TopPrediction
   /// 예측을 확정한다 — 서버가 확정한 결과를 돌려준다
   var predict: @Sendable (_ relayID: String, _ optionID: TopPrediction.Option.ID) async throws -> TopPrediction
+  /// 내 칭호(DEC-021)
+  var titles: @Sendable () async throws -> TitleBoard
+  /// 대표 칭호를 바꾼다 — 프로필 · 명함에 붙는다
+  var setRepresentative: @Sendable (_ titleID: UserTitle.ID) async throws -> Void
 }
 
 extension TopPredictionClient: DependencyKey {
@@ -16,14 +20,18 @@ extension TopPredictionClient: DependencyKey {
       var prediction = TopPrediction.mock(relayID: relayID)
       prediction.lockedID = optionID
       return prediction
-    }
+    },
+    titles: { .mock },
+    setRepresentative: { _ in }
   )
 
   static let previewValue = liveValue
 
   static let testValue = TopPredictionClient(
     fetch: unimplemented("TopPredictionClient.fetch", placeholder: .mock(relayID: "")),
-    predict: unimplemented("TopPredictionClient.predict", placeholder: .mock(relayID: ""))
+    predict: unimplemented("TopPredictionClient.predict", placeholder: .mock(relayID: "")),
+    titles: unimplemented("TopPredictionClient.titles", placeholder: .mock),
+    setRepresentative: unimplemented("TopPredictionClient.setRepresentative")
   )
 }
 

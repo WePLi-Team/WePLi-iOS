@@ -59,6 +59,31 @@ final class TopPredictionFeatureTests: XCTestCase {
       $0.toast = "예측하지 못했어요. 다시 시도해 주세요"
     }
   }
+
+  func testTitles_onlyEarnedBecomeRepresentativeAndRollBack() async {
+    struct Failure: Error {}
+    var state = self.loaded()
+    state.titles = .mock
+    let calls = LockIsolated(0)
+    let store = TestStore(initialState: state) { TopPredictionFeature() } withDependencies: {
+      $0.topPredictionClient.setRepresentative = { _ in
+        calls.withValue { $0 += 1 }
+        if calls.value == 2 {
+          throw Failure()
+        }
+      }
+    }
+    XCTAssertEqual(TitleBoard.mock.titles[2].conditionLine, "추천곡 역전 3회 · 2/3")
+    // 못 얻은 칭호 · 지금 대표는 고르지 않는다
+    await store.send(.titleTapped("comeback"))
+    await store.send(.titleTapped("curator"))
+    await store.send(.titleTapped("seer")) { $0.titles?.representativeID = "seer" }
+    await store.send(.titleTapped("host")) { $0.titles?.representativeID = "host" }
+    await store.receive(.representativeFailed(previous: "seer")) {
+      $0.titles?.representativeID = "seer"
+      $0.toast = "대표 칭호를 바꾸지 못했어요"
+    }
+  }
 }
 
 extension MainTabFeatureTests {
