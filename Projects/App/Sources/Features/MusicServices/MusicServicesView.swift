@@ -132,7 +132,8 @@ struct MusicServicesView: View {
       self.store.send(.defaultSelected(connection.service))
     } label: {
       HStack {
-        Text(connection.service.name).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
+        Text(connection.service.name).wepliFont(.body)
+          .foregroundStyle(isSelected ? WePLiColor.accent : WePLiColor.textPrimary)
         Spacer()
         if isSelected {
           ExportCheck(size: 20)

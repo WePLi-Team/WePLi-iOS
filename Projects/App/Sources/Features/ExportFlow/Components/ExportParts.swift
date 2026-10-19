@@ -77,11 +77,7 @@ struct ExportCheck: View {
   var size: CGFloat = 22
 
   var body: some View {
-    Image(systemName: "checkmark")
-      .font(.system(size: self.size * 0.7, weight: .bold))
-      .foregroundStyle(WePLiColor.accent)
-      .frame(width: self.size, height: self.size)
-      .accessibilityHidden(true)
+    WePLiSelectionCheck(isOn: true, size: self.size)
   }
 }
 

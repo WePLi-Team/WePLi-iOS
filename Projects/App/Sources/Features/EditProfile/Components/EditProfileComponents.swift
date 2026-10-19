@@ -49,26 +49,13 @@ struct PersonaList: View {
             VStack(alignment: .leading, spacing: 2) {
               Text(persona.name)
                 .wepliFont(.body, weight: .medium)
-                .foregroundStyle(WePLiColor.textPrimary)
+                .foregroundStyle(isOn ? WePLiColor.accent : WePLiColor.textPrimary)
               Text(persona.summary)
                 .wepliFont(.footnote, weight: .light)
                 .foregroundStyle(WePLiColor.textQuaternary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Group {
-              if isOn {
-                Image(systemName: "checkmark")
-                  .font(.system(size: 11, weight: .heavy))
-                  .foregroundStyle(WePLiColor.textOnCTA)
-                  .frame(width: 24, height: 24)
-                  .background(WePLiColor.accent, in: Circle())
-              } else {
-                Circle()
-                  .strokeBorder(Color.white.opacity(0.22), lineWidth: 1.5)
-                  .frame(width: 24, height: 24)
-              }
-            }
-            .accessibilityHidden(true)
+            WePLiSelectionCheck(isOn: isOn)
           }
           .padding(.horizontal, 16)
           .frame(height: 66)

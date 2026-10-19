@@ -118,17 +118,7 @@ struct BatonMyTurn: View {
           Text(pick.artist).wepliFont(.footnote, weight: .light).foregroundStyle(WePLiColor.textPrimary.opacity(0.7))
         }
         Spacer(minLength: 8)
-        // 미결정 — 고르기 표시(22pt 원)가 DEC-009 「라디오는 설정 화면만」에 걸리는지 확인 필요(8d와 같은 모양)
-        Circle()
-          .strokeBorder(Color.white.opacity(isSelected ? 0 : 0.22), lineWidth: 1.5)
-          .background(Circle().fill(isSelected ? WePLiColor.accent : .clear))
-          .overlay {
-            if isSelected {
-              Image(systemName: "checkmark").font(.system(size: 10, weight: .heavy))
-                .foregroundStyle(WePLiColor.textOnCTA)
-            }
-          }
-          .frame(width: 22, height: 22)
+        WePLiSelectionCheck(isOn: isSelected)
       }
       .frame(height: 56)
       .contentShape(Rectangle())

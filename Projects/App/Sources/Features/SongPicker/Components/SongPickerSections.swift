@@ -150,18 +150,7 @@ struct SongPickerResults: View {
           Text(track.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textQuaternary).lineLimit(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        Group {
-          if isOn {
-            Image(systemName: "checkmark")
-              .font(.system(size: 11, weight: .heavy))
-              .foregroundStyle(WePLiColor.textOnCTA)
-              .frame(width: 24, height: 24)
-              .background(WePLiColor.accent, in: Circle())
-          } else {
-            Circle().strokeBorder(Color.white.opacity(0.28), lineWidth: 1.5).frame(width: 24, height: 24)
-          }
-        }
-        .accessibilityHidden(true)
+        WePLiSelectionCheck(isOn: isOn)
       }
       .padding(.horizontal, 20)
       .frame(height: 64)

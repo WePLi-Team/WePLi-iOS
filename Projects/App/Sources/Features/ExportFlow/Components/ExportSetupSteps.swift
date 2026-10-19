@@ -39,7 +39,8 @@ struct ExportServiceStep: View {
       HStack(spacing: 14) {
         ExportServiceIcon(service: service)
         VStack(alignment: .leading, spacing: 2) {
-          Text(service.name).wepliFont(.callout, weight: .medium).foregroundStyle(WePLiColor.textPrimary)
+          Text(service.name).wepliFont(.callout, weight: .medium)
+            .foregroundStyle(isSelected ? WePLiColor.accent : WePLiColor.textPrimary)
           Text(self.detail(service))
             .wepliFont(.caption, weight: .light)
             .foregroundStyle(self.isConnected(service) ? WePLiColor.accent : WePLiColor.textTertiary)
