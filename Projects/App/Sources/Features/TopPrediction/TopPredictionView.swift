@@ -129,17 +129,7 @@ private struct TopPredictionRow: View {
           }
           .frame(height: 3)
         }
-        // 미결정 — 원본의 고르기 표시(22pt 원)가 DEC-009 「라디오는 설정 화면만」에 걸리는지 확인 필요
-        Circle()
-          .strokeBorder(Color.white.opacity(self.isSelected ? 0 : 0.22), lineWidth: 1.5)
-          .background(Circle().fill(self.isSelected ? WePLiColor.accent : .clear))
-          .overlay {
-            if self.isSelected {
-              Image(systemName: "checkmark").font(.system(size: 10, weight: .heavy))
-                .foregroundStyle(WePLiColor.textOnCTA)
-            }
-          }
-          .frame(width: 22, height: 22)
+        WePLiSelectionCheck(isOn: self.isSelected)
       }
       .padding(.horizontal, 20)
       .frame(height: 68)

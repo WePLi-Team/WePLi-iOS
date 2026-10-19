@@ -178,17 +178,7 @@ struct HomePredictionSection: View {
   }
 
   private func indicator(isSelected: Bool) -> some View {
-    ZStack {
-      if isSelected {
-        Circle().fill(WePLiColor.accent)
-        Image(systemName: "checkmark")
-          .font(.system(size: 10, weight: .heavy))
-          .foregroundStyle(WePLiColor.textOnCTA)
-      } else {
-        Circle().strokeBorder(Color.white.opacity(0.22), lineWidth: 1.5)
-      }
-    }
-    .frame(width: 22, height: 22)
+    WePLiSelectionCheck(isOn: isSelected)
   }
 }
 
