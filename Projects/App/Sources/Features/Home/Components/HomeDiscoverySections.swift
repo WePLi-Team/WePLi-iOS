@@ -33,11 +33,13 @@ struct HomeNewUserPrompt: View {
 /// 오늘의 플리 — 300×140 카드(흐린 배경 + 검정 55%) · 아트 92 · 「#가수」 · 제목 3줄
 struct HomeTodayPicksSection: View {
   let picks: [HomeTodayPick]
+  /// 머리 → 오늘의 한 곡(UI-6c · DEC-012)
+  let onOpen: () -> Void
   let onTap: (HomeTodayPick.ID) -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 14) {
-      HomeSectionHeader(title: "오늘의 플리", subtitle: "매일 아침 위플리가 고른 곡이에요")
+      HomeSectionHeader(title: "오늘의 플리", subtitle: "매일 아침 위플리가 고른 곡이에요", onTap: self.onOpen)
       ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 12) {
           ForEach(self.picks) { pick in

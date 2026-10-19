@@ -40,6 +40,7 @@ struct ContentNavigation: Reducer {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
          .batonRelay(.delegate(.dismiss)), .liveTrend(.delegate(.dismiss)),
+         .dailySong(.delegate(.dismiss)),
          .myRecommendation(.delegate(.dismiss)), .topPrediction(.delegate(.dismiss)),
          .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
