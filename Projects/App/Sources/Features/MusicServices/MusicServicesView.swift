@@ -17,8 +17,8 @@ struct MusicServicesView: View {
               }
             }
             self.section("기본으로 담을 곳") {
-              ForEach(settings.connections) { connection in
-                self.defaultRow(connection, isSelected: settings.defaultService == connection.service)
+              ForEach(settings.destinations) { connection in
+                self.defaultRow(connection, isSelected: settings.defaultService == connection.service.exportService)
               }
             }
             self.autoExport(settings.autoExport)
@@ -92,7 +92,7 @@ struct MusicServicesView: View {
 
   private func connectionRow(_ connection: MusicServiceConnection, isLast: Bool) -> some View {
     HStack(spacing: 12) {
-      ExportServiceIcon(service: connection.service, size: 38)
+      MusicConnectionIcon(service: connection.service)
       VStack(alignment: .leading, spacing: 2) {
         Text(connection.service.name).wepliFont(.body, weight: .medium).foregroundStyle(WePLiColor.textPrimary)
         Text(connection.status).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
@@ -129,7 +129,9 @@ struct MusicServicesView: View {
 
   private func defaultRow(_ connection: MusicServiceConnection, isSelected: Bool) -> some View {
     Button {
-      self.store.send(.defaultSelected(connection.service))
+      if let service = connection.service.exportService {
+        self.store.send(.defaultSelected(service))
+      }
     } label: {
       HStack {
         Text(connection.service.name).wepliFont(.body)
@@ -155,7 +157,9 @@ struct MusicServicesView: View {
     Toggle(isOn: Binding(get: { isOn }, set: { self.store.send(.autoExportToggled($0)) })) {
       VStack(alignment: .leading, spacing: 2) {
         Text("완성되면 자동으로 담기").wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
-        Text("곡을 추천하거나 투표한 릴레이만").wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
+        Text("곡을 추천하거나 투표한 릴레이가 끝나면 바로 담아요")
+          .wepliFont(.caption)
+          .foregroundStyle(WePLiColor.textQuaternary)
       }
     }
     .tint(WePLiColor.accent)
@@ -195,5 +199,26 @@ struct MusicServicesView: View {
     MusicServicesView(store: Store(initialState: MusicServicesFeature.State()) {
       MusicServicesFeature()
     })
+  }
+}
+
+/// 서비스 아이콘 38 — 로고 에셋이 붙기 전까지 자리 표시(Last.fm은 지금 듣는 중 표시)
+private struct MusicConnectionIcon: View {
+  let service: MusicConnectionService
+
+  var body: some View {
+    if let exportService = self.service.exportService {
+      ExportServiceIcon(service: exportService, size: 38)
+    } else {
+      RoundedRectangle(cornerRadius: 38 * 0.25)
+        .fill(WePLiColor.surface4)
+        .frame(width: 38, height: 38)
+        .overlay {
+          Image(systemName: "dot.radiowaves.left.and.right")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(WePLiColor.textMuted)
+        }
+        .accessibilityHidden(true)
+    }
   }
 }

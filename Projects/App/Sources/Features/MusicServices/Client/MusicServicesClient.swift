@@ -2,14 +2,13 @@ import ComposableArchitecture
 import Foundation
 
 // REQ-050 · DEC-004 — 백엔드가 정해지기 전까지 원본(UI-11b) 예시를 돌려주는 목업이다.
-// 미결정 — 실제 연결은 MusicKit 권한(14e) · Spotify · Google 로그인(14g)을 쓴다.
+// 미결정 — 실제 연결은 MusicKit 권한(14e) · Spotify · Google 로그인(14g) · Last.fm 로그인을 쓴다.
 
 struct MusicServicesClient {
   var fetch: @Sendable () async throws -> MusicServiceSettings
-  /// 연결하면 계정 이름 같은 설명을 돌려준다
-  var connect: @Sendable (_ service: ExportService) async throws -> String?
+  var connect: @Sendable (_ service: MusicConnectionService) async throws -> Void
   /// 끊어도 이미 만든 플리는 남고 자동 반영만 멈춘다(11b 노트)
-  var disconnect: @Sendable (_ service: ExportService) async throws -> Void
+  var disconnect: @Sendable (_ service: MusicConnectionService) async throws -> Void
   var setDefault: @Sendable (_ service: ExportService) async throws -> Void
   var setAutoExport: @Sendable (_ isOn: Bool) async throws -> Void
 }
@@ -17,7 +16,7 @@ struct MusicServicesClient {
 extension MusicServicesClient: DependencyKey {
   static let liveValue = MusicServicesClient(
     fetch: { .mock },
-    connect: { _ in nil },
+    connect: { _ in },
     disconnect: { _ in },
     setDefault: { _ in },
     setAutoExport: { _ in }
@@ -27,7 +26,7 @@ extension MusicServicesClient: DependencyKey {
 
   static let testValue = MusicServicesClient(
     fetch: unimplemented("MusicServicesClient.fetch", placeholder: .mock),
-    connect: unimplemented("MusicServicesClient.connect", placeholder: nil),
+    connect: unimplemented("MusicServicesClient.connect"),
     disconnect: unimplemented("MusicServicesClient.disconnect"),
     setDefault: unimplemented("MusicServicesClient.setDefault"),
     setAutoExport: unimplemented("MusicServicesClient.setAutoExport")
@@ -45,9 +44,10 @@ extension MusicServiceSettings {
   /// 원본(UI-11b) 예시
   static let mock = MusicServiceSettings(
     connections: [
-      MusicServiceConnection(service: .appleMusic, isConnected: true, detail: "iCloud 보관함"),
-      MusicServiceConnection(service: .spotify, isConnected: true, detail: "dongdong0915"),
+      MusicServiceConnection(service: .appleMusic, isConnected: true),
+      MusicServiceConnection(service: .spotify, isConnected: true),
       MusicServiceConnection(service: .youtubeMusic, isConnected: false),
+      MusicServiceConnection(service: .lastFM, isConnected: false),
     ],
     defaultService: .appleMusic,
     autoExport: true,
