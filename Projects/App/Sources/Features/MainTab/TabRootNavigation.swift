@@ -113,6 +113,7 @@ struct TabRootNavigation: Reducer {
     switch delegate {
     case .showNotifications: .notifications(NotificationsFeature.State())
     case .showLiveTrend: .liveTrend(LiveTrendFeature.State())
+    case .showDailySong: .dailySong(DailySongFeature.State())
     case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
     case let .showArtist(name): .artist(ArtistFeature.State(artistID: name))
     case let .showPost(id): .postDetail(PostDetailFeature.State(postID: id))

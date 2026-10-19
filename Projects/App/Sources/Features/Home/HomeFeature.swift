@@ -44,6 +44,8 @@ struct HomeFeature {
     case liveSongTapped(HomeLiveListening.Song.ID)
     /// 「지금 위플리에서 듣는 중」 머리 → 지금 위플리(UI-13f)
     case liveHeaderTapped
+    /// 「오늘의 플리」 머리 → 오늘의 한 곡(UI-6c · DEC-012)
+    case todayHeaderTapped
     case friendTapped(HomeFriendListening.ID)
     case toastDismissed
     case todayPickTapped(HomeTodayPick.ID)
@@ -149,11 +151,13 @@ struct HomeFeature {
     }
   }
 
-  /// 섹션 머리 → 지금 위플리(UI-13f) · 1위 예측(UI-8d)
+  /// 섹션 머리 → 지금 위플리(UI-13f) · 1위 예측(UI-8d) · 오늘의 한 곡(UI-6c)
   private func sectionHeader(_ action: Action, _ state: State) -> Effect<Action> {
     switch action {
     case .liveHeaderTapped:
       return .send(.delegate(.showLiveTrend))
+    case .todayHeaderTapped:
+      return .send(.delegate(.showDailySong))
     case .predictionHeaderTapped:
       guard let relayID = state.feed?.prediction?.relayID else { return .none }
       return .send(.delegate(.showPrediction(relayID: relayID)))
@@ -175,7 +179,7 @@ struct HomeFeature {
     case let .liveSongTapped(id):
       return .send(.delegate(.showSong(id)))
 
-    case .liveHeaderTapped, .predictionHeaderTapped:
+    case .liveHeaderTapped, .predictionHeaderTapped, .todayHeaderTapped:
       return self.sectionHeader(action, state)
 
     case .predictionOptionTapped, .predictionLoaded, .predictionFailed:
@@ -310,6 +314,8 @@ enum HomeDelegate: Equatable {
   case showBaton(String)
   /// 지금 위플리 · 전체 트렌드(UI-13f)
   case showLiveTrend
+  /// 오늘의 한 곡(UI-6c)
+  case showDailySong
   case switchTab(MainTabFeature.Tab)
 }
 
