@@ -120,6 +120,7 @@ struct MainTabFeature {
     case artist(ArtistFeature)
     case playlistDetail(PlaylistDetailFeature)
     case friendProfile(FriendProfileFeature)
+    case tasteMatch(TasteMatchFeature)
   }
 
   enum Action: Equatable {

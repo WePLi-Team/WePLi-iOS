@@ -83,7 +83,7 @@ extension MainTabView {
     }
   }
 
-  /// 탭 공용 push 화면 — 알림 · 내 정보 · 보관함 · 내 플리 · 친구 프로필
+  /// 탭 공용 push 화면 — 알림 · 내 정보 · 보관함 · 내 플리 · 친구 프로필 · 취향 궁합
   @ViewBuilder
   private static func accountDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
@@ -95,6 +95,7 @@ extension MainTabView {
     case let .library(store): LibraryView(store: store)
     case let .myPlaylist(store): MyPlaylistView(store: store)
     case let .friendProfile(store): FriendProfileView(store: store)
+    case let .tasteMatch(store): TasteMatchView(store: store)
     default: settingsDestination(store)
     }
   }
