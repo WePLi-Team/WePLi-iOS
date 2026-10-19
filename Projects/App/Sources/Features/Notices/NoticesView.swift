@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-// REQ-110 · UI-7a — 공지 · 이벤트. 밑줄 탭(DEC-009 — 원본의 세그먼트 대신), 「중요」 고정, 안 읽음 점, 상세 · 목록으로
+// REQ-110 · UI-7a — 공지 · 이벤트. 밑줄 탭, 「중요」 고정 · 안 읽음 점(공지), 배너 카드(이벤트), 상세 · 목록으로
 
 struct NoticesView: View {
   let store: StoreOf<NoticesFeature>
@@ -63,96 +63,65 @@ struct NoticesView: View {
       .padding(.horizontal, 20)
       .padding(.top, 12)
       ScrollView {
-        LazyVStack(spacing: 0) {
-          ForEach(self.store.list) { notice in
-            self.row(notice)
+        if self.store.tab == .event {
+          LazyVStack(spacing: 24) {
+            ForEach(self.store.list) { notice in
+              EventCard(notice: notice) { self.store.send(.noticeTapped(notice.id)) }
+            }
+          }
+          .padding(.horizontal, 20)
+          .padding(.top, 18)
+          .padding(.bottom, 40)
+        } else {
+          LazyVStack(spacing: 0) {
+            ForEach(self.store.list) { notice in
+              NoticeRow(notice: notice) { self.store.send(.noticeTapped(notice.id)) }
+            }
           }
         }
-      }
-    }
-  }
-
-  private func row(_ notice: Notice) -> some View {
-    Button {
-      self.store.send(.noticeTapped(notice.id))
-    } label: {
-      HStack(spacing: 12) {
-        if notice.hasImage {
-          RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder).frame(width: 64, height: 48)
-        }
-        VStack(alignment: .leading, spacing: 4) {
-          HStack(spacing: 6) {
-            self.badges(notice)
-            Text(notice.title).wepliFont(.body, weight: .medium).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
-          }
-          Text(notice.dateText).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
-        }
-        Spacer(minLength: 8)
-        if notice.isUnread {
-          Circle().fill(WePLiColor.accentStrong).frame(width: 7, height: 7).accessibilityLabel("읽지 않음")
-        }
-      }
-      .padding(.horizontal, 20)
-      .padding(.vertical, 16)
-      .contentShape(Rectangle())
-      .overlay(alignment: .bottom) { Rectangle().fill(Color.white.opacity(0.08)).frame(height: 0.5) }
-    }
-    .buttonStyle(.plain)
-  }
-
-  private func badges(_ notice: Notice) -> some View {
-    HStack(spacing: 6) {
-      if notice.isPinned {
-        NoticeBadge(title: "중요")
-      }
-      if let status = notice.eventStatus {
-        NoticeBadge(title: status.title, isDimmed: status == .ended)
       }
     }
   }
 
   private func detail(_ notice: Notice) -> some View {
     VStack(alignment: .leading, spacing: 14) {
-      HStack(spacing: 6) {
-        self.badges(notice)
-        Text(notice.dateText).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
-      }
+      NoticeMeta(notice: notice, isDetail: true)
       Text(notice.title).wepliFont(.title2).foregroundStyle(WePLiColor.textPrimary)
       if notice.hasImage {
-        RoundedRectangle(cornerRadius: 16).fill(WePLiColor.imagePlaceholder).frame(height: 180)
+        RoundedRectangle(cornerRadius: 12).fill(WePLiColor.surface1).frame(height: 168)
+          .overlay { RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder).padding(.vertical, 24).padding(
+            .horizontal,
+            60
+          ) }
+          .accessibilityHidden(true)
       }
       Text(notice.body).wepliFont(.body).lineSpacing(6).foregroundStyle(WePLiColor.textMuted)
-      Button {
-        self.store.send(.backToListTapped)
-      } label: {
-        Text("목록으로")
-          .wepliFont(.body, weight: .semibold)
-          .foregroundStyle(WePLiColor.textPrimary)
-          .frame(maxWidth: .infinity)
-          .frame(height: 50)
-          .background(WePLiColor.disabledFill, in: Capsule())
+      VStack(spacing: 10) {
+        if let banner = notice.eventAction, let title = banner.action {
+          self.eventButton(title, url: banner.actionURL)
+        }
+        ExportSecondaryButton(title: "목록으로") { self.store.send(.backToListTapped) }
       }
-      .buttonStyle(.plain)
       .padding(.top, 10)
     }
     .padding(.horizontal, 20)
     .padding(.top, 18)
     .padding(.bottom, 40)
   }
-}
 
-/// 「중요」 · 「진행 중」 · 「종료」 — 원본의 분홍 「중요」는 DEC-009(분홍은 좋아요 · 급상승만)에 따라 라벤더로 그린다
-private struct NoticeBadge: View {
-  let title: String
-  var isDimmed = false
-
-  var body: some View {
-    Text(self.title)
-      .font(.custom(WePLiFont.Weight.bold.postScriptName, size: 11, relativeTo: .caption2))
-      .foregroundStyle(self.isDimmed ? WePLiColor.textQuaternary : WePLiColor.accent)
-      .padding(.horizontal, 6)
-      .frame(height: 20)
-      .background(self.isDimmed ? WePLiColor.chipOff : WePLiColor.chipOn, in: RoundedRectangle(cornerRadius: 4))
+  /// 진행 중 이벤트 버튼 — 미결정: 여는 곳(원본에는 동작이 없다)
+  @ViewBuilder
+  private func eventButton(_ title: String, url: URL?) -> some View {
+    if let url {
+      Link(destination: url) {
+        Text(title)
+          .wepliFont(.callout, weight: .semibold)
+          .foregroundStyle(WePLiColor.textOnCTA)
+          .frame(maxWidth: .infinity)
+          .frame(height: 52)
+          .background(WePLiGradient.cta, in: Capsule())
+      }
+    }
   }
 }
 

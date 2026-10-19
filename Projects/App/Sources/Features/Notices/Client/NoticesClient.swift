@@ -73,7 +73,7 @@ extension Notice {
       id: "instagram",
       kind: .event,
       title: "위플리 인스타그램 OPEN! 팔로우 이벤트",
-      dateText: "~ 2026.10.31",
+      dateText: "2026.10.01 – 10.31",
       body: """
       감성 가득한 일상을 위플리 인스타그램에서 만나보세요. 10월 31일까지 팔로우한 분 중 추첨으로 선물을 드려요.
 
@@ -81,7 +81,13 @@ extension Notice {
       """,
       eventStatus: .ongoing,
       hasImage: true,
-      isUnread: true
+      isUnread: true,
+      banner: Notice.Banner(
+        kicker: "위플리 인스타그램 OPEN!",
+        head: "감성 가득한 일상 보러가기",
+        action: "인스타그램에서 팔로우하기",
+        actionURL: URL(string: "https://www.instagram.com")
+      )
     ),
     Notice(
       id: "chart",
@@ -91,7 +97,8 @@ extension Notice {
       body: "위플리 차트 오픈을 기념한 이벤트가 종료되었어요. 참여해 주셔서 고마워요.",
       eventStatus: .ended,
       hasImage: true,
-      isUnread: true
+      isUnread: true,
+      banner: Notice.Banner(kicker: "오직 위플리에서만", head: "실시간 통합 순위를 한 눈에!")
     ),
   ]
 }

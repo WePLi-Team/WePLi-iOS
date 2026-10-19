@@ -28,6 +28,18 @@ struct Notice: Equatable, Identifiable, Sendable {
     }
   }
 
+  /// 이벤트 배너 — 작은 글 · 큰 글, 진행 중이면 상세 아래 버튼
+  struct Banner: Equatable, Sendable {
+    /// 「위플리 인스타그램 OPEN!」
+    let kicker: String
+    /// 「감성 가득한 일상 보러가기」
+    let head: String
+    /// 「인스타그램에서 팔로우하기」 — 없으면 버튼 없음
+    var action: String?
+    /// 미결정 — 버튼이 여는 곳(원본에는 동작이 없다)
+    var actionURL: URL?
+  }
+
   let id: String
   let kind: Kind
   let title: String
@@ -40,6 +52,13 @@ struct Notice: Equatable, Identifiable, Sendable {
   /// 이벤트 이미지 — 아직 없어 자리만 둔다
   var hasImage = false
   var isUnread = false
+  var banner: Banner?
+
+  /// 상세 아래 그라데이션 버튼 — 진행 중 이벤트에만
+  var eventAction: Banner? {
+    guard self.eventStatus == .ongoing, let banner = self.banner, banner.action != nil else { return nil }
+    return banner
+  }
 }
 
 extension [Notice] {

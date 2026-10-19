@@ -14,6 +14,13 @@ final class NoticesFeatureTests: XCTestCase {
     XCTAssertEqual(notices.list(for: .event).map(\.id), ["instagram", "chart"])
   }
 
+  func testEventAction_onlyOngoingWithButton() {
+    let events = Notice.mock.list(for: .event)
+    XCTAssertEqual(events[0].eventAction?.action, "인스타그램에서 팔로우하기")
+    // 종료된 이벤트 · 버튼 문구가 없는 이벤트는 버튼이 없다
+    XCTAssertNil(events[1].eventAction)
+  }
+
   func testOpen_marksReadAndBackReturnsToList() async {
     let read = LockIsolated<[String]>([])
     var state = NoticesFeature.State()
