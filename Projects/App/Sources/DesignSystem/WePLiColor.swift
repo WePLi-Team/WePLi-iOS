@@ -47,6 +47,8 @@ enum WePLiColor {
   static let imagePlaceholder = Self.surface2
   /// 입력 오류 — 위험 동작(#FF453A)과 구분한다 (모션 35)
   static let inputError = Color(rgbHex: 0xFF6961)
+  /// 오류 배너 글자 — 오프라인 · 이용 제한 (UI-7d)
+  static let errorText = Color(rgbHex: 0xFFB3AE)
   /// 고른 선택 카드 안쪽 (UI-6a 투표 방식)
   static let selectionFill = Color(rgbHex: 0x1A1A22)
   /// 명함 카드 면 · 테두리 · 말풍선 (UI-2e)
