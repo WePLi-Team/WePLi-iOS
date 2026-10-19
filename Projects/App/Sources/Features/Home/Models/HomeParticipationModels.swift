@@ -47,11 +47,14 @@ struct HomePrediction: Equatable, Sendable {
   /// 「1일 12시간」
   let remaining: String
   var options: [Option]
+  /// 고른 곡 — 잠그기 전까지 바꿀 수 있다(DEC-016)
   var pickedID: Option.ID?
+  /// 「예측하기」로 잠갔다 — 비율 · 막대는 이때부터 보인다
+  var isLocked = false
 
-  /// 머리 설명 — 고르기 전 · 처음 · 고른 뒤
+  /// 머리 설명 — 잠그기 전(처음 · 기록) · 잠근 뒤
   var subtitle: String {
-    if self.pickedID != nil {
+    if self.isLocked {
       return "예측 완료 · 마감되면 결과를 알려드릴게요"
     }
     let lead = self.record ?? "처음이라면 지금 한 번 맞혀보세요"

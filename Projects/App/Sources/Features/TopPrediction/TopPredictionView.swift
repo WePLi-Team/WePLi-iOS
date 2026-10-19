@@ -1,7 +1,8 @@
 import ComposableArchitecture
 import SwiftUI
 
-// REQ-039 · UI-8d — 1위 예측. 후보마다 비율 · 막대, 고른 뒤 「예측하기」, 확정하면 「내 예측 · 변경 불가」 카드
+// REQ-039 · UI-8d · DEC-016 — 1위 예측. 곡 고르기 → 「예측하기」 → 잠김.
+// 비율 · 막대는 잠근 뒤에만 보인다(다른 사람 선택에 휩쓸리지 않게). 잠그면 목록 아래 「내 예측 · 변경 불가」 카드
 
 struct TopPredictionView: View {
   let store: StoreOf<TopPredictionFeature>
@@ -60,10 +61,10 @@ struct TopPredictionView: View {
       }
       .padding(.horizontal, 20)
       .padding(.top, 12)
+      self.options(prediction).padding(.top, 12)
       if let locked = prediction.locked {
         TopPredictionLockedCard(option: locked).padding(.horizontal, 20).padding(.top, 18)
       } else {
-        self.options(prediction).padding(.top, 12)
         WePLiPrimaryButton(title: "예측하기", isEnabled: self.store.canPredict) { self.store.send(.predictTapped) }
           .padding(.horizontal, 20)
           .padding(.top, 14)
@@ -76,7 +77,11 @@ struct TopPredictionView: View {
   private func options(_ prediction: TopPrediction) -> some View {
     VStack(spacing: 0) {
       ForEach(prediction.options) { option in
-        TopPredictionRow(option: option, isSelected: self.store.selectedID == option.id) {
+        TopPredictionRow(
+          option: option,
+          isSelected: (prediction.lockedID ?? self.store.selectedID) == option.id,
+          isRevealed: prediction.lockedID != nil
+        ) {
           self.store.send(.optionTapped(option.id))
         }
       }
@@ -97,11 +102,15 @@ struct TopPredictionView: View {
   }
 }
 
-/// 후보 한 줄 — 아트 · 제목 · 비율 · 막대 · 고른 표시
+/// 후보 한 줄 — 아트 · 제목 · 비율 · 막대 · 고른 표시. 비율 · 막대는 잠근 뒤에만 차오른다
 private struct TopPredictionRow: View {
   let option: TopPrediction.Option
   let isSelected: Bool
+  let isRevealed: Bool
   let action: () -> Void
+
+  @Environment(\.accessibilityReduceMotion)
+  private var reduceMotion
 
   var body: some View {
     Button(action: self.action) {
@@ -118,16 +127,22 @@ private struct TopPredictionRow: View {
               .wepliFont(.caption, weight: .light)
               .monospacedDigit()
               .foregroundStyle(WePLiColor.textTertiary)
+              .opacity(self.isRevealed ? 1 : 0)
           }
           GeometryReader { proxy in
             Capsule().fill(Color.white.opacity(0.08))
               .overlay(alignment: .leading) {
                 Capsule()
                   .fill(self.isSelected ? WePLiColor.accent : Color.white.opacity(0.28))
-                  .frame(width: proxy.size.width * Double(self.option.percent) / 100)
+                  .frame(width: self.isRevealed ? proxy.size.width * Double(self.option.percent) / 100 : 0)
               }
           }
           .frame(height: 3)
+          .opacity(self.isRevealed ? 1 : 0)
+          .animation(
+            self.reduceMotion ? .easeOut(duration: 0.3) : .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.5),
+            value: self.isRevealed
+          )
         }
         WePLiSelectionCheck(isOn: self.isSelected)
       }
@@ -137,8 +152,9 @@ private struct TopPredictionRow: View {
       .animation(.easeOut(duration: 0.2), value: self.isSelected)
     }
     .buttonStyle(.plain)
+    .disabled(self.isRevealed)
     .accessibilityElement(children: .combine)
-    .accessibilityLabel("\(self.option.title), \(self.option.percent)퍼센트 예측")
+    .accessibilityLabel(self.isRevealed ? "\(self.option.title), \(self.option.percent)퍼센트 예측" : self.option.title)
     .accessibilityAddTraits(self.isSelected ? [.isButton, .isSelected] : .isButton)
   }
 }

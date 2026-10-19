@@ -197,5 +197,6 @@ struct ContentNavigation: Reducer {
     guard let prediction = state.home.feed?.prediction, prediction.relayID == relayID else { return }
     guard prediction.options.contains(where: { $0.id == optionID }) else { return }
     state.home.feed?.prediction?.pickedID = optionID
+    state.home.feed?.prediction?.isLocked = true
   }
 }

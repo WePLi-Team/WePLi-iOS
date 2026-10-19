@@ -35,6 +35,7 @@ struct HomeFeature {
     case myRecommendationTapped(HomeMyRecommendation.ID)
     case votingRelayTapped(HomeVotingRelay.ID)
     case predictionOptionTapped(HomePrediction.Option.ID)
+    case predictionPredictTapped
     /// 「1위 예측」 머리 → 1위 예측(UI-8d)
     case predictionHeaderTapped
     case predictionLoaded([HomePrediction.Option])
@@ -182,7 +183,7 @@ struct HomeFeature {
     case .liveHeaderTapped, .predictionHeaderTapped, .todayHeaderTapped:
       return self.sectionHeader(action, state)
 
-    case .predictionOptionTapped, .predictionLoaded, .predictionFailed:
+    case .predictionOptionTapped, .predictionPredictTapped, .predictionLoaded, .predictionFailed:
       return self.prediction(action, &state)
 
     case .liveTicked, .liveListeningLoaded:
@@ -252,13 +253,20 @@ struct HomeFeature {
     }
   }
 
-  /// 1위 예측 — 한 번만 고른다(8d). 먼저 반영하고 실패하면 되돌린다(DEC-004)
+  /// 1위 예측 — 곡 고르기 → 「예측하기」 → 잠김(DEC-016). 먼저 잠그고 실패하면 되돌린다(DEC-004)
   private func prediction(_ action: Action, _ state: inout State) -> Effect<Action> {
     switch action {
     case let .predictionOptionTapped(id):
-      // 한 번만 고른다 — 바꿀 수 없다(8d)
-      guard let prediction = state.feed?.prediction, prediction.pickedID == nil else { return .none }
+      // 잠그기 전까지는 바꿀 수 있다
+      guard state.feed?.prediction?.isLocked == false else { return .none }
       state.feed?.prediction?.pickedID = id
+      return .none
+
+    case .predictionPredictTapped:
+      guard let prediction = state.feed?.prediction, !prediction.isLocked, let id = prediction.pickedID else {
+        return .none
+      }
+      state.feed?.prediction?.isLocked = true
       let relayID = prediction.relayID
       return .run { send in
         do {
@@ -273,9 +281,10 @@ struct HomeFeature {
       return .none
 
     case .predictionFailed:
-      state.feed?.prediction?.pickedID = nil
+      // 고른 곡은 두고 잠금만 푼다
+      state.feed?.prediction?.isLocked = false
       // 원본에 없는 문구 — 디자인 확인 필요
-      state.toast = "예측을 저장하지 못했어요. 다시 골라 주세요"
+      state.toast = "예측을 저장하지 못했어요. 다시 시도해 주세요"
       return .none
 
     default:
