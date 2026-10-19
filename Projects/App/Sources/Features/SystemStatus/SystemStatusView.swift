@@ -20,12 +20,25 @@ private struct SystemStatusModifier: ViewModifier {
             }
           }
         )) {
-          if let restriction = self.restriction {
-            RestrictionSheet(restriction: restriction) { self.store.send(.restrictionClosed) }
-              .wepliSheetStyle(detents: [.large])
-          }
+          self.restrictionSheet()
         }
         .task { self.store.send(.launched) }
+    }
+  }
+
+  /// 이용 제한 안내 — 「이의 신청하기」를 누르면 같은 시트 안에서 이의 신청(UI-11d)으로 바뀐다
+  @ViewBuilder
+  private func restrictionSheet() -> some View {
+    if let appealStore = self.store.scope(state: \.appeal, action: \.appeal.presented) {
+      AppealView(store: appealStore)
+        .wepliSheetStyle(detents: [.large])
+    } else if let restriction = self.restriction {
+      RestrictionSheet(
+        restriction: restriction,
+        onAppeal: { self.store.send(.appealTapped) },
+        onClose: { self.store.send(.restrictionClosed) }
+      )
+      .wepliSheetStyle(detents: [.large])
     }
   }
 

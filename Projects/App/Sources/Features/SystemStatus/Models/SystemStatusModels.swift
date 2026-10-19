@@ -32,12 +32,24 @@ struct SystemConfig: Equatable, Sendable {
 
 /// 커뮤니티 이용 제한 — 커뮤니티 동작 때 서버가 알려준다
 struct CommunityRestriction: Equatable, Sendable {
+  /// 이의 신청 대상 id(UI-11d)
+  let id: String
   /// 「운영정책 위반 신고 누적\n(욕설 · 비하 표현)」
   let reason: String
   let days: Int
   let until: Date
   /// 「게시글 · 댓글 작성, 릴레이 곡 추천」
   let scope: String
+
+  /// 이의 신청(UI-11d) 대상 카드 — 원본에는 게시글 대상만 있어 같은 꼴로 만든다
+  var appealTarget: AppealTarget {
+    AppealTarget(
+      id: self.id,
+      kind: .restriction,
+      title: "커뮤니티 \(self.days)일 이용 제한",
+      reason: self.reason.replacingOccurrences(of: "\n", with: " ")
+    )
+  }
 }
 
 /// 지금 보일 상태 — 겹치면 강제 업데이트 > 점검 > 오프라인 > 이용 제한 > 이벤트(DEC-014)

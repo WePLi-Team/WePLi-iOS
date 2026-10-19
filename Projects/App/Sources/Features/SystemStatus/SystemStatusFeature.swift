@@ -17,6 +17,8 @@ struct SystemStatusFeature {
     var retryCount = 0
     var now = Date()
     var appVersion = ""
+    /// 이용 제한 시트에서 연 이의 신청(UI-11d)
+    @Presents var appeal: AppealFeature.State?
 
     /// 겹치면 강제 업데이트 > 점검 > 오프라인 > 이용 제한 > 이벤트(DEC-014)
     var status: SystemStatus? {
@@ -45,6 +47,8 @@ struct SystemStatusFeature {
     case updateTapped
     case restrictionReceived(CommunityRestriction)
     case restrictionClosed
+    case appealTapped
+    case appeal(PresentationAction<AppealFeature.Action>)
     case eventClosed
     case eventHiddenToday
   }
@@ -90,6 +94,16 @@ struct SystemStatusFeature {
         return .none
       case .restrictionClosed:
         state.closedRestriction = true
+        state.appeal = nil
+        return .none
+      case .appealTapped:
+        guard let restriction = state.restriction else { return .none }
+        state.appeal = AppealFeature.State(target: restriction.appealTarget)
+        return .none
+      case .appeal(.presented(.delegate(.dismiss))):
+        state.appeal = nil
+        return .none
+      case .appeal:
         return .none
       case .eventClosed:
         state.closedEventID = state.config?.event?.id
@@ -101,6 +115,7 @@ struct SystemStatusFeature {
         return .run { _ in self.client.hideEvent(event.id, day) }
       }
     }
+    .ifLet(\.$appeal, action: \.appeal) { AppealFeature() }
   }
 
   private func loadConfig() -> Effect<Action> {
