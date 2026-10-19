@@ -42,9 +42,10 @@ final class SystemStatusFeatureTests: XCTestCase {
 
   func testEvent_hideTodayStoresSeoulDay() async {
     let stored = LockIsolated<String?>(nil)
+    let event = self.event
     let store = TestStore(initialState: SystemStatusFeature.State()) { SystemStatusFeature() } withDependencies: {
       $0.date.now = self.now
-      $0.systemStatusClient.config = { SystemConfig(event: self.event) }
+      $0.systemStatusClient.config = { SystemConfig(event: event) }
       $0.systemStatusClient.hideEvent = { _, day in stored.setValue(day) }
     }
     await store.send(.launched) {
@@ -59,9 +60,10 @@ final class SystemStatusFeatureTests: XCTestCase {
   }
 
   func testEvent_alreadyHiddenToday() async {
+    let event = self.event
     let store = TestStore(initialState: SystemStatusFeature.State()) { SystemStatusFeature() } withDependencies: {
       $0.date.now = self.now
-      $0.systemStatusClient.config = { SystemConfig(event: self.event) }
+      $0.systemStatusClient.config = { SystemConfig(event: event) }
       $0.systemStatusClient.hiddenEventDay = { _ in "2026-10-16" }
     }
     await store.send(.launched) {
