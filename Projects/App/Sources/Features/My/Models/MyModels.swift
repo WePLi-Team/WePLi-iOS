@@ -52,6 +52,8 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
   case listeningShare
   case serviceGuide
   case noticesAndTerms
+  /// 고객센터(UI-7b · DEC-013)
+  case helpCenter
   case developerMode
 
   var title: String {
@@ -64,6 +66,7 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
     case .listeningShare: "지금 듣는 음악"
     case .serviceGuide: "서비스 이용 가이드"
     case .noticesAndTerms: "공지 • 이용약관"
+    case .helpCenter: "고객센터"
     case .developerMode: "개발자 모드"
     }
   }
@@ -78,6 +81,7 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
     case .listeningShare: "headphones"
     case .serviceGuide: "book.closed"
     case .noticesAndTerms: "doc.text"
+    case .helpCenter: "questionmark.bubble"
     case .developerMode: "terminal"
     }
   }
@@ -104,7 +108,7 @@ enum MyMenuSection: CaseIterable, Equatable {
     switch self {
     case .activity: [.myPlaylists, .joinedRelays, .likesAndSaves]
     case .settings: [.notificationSettings, .musicServices, .listeningShare]
-    case .appInfo: [.serviceGuide, .noticesAndTerms]
+    case .appInfo: [.serviceGuide, .noticesAndTerms, .helpCenter]
     case .etc: isDeveloperModeEnabled ? [.developerMode] : []
     }
   }

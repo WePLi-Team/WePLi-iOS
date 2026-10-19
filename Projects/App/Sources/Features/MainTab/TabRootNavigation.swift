@@ -135,6 +135,7 @@ struct TabRootNavigation: Reducer {
       state.listeningShare = ListeningShareFeature.State(nickname: state.my.profile?.nickname ?? "")
     // 「공지 • 이용약관」은 공지(7a)로 — 약관은 앱 정보(7g, 「앱 버전」)에 있다
     case .noticesAndTerms: state.myPath.append(.notices(NoticesFeature.State()))
+    case .helpCenter: state.myPath.append(.helpCenter(HelpCenterFeature.State()))
     case .developerMode: state.myPath.append(.appInfo(AppInfoFeature.State(isDeveloperModeEnabled: true)))
     }
   }
