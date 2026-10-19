@@ -54,7 +54,7 @@ let project = Project(
           ],
         ],
       ]),
-      sources: ["Sources/**", "Generated/**"],
+      sources: ["Sources/**", "Generated/**", "Shared/Sources/**"],
       resources: ["Resources/**"],
       entitlements: .file(path: .relativeToManifest("App.entitlements")),
       scripts: [
@@ -68,7 +68,24 @@ let project = Project(
         .external(name: "GoogleSignInSwift"),
         .external(name: "Supabase"),
         .external(name: "KeychainAccess"),
+        .target(name: "WePLiWidget"),
       ]
+    ),
+    // DEC-015 · UI-13e 잠금화면 위젯
+    .target(
+      name: "WePLiWidget",
+      destinations: [.iPhone],
+      product: .appExtension,
+      bundleId: "com.example.wepli.widget",
+      deploymentTargets: .iOS("16.0"),
+      infoPlist: .extendingDefault(with: [
+        "CFBundleDisplayName": "WePLi",
+        "NSExtension": [
+          "NSExtensionPointIdentifier": "com.apple.widgetkit-extension",
+        ],
+      ]),
+      sources: ["Widget/Sources/**", "Shared/Sources/**"],
+      entitlements: .file(path: .relativeToManifest("Widget/WePLiWidget.entitlements"))
     ),
     .target(
       name: "WePLiTests",

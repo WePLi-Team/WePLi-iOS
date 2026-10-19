@@ -8,6 +8,12 @@
     <string>Default</string>
   </array>
 
+  <!-- DEC-015 잠금화면 위젯과 함께 쓰는 저장소 — Apple Developer에 App Group 등록 필요 -->
+  <key>com.apple.security.application-groups</key>
+  <array>
+    <string>group.com.example.wepli</string>
+  </array>
+
   <!-- (선택) Universal Links/Supabase OAuth Redirect에 'applinks:'를 쓰면 Associated Domains 필요
   <key>com.apple.developer.associated-domains</key>
   <array>
