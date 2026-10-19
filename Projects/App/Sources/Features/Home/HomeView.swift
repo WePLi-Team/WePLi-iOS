@@ -70,7 +70,11 @@ struct HomeView: View {
   @ViewBuilder
   private func discovery(_ feed: HomeFeed) -> some View {
     if !feed.todayPicks.isEmpty {
-      HomeTodayPicksSection(picks: feed.todayPicks) { self.store.send(.todayPickTapped($0)) }
+      HomeTodayPicksSection(
+        picks: feed.todayPicks,
+        onOpen: { self.store.send(.todayHeaderTapped) },
+        onTap: { self.store.send(.todayPickTapped($0)) }
+      )
     }
     if !feed.timeOfDayColumns.isEmpty {
       HomeTimeOfDaySection(columns: feed.timeOfDayColumns, hour: HomeTimeOfDay.hour(of: self.store.now)) {

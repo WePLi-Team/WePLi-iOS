@@ -108,6 +108,7 @@ extension MainTabView {
     case let .appInfo(store): AppInfoView(store: store)
     case let .batonRelay(store): BatonRelayView(store: store)
     case let .liveTrend(store): LiveTrendView(store: store)
+    case let .dailySong(store): DailySongView(store: store)
     default: EmptyView()
     }
   }
