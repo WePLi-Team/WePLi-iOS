@@ -32,6 +32,12 @@ struct FriendFeedFeature {
   @Dependency(\.friendFeedClient)
   var client
 
+  @Dependency(\.nowPlayingWidgetClient)
+  var widget
+
+  @Dependency(\.date.now)
+  var now
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -40,7 +46,9 @@ struct FriendFeedFeature {
         return self.load(&state)
       case let .loaded(feed):
         state.feed = feed
-        return .none
+        // 잠금화면 위젯(UI-13e)도 새로 그린다
+        let snapshot = NowPlayingWidgetSnapshot(feed, now: self.now)
+        return .run { _ in await self.widget.update(snapshot) }
       case .loadFailed:
         state.loadFailed = true
         return .none
