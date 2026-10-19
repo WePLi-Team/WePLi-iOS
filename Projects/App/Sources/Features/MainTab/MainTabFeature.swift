@@ -113,6 +113,7 @@ struct MainTabFeature {
     case musicServices(MusicServicesFeature)
     case notices(NoticesFeature)
     case appInfo(AppInfoFeature)
+    case helpCenter(HelpCenterFeature)
     case myPlaylist(MyPlaylistFeature)
     case songDetail(SongDetailFeature)
     case artist(ArtistFeature)

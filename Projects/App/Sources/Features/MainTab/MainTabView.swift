@@ -106,6 +106,7 @@ extension MainTabView {
     case let .musicServices(store): MusicServicesView(store: store)
     case let .notices(store): NoticesView(store: store)
     case let .appInfo(store): AppInfoView(store: store)
+    case let .helpCenter(store): HelpCenterView(store: store)
     case let .batonRelay(store): BatonRelayView(store: store)
     case let .liveTrend(store): LiveTrendView(store: store)
     default: EmptyView()
