@@ -57,12 +57,24 @@ struct InquiryDraft: Equatable, Sendable {
   static let photoLimit = 3
   /// 문의 내역 제목 길이(원본 24자)
   static let titleLength = 24
+  /// 이메일 칸(원본 80자)
+  static let emailLimit = 80
 
   var category: InquiryCategory?
   var text = ""
   /// 고른 사진(JPEG)
   var photos: [Data] = []
+  /// 「이메일로도 받기」 — 기본은 앱 알림 · 내 문의 내역(DEC-025). Apple 숨김 이메일로는 답변이 안 갈 수 있어 직접 적는다
+  var wantsEmail = false
+  var email = ""
 
+  /// 보낼 이메일 — 켰고 비어 있지 않을 때만
+  var replyEmail: String? {
+    let email = self.email.trimmingCharacters(in: .whitespacesAndNewlines)
+    return self.wantsEmail && !email.isEmpty ? email : nil
+  }
+
+  /// 원본: 이메일 칸은 보내기 조건에 들지 않는다
   var canSend: Bool {
     self.category != nil && !self.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }

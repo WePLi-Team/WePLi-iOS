@@ -45,11 +45,15 @@ final class HelpCenterFeatureTests: XCTestCase {
     state.isComposing = true
     state.draft.category = .community
     state.draft.text = "게시글이 안 올라가요"
+    state.draft.wantsEmail = true
+    state.draft.email = " me@example.com "
     let inquiry = Inquiry(id: "q2", title: "게시글이 안 올라가요", category: .community, dateText: "방금", isAnswered: false)
     let device = LockIsolated<InquiryDeviceInfo?>(nil)
+    let replyEmail = LockIsolated<String?>(nil)
     let store = TestStore(initialState: state) { HelpCenterFeature() } withDependencies: {
-      $0.helpCenterClient.submit = { _, info in
+      $0.helpCenterClient.submit = { draft, info in
         device.setValue(info)
+        replyEmail.setValue(draft.replyEmail)
         return inquiry
       }
     }
@@ -57,11 +61,24 @@ final class HelpCenterFeatureTests: XCTestCase {
     await store.receive(.sent(inquiry)) {
       $0.isSending = false
       $0.inquiries.insert(inquiry, at: 0)
-      $0.draft = InquiryDraft()
+      // 이메일 설정은 남는다
+      $0.draft = InquiryDraft(wantsEmail: true, email: " me@example.com ")
       $0.isComposing = false
-      $0.toast = "문의를 보냈어요. 답변은 이메일로도 알려드려요"
+      $0.toast = "문의를 보냈어요. 답변이 오면 알림으로 알려드려요"
     }
     XCTAssertEqual(device.value?.appVersion, "1.0.0")
+    XCTAssertEqual(replyEmail.value, "me@example.com")
+  }
+
+  func testEmail_isOptionalAndLimited() async {
+    let store = TestStore(initialState: HelpCenterFeature.State()) { HelpCenterFeature() }
+    XCTAssertNil(store.state.draft.replyEmail)
+    await store.send(.emailToggled(true)) { $0.draft.wantsEmail = true }
+    let long = String(repeating: "a", count: 90)
+    await store.send(.emailChanged(long)) { $0.draft.email = String(repeating: "a", count: 80) }
+    await store.send(.emailToggled(false)) { $0.draft.wantsEmail = false }
+    // 꺼 두면 적어 둔 주소를 보내지 않는다
+    XCTAssertNil(store.state.draft.replyEmail)
   }
 }
 
