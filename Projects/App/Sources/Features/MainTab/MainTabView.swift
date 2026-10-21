@@ -67,7 +67,7 @@ extension MainTabView {
     }
   }
 
-  /// 탭 공용 push 화면 — 음악 · 게시글 화면
+  /// 탭 공용 push 화면 — 음악 · 게시글 화면 · 계정 관리
   @ViewBuilder
   private static func destination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
@@ -79,6 +79,7 @@ extension MainTabView {
     case let .vote(store): CardVoteView(store: store)
     case let .worldCup(store): SongWorldCupView(store: store)
     case let .topPrediction(store): TopPredictionView(store: store)
+    case let .accountManagement(store): AccountManagementView(store: store)
     default: accountDestination(store)
     }
   }

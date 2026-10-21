@@ -123,6 +123,7 @@ struct MainTabFeature {
     case friendProfile(FriendProfileFeature)
     case tasteMatch(TasteMatchFeature)
     case communityPolicy(CommunityPolicyFeature)
+    case accountManagement(AccountManagementFeature)
   }
 
   enum Action: Equatable {
@@ -150,6 +151,7 @@ struct MainTabFeature {
     case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
     case replySongPicker(PresentationAction<SongPickerFeature.Action>)
+    case delegate(MainTabDelegate)
   }
 
   var body: some ReducerOf<Self> {
@@ -244,6 +246,11 @@ struct MainTabFeature {
       }
     }
   }
+}
+
+enum MainTabDelegate: Equatable {
+  /// 탈퇴 신청 뒤 로그아웃(UI-7c) — 앱 루트가 로그인 화면으로 돌아간다
+  case signedOut
 }
 
 extension MainTabFeature.Path.State: Equatable {}

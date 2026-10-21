@@ -81,7 +81,7 @@ struct AppealStep: Equatable, Identifiable, Sendable {
     AppealStep(id: 0, title: "접수 완료", detail: "방금", phase: .done),
     // 원본 「보통 24시간 이내」 — 정한 기준(24시간 안에)에 맞춤
     AppealStep(id: 1, title: "운영팀 검토 중", detail: "24시간 안에", phase: .current),
-    // 원본 「알림 · 이메일」 — 결과는 알림 · 내 문의 내역으로 간다(DEC-024 · DEC-025)
+    // 결과는 알림 · 내 문의 내역으로 간다(DEC-024 · DEC-025)
     AppealStep(id: 2, title: "결과 안내", detail: "알림 · 내 문의 내역", phase: .upcoming),
   ]
 }

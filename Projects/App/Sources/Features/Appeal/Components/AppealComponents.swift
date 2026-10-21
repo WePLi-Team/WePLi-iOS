@@ -54,7 +54,7 @@ struct AppealTextBox: View {
   }
 }
 
-/// 접수 → 검토 중 → 결과 안내. 원본의 분홍 점(검토 중)은 DEC-009(분홍은 좋아요 · 급상승만)에 따라 보조 강조색으로
+/// 접수 → 검토 중 → 결과 안내. 점은 지난 단계 라벤더 · 지금 단계 보조 강조색 · 남은 단계 회색
 struct AppealTimeline: View {
   let steps: [AppealStep]
 
@@ -89,7 +89,7 @@ struct AppealTimeline: View {
     switch phase {
     case .done: WePLiColor.accent
     case .current: WePLiColor.accentStrong
-    case .upcoming: WePLiColor.surface4
+    case .upcoming: WePLiColor.stepPending
     }
   }
 }
