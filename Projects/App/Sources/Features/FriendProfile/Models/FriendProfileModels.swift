@@ -1,7 +1,8 @@
 import ComposableArchitecture
 import Foundation
 
-// REQ-079 · UI-13g · DEC-010 · DEC-020 · DEC-023 — 친구 프로필(B안). 팔로우 · 차단 · 일치율은 서버 값(DEC-004)
+// REQ-079 · UI-13g · UI-17d · DEC-010 · DEC-020 · DEC-023 · DEC-029 — 친구 프로필(B안).
+// 팔로우 · 차단 · 일치율 · 내가 한 신고는 서버 값(DEC-004)
 
 struct FriendProfile: Equatable, Sendable {
   /// 사용자 id — 커뮤니티 · 검색 · 홈에서 넘어오는 값
@@ -30,6 +31,8 @@ struct FriendProfile: Equatable, Sendable {
   let recent: [FriendRecentTrack]
   /// 둘 다 자주 듣는 가수(최근 한 달)
   let sharedArtists: [String]
+  /// 내가 이 사람을 신고한 기록 — 같은 사람은 한 번만 신고한다(DEC-029)
+  var myReport: FriendReport?
 
   var isMutual: Bool {
     self.isFollowing && self.followsMe
@@ -129,11 +132,36 @@ enum ReportReason: CaseIterable, Equatable, Sendable {
   }
 }
 
+/// 내가 한 신고 — 「이미 신고했어요」에 신고한 날 · 사유 · 진행 상태로 보인다
+struct FriendReport: Equatable, Sendable {
+  let date: Date
+  let reason: ReportReason
+  let status: ReportStatus
+}
+
+/// 신고 진행 상태 — 결과는 알림과 내 문의 내역으로 온다
+enum ReportStatus: Equatable, Sendable {
+  case reviewing
+  case resolved
+
+  var title: String {
+    switch self {
+    case .reviewing: "운영팀 검토 중"
+    // 원본에 없는 문구 — 17a 「결과 안내」와 맞춤
+    case .resolved: "결과 안내"
+    }
+  }
+}
+
 /// 프로필 위에 뜨는 창 — 한 번에 하나
 enum FriendProfileOverlay: Hashable, Identifiable, Sendable {
   case menu
   case blockConfirm
   case report
+  /// 「신고를 접수했어요」
+  case reportDone
+  /// 「이미 신고했어요」
+  case reportExisting
 
   var id: Self {
     self
@@ -160,11 +188,30 @@ enum FriendProfileText {
     "\(name) 님을 신고하는 이유를 골라주세요"
   }
 
-  static let reportNotice = "서로 다른 5명이 신고하면 운영팀이 확인하기 전까지 임시로 가려져요. 신고한 사실은 상대에게 알리지 않아요."
+  static let reportNotice = "신고한 사실은 상대에게 알리지 않아요. 같은 사람은 한 번만 신고할 수 있어요."
+  static let reportDetailPlaceholder = "어떤 점이 문제인지 적어주세요 (필수)"
+  /// 「기타」 사유는 200자까지
+  static let reportDetailLimit = 200
+  static let reportDoneTitle = "신고를 접수했어요"
+  static let reportDoneDetail = "운영팀이 확인한 뒤 결과를 알림과\n내 문의 내역으로 알려드려요"
+  static let reportExistingTitle = "이미 신고했어요"
+  static let reportExistingDetail = "같은 사람은 한 번만 신고할 수 있어요. 결과가 나오면 알려드릴게요."
+
+  static func reportBlock(_ name: String) -> String {
+    "\(name) 님 차단하기"
+  }
+
+  /// 「10월 19일」 — Asia/Seoul(DEC-004)
+  static func reportDate(_ date: Date) -> String {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+    let parts = calendar.dateComponents([.month, .day], from: date)
+    return "\(parts.month ?? 0)월 \(parts.day ?? 0)일"
+  }
+
   static let linkCopied = "프로필 링크를 복사했어요"
   static let blocked = "차단했어요"
   static let unblocked = "차단을 풀었어요 · 팔로우는 다시 해야 해요"
-  static let reported = "신고를 접수했어요 · 결과는 알림으로 알려드려요"
   /// 원본에 없는 문구 — 디자인 확인 필요
   static let failed = "처리하지 못했어요. 다시 시도해 주세요"
 
@@ -173,8 +220,8 @@ enum FriendProfileText {
     "@\(handle)"
   }
 
-  /// 프로필 링크 — 미결정: 공유 링크 도메인(REQ-066과 같이 정함)
+  /// 프로필 링크 — 원본 임시 주소 wepli.app/@아이디. 실제 주소는 미결정
   static func link(_ profile: FriendProfile) -> URL? {
-    URL(string: "https://wepli.example/u/\(profile.handle)")
+    URL(string: "https://wepli.app/@\(profile.handle)")
   }
 }
