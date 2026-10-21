@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +17,7 @@ concurrency:
 jobs:
   changes:
     name: Detect Changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       code: ${{ steps.filter.outputs.code }}
       lint: ${{ steps.filter.outputs.lint }}
@@ -28,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -56,7 +54,7 @@ jobs:
     name: Automation Scripts (.claude)
     needs: changes
     if: ${{ needs.changes.outputs.automation == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
@@ -67,11 +65,14 @@ jobs:
     name: Sync Labels
     needs: changes
     if: ${{ needs.changes.outputs.labels == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v6
       - name: Apply labels from config
-        uses: crazy-max/ghaction-github-labeler@v5
+        uses: crazy-max/ghaction-github-labeler@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           yaml-file: .github/labels.yml
@@ -98,7 +99,7 @@ jobs:
 
       - name: Install lint tools (pinned in .mise.toml)
         if: ${{ steps.has_swift.outputs.present == 'true' }}
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
         with:
           install_args: swiftformat swiftlint
 
@@ -139,26 +140,16 @@ jobs:
         with:
           xcode-version: '16.2'
 
-      - name: Cache SPM
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/SourcePackages
-            ~/.swiftpm
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved', '**/Tuist/Dependencies.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-spm-
-
       - name: Cache Tuist Dependencies
         uses: actions/cache@v5
         with:
-          path: Tuist/Dependencies
-          key: ${{ runner.os }}-tuist-${{ hashFiles('**/Tuist/Dependencies.lock') }}
+          path: Tuist/.build
+          key: ${{ runner.os }}-tuist-build-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift') }}
           restore-keys: |
-            ${{ runner.os }}-tuist-
+            ${{ runner.os }}-tuist-build-
 
       - name: Setup mise (Tuist via mise)
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
 
       - name: Install tools via mise
         run: |
@@ -206,7 +197,7 @@ jobs:
 
       - name: Upload Xcode Build Log on Failure
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: xcodebuild-log
           path: xcodebuild.log
