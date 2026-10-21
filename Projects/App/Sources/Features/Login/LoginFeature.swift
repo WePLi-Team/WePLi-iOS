@@ -19,6 +19,11 @@ struct LoginFeature {
     case loginResponse(Result<Void, Error>)
     case termsOfServiceTapped
     case privacyPolicyTapped
+    case delegate(Delegate)
+  }
+
+  enum Delegate: Equatable {
+    case didLogIn
   }
 
   @Dependency(\.authClient)
@@ -58,7 +63,7 @@ struct LoginFeature {
 
       case .loginResponse(.success):
         state.isLoading = false
-        return .none
+        return .send(.delegate(.didLogIn))
 
       case let .loginResponse(.failure(error)):
         state.isLoading = false
@@ -69,6 +74,9 @@ struct LoginFeature {
         return .none
 
       case .privacyPolicyTapped:
+        return .none
+
+      case .delegate:
         return .none
       }
     }
@@ -110,11 +118,11 @@ struct AuthClient {
 extension AuthClient: DependencyKey {
   static let liveValue = AuthClient(
     signInWithApple: {
-      // TODO: Implement Apple Sign-In
+      // TODO(#14): Implement Apple Sign-In — 지금은 1초 뒤 성공(메인 탭 임시 진입, #104)
       try await Task.sleep(nanoseconds: 1000000000)
     },
     signInWithGoogle: {
-      // TODO: Implement Google Sign-In
+      // TODO(#14): Implement Google Sign-In — 지금은 1초 뒤 성공(메인 탭 임시 진입, #104)
       try await Task.sleep(nanoseconds: 1000000000)
     }
   )
