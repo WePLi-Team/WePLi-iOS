@@ -116,6 +116,8 @@ struct MainTabFeature {
     case notices(NoticesFeature)
     case appInfo(AppInfoFeature)
     case helpCenter(HelpCenterFeature)
+    case inquiryHistory(InquiryHistoryFeature)
+    case inquiryDetail(InquiryDetailFeature)
     case myPlaylist(MyPlaylistFeature)
     case songDetail(SongDetailFeature)
     case artist(ArtistFeature)
@@ -198,6 +200,7 @@ struct MainTabFeature {
         SongMenuNavigation()
         PlaybackNavigation()
         ProfileNavigation()
+        InquiryNavigation()
         Reduce { state, action in
           switch action {
           case let .tabSelected(tab):
