@@ -40,16 +40,35 @@ struct SeasonRanking: Equatable, Sendable {
   let seasonName: String
   let endsAt: Date
   let me: Standing
-  /// 1위부터 — 앞 3명은 시상대, 나머지는 목록
+  /// 1위부터 TOP 10 — 앞 3명은 시상대, 나머지는 목록
   let entries: [Entry]
+  /// 내 바로 위 · 나 · 바로 아래(DEC-030)
+  let nearby: [Entry]
   var hosts: [SeasonHost]
 
   var podium: [Entry] {
     Array(self.entries.prefix(3))
   }
 
+  /// 4–10위
   var list: [Entry] {
     Array(self.entries.dropFirst(3))
+  }
+
+  /// TOP 10 뒤에 이어 보일 내 주변 — TOP 10과 겹치는 순위는 뺀다
+  var nearbyList: [Entry] {
+    let last = self.entries.last?.rank ?? 0
+    return self.nearby.filter { $0.rank > last }
+  }
+
+  /// 내 주변이 TOP 10에 바로 이어지면 줄임표를 두지 않는다
+  var showsGap: Bool {
+    guard let first = self.nearbyList.first?.rank else { return false }
+    return first > (self.entries.last?.rank ?? 0) + 1
+  }
+
+  func isMe(_ entry: Entry) -> Bool {
+    entry.rank == self.me.rank
   }
 }
 
@@ -91,11 +110,11 @@ enum SeasonText {
     value.formatted(.number.grouping(.automatic).locale(Locale(identifier: "ko_KR")))
   }
 
-  /// 「▲12」 · 「▼3」 · 변동 없으면 nil
+  /// 「어제보다 ▲12」 · 「어제보다 ▼3」 — 어제 같은 시각 대비(DEC-030), 변동 없으면 nil
   static func change(_ value: Int) -> String? {
     if value > 0 {
-      return "▲\(value)"
+      return "어제보다 ▲\(value)"
     }
-    return value < 0 ? "▼\(-value)" : nil
+    return value < 0 ? "어제보다 ▼\(-value)" : nil
   }
 }
