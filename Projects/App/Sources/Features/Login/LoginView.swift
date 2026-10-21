@@ -1,169 +1,89 @@
 import ComposableArchitecture
 import SwiftUI
 
+// UI-16d 로그인 — 흐르는 커버 벽 위에 Figma 원본 문구, 아래에 Apple · Google · 먼저 둘러볼게요(DEC-032)
+
 struct LoginView: View {
   @Perception.Bindable var store: StoreOf<LoginFeature>
+
+  enum Metric {
+    static let copyTop: CGFloat = 430
+    static let buttonsBottom: CGFloat = 92
+    static let termsBottom: CGFloat = 40
+  }
 
   var body: some View {
     WithPerceptionTracking {
       ZStack {
-        Color.black
+        WePLiColor.background
           .ignoresSafeArea()
 
-        VStack(alignment: .leading, spacing: 0) {
-          headerSection
-            .padding(.top, 80)
+        LoginCoverWall()
 
-          albumCarousel
-            .padding(.top, 32)
+        GeometryReader { proxy in
+          // 원본 기준(402×874)의 위치를 안전 영역 밖 화면 좌표로 맞춘다
+          let fullHeight = proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
+          ZStack(alignment: .bottom) {
+            self.copy
+              .padding(.horizontal, 32)
+              .padding(.top, Metric.copyTop)
+              .frame(maxHeight: .infinity, alignment: .top)
 
-          Spacer()
+            LoginButtons(
+              onApple: { self.store.send(.appleLoginButtonTapped) },
+              onGoogle: { self.store.send(.googleLoginButtonTapped) },
+              onBrowse: { self.store.send(.browseTapped) }
+            )
+            .padding(.horizontal, 20)
+            .padding(.bottom, Metric.buttonsBottom)
 
-          loginButtonsSection
-            .padding(.bottom, 16)
-
-          termsSection
-            .padding(.bottom, 24)
+            LoginTerms(
+              onTerms: { self.store.send(.termsOfServiceTapped) },
+              onPrivacy: { self.store.send(.privacyPolicyTapped) }
+            )
+            .padding(.horizontal, 28)
+            .padding(.bottom, Metric.termsBottom)
+          }
+          .frame(width: proxy.size.width, height: fullHeight)
+          .offset(y: -proxy.safeAreaInsets.top)
         }
-        .padding(.horizontal, 24)
 
-        if store.isLoading {
-          loadingOverlay
+        if self.store.isLoading {
+          self.loadingOverlay
         }
       }
+      .preferredColorScheme(.dark)
       // 탈퇴 유예 · 재가입 제한(UI-17e)
-      .fullScreenCover(item: $store.scope(state: \.accountGrace, action: \.accountGrace)) { graceStore in
+      .fullScreenCover(item: self.$store.scope(state: \.accountGrace, action: \.accountGrace)) { graceStore in
         AccountGraceView(store: graceStore)
       }
     }
   }
-}
 
-// MARK: - Colors
-
-private extension LoginView {
-  var subtitleColor: Color {
-    Color(red: 163.0 / 255.0, green: 163.0 / 255.0, blue: 163.0 / 255.0)
-  }
-
-  var termsColor: Color {
-    Color(red: 118.0 / 255.0, green: 118.0 / 255.0, blue: 118.0 / 255.0)
-  }
-}
-
-// MARK: - Header Section
-
-private extension LoginView {
-  var headerSection: some View {
+  /// 원본 로고(img/logo.png)는 앱에 없어 글자만 둔다
+  private var copy: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text("함께 만드는\n플레이리스트")
-        .font(.system(size: 28, weight: .semibold))
-        .foregroundColor(.white)
-        .lineSpacing(6)
-
-      Text("다양한 사람들과 음악으로 연결되는\n특별한 순간을 경험해보세요")
-        .font(.system(size: 14, weight: .regular))
-        .foregroundColor(subtitleColor)
-        .lineSpacing(4)
+      Text("WePLi")
+        .wepliFont(.title1)
+        .foregroundStyle(WePLiColor.textPrimary)
+      Text("함께 만들어가는 플레이리스트,\n음악으로 연결되는 특별한 순간을 경험해보세요")
+        .wepliFont(.callout)
+        .lineSpacing(3)
+        .foregroundStyle(WePLiColor.textSecondary)
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
-}
 
-// MARK: - Album Carousel
-
-private extension LoginView {
-  var albumCarousel: some View {
-    InteractiveAlbumCarousel(
-      albumImages: [
-        Asset.Assets.album1,
-        Asset.Assets.album2,
-        Asset.Assets.album3,
-        Asset.Assets.album4,
-        Asset.Assets.album1,
-        Asset.Assets.album2,
-        Asset.Assets.album3,
-        Asset.Assets.album4,
-      ]
-    )
-    .padding(.horizontal, -24)
-  }
-}
-
-// MARK: - Login Buttons Section
-
-private extension LoginView {
-  var loginButtonsSection: some View {
-    VStack(spacing: 16) {
-      SocialLoginButton(provider: .apple) {
-        store.send(.appleLoginButtonTapped)
-      }
-
-      SocialLoginButton(provider: .google) {
-        store.send(.googleLoginButtonTapped)
-      }
-    }
-  }
-}
-
-// MARK: - Terms Section
-
-private extension LoginView {
-  var termsSection: some View {
-    VStack(spacing: 2) {
-      Text("최초 로그인은 계정을 생성하며,")
-        .font(.system(size: 11, weight: .light))
-        .foregroundColor(termsColor)
-
-      HStack(spacing: 0) {
-        Text("그와 동시에 ")
-          .font(.system(size: 11, weight: .light))
-          .foregroundColor(termsColor)
-
-        Button {
-          store.send(.termsOfServiceTapped)
-        } label: {
-          Text("서비스 조건")
-            .font(.system(size: 11, weight: .bold))
-            .foregroundColor(termsColor)
-        }
-
-        Text("과 ")
-          .font(.system(size: 11, weight: .light))
-          .foregroundColor(termsColor)
-
-        Button {
-          store.send(.privacyPolicyTapped)
-        } label: {
-          Text("개인정보처리방침")
-            .font(.system(size: 11, weight: .bold))
-            .foregroundColor(termsColor)
-        }
-
-        Text("에 동의하게 됩니다.")
-          .font(.system(size: 11, weight: .light))
-          .foregroundColor(termsColor)
-      }
-    }
-    .frame(maxWidth: .infinity)
-  }
-}
-
-// MARK: - Loading Overlay
-
-private extension LoginView {
-  var loadingOverlay: some View {
+  private var loadingOverlay: some View {
     ZStack {
       Color.black.opacity(0.5)
         .ignoresSafeArea()
-
       ProgressView()
         .progressViewStyle(CircularProgressViewStyle(tint: .white))
         .scaleEffect(1.5)
     }
   }
 }
-
-// MARK: - Preview
 
 #Preview {
   LoginView(
