@@ -129,8 +129,10 @@ jobs:
     name: Build & Unit Test
     needs: [changes, lint]
     if: ${{ !cancelled() && needs.changes.outputs.code == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
-    runs-on: macos-14
+    runs-on: macos-26
     timeout-minutes: 60
+    env:
+      XCODE_VERSION: '26.5'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -138,7 +140,7 @@ jobs:
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.2'
+          xcode-version: ${{ env.XCODE_VERSION }}
 
       - name: Cache Tuist Dependencies
         uses: actions/cache@v5
@@ -147,6 +149,15 @@ jobs:
           key: ${{ runner.os }}-tuist-build-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift') }}
           restore-keys: |
             ${{ runner.os }}-tuist-build-
+
+      # 의존성(swift-syntax · TCA 등) 빌드 결과를 재사용한다. 앱 소스는 checkout마다 새로 컴파일된다
+      - name: Cache DerivedData
+        uses: actions/cache@v5
+        with:
+          path: DerivedData
+          key: ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift', 'Tuist/ProjectDescriptionHelpers/**', 'Projects/**/Project.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-
 
       - name: Setup mise (Tuist via mise)
         uses: jdx/mise-action@v4
@@ -183,6 +194,7 @@ jobs:
           echo "SIM_ID=$SIM_ID" >> $GITHUB_OUTPUT
           xcrun simctl boot "$SIM_ID" || true
 
+      # 커버리지 · 인덱스는 CI에서 쓰지 않아 끈다. clean 없이 캐시된 DerivedData 위에서 빌드한다
       - name: Build & Test
         env:
           SIM_ID: ${{ steps.sim.outputs.SIM_ID }}
@@ -192,8 +204,16 @@ jobs:
             -workspace WePLi.xcworkspace \
             -scheme WePLi \
             -destination "id=$SIM_ID" \
-            -enableCodeCoverage YES \
-            clean test | tee xcodebuild.log | xcbeautify
+            -derivedDataPath DerivedData \
+            -enableCodeCoverage NO \
+            -skipMacroValidation \
+            -skipPackagePluginValidation \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            test | tee xcodebuild.log | xcbeautify
+
+      - name: Trim DerivedData before cache save
+        if: ${{ always() }}
+        run: rm -rf DerivedData/Logs DerivedData/Index.noindex
 
       - name: Upload Xcode Build Log on Failure
         if: ${{ failure() }}
