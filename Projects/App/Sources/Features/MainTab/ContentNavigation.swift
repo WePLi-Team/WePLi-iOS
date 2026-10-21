@@ -50,7 +50,7 @@ struct ContentNavigation: Reducer {
          .helpCenter(.delegate(.dismiss)),
          .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
-         .friendProfile(.delegate(.dismiss)):
+         .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)):
       true
     default:
       false
