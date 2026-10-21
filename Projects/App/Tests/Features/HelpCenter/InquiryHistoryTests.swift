@@ -117,7 +117,8 @@ extension MainTabFeatureTests {
   }
 
   func testHelpCenterInquiry_opensDetailAndFollowUpReturnsToComposer() async throws {
-    let clock = TestClock()
+    // 지연 효과가 sleep을 걸기 전에 advance하면 CI에서 놓친다 → 바로 지나가는 시계
+    let clock = ImmediateClock()
     let store = TestStore(initialState: self.myTabWithHelpCenter()) { MainTabFeature() } withDependencies: {
       $0.helpCenterClient.markRead = { _ in }
       $0.continuousClock = clock
@@ -133,7 +134,6 @@ extension MainTabFeatureTests {
     await store.send(.myPath(.element(id: detailID, action: .inquiryDetail(.followUpTapped))))
     await store.receive(\.myPath)
     XCTAssertEqual(store.state.myPath.count, 1)
-    await clock.advance(by: .milliseconds(450))
     await store.receive(\.myPath)
     let help = store.state.myPath[id: helpID, case: \.helpCenter]
     XCTAssertEqual(help?.isComposing, true)
