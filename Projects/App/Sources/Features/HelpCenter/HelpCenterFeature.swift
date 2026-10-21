@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Foundation
 
 // REQ-111 · UI-7b · DEC-013 — 고객센터(push). 자주 묻는 질문을 먼저 보여주고, 해결이 안 되면 1:1 문의 시트로 넘어간다.
+// 「내 문의 내역」 줄을 누르면 읽음으로 바꾸고 상세(UI-17a)를 연다.
 
 @Reducer
 struct HelpCenterFeature {
@@ -14,6 +15,17 @@ struct HelpCenterFeature {
     var draft = InquiryDraft()
     var isSending = false
     var toast: String?
+
+    /// 고객센터에는 최근 3건만 — 더 있으면 머리 꺾쇠로 내 문의 내역(UI-17a)을 연다
+    static let recentCount = 3
+
+    var recentInquiries: [Inquiry] {
+      Array(self.inquiries.prefix(Self.recentCount))
+    }
+
+    var hasMoreInquiries: Bool {
+      self.inquiries.count > Self.recentCount
+    }
   }
 
   enum Action: Equatable {
@@ -32,6 +44,13 @@ struct HelpCenterFeature {
     case sendTapped
     case sent(Inquiry)
     case sendFailed
+    case inquiryTapped(Inquiry.ID)
+    case readFailed(Inquiry.ID)
+    case historyTapped
+    /// 문의 상세 「추가로 문의하기」 — 같은 유형으로 문의 시트를 연다
+    case followUpRequested(InquiryCategory)
+    /// 문의 상세에서 취소한 문의
+    case inquiryCancelled(Inquiry.ID)
     case toastDismissed
     case delegate(HelpCenterDelegate)
   }
@@ -71,6 +90,8 @@ struct HelpCenterFeature {
         return .none
       case .sendTapped, .sent, .sendFailed:
         return self.send(&state, action)
+      case .inquiryTapped, .readFailed, .historyTapped, .followUpRequested, .inquiryCancelled:
+        return self.history(&state, action)
       case .toastDismissed:
         state.toast = nil
         return .none
@@ -78,6 +99,31 @@ struct HelpCenterFeature {
         return .none
       }
     }
+  }
+
+  private func history(_ state: inout State, _ action: Action) -> Effect<Action> {
+    switch action {
+    case let .inquiryTapped(id):
+      guard var inquiry = state.inquiries.first(where: { $0.id == id }) else { return .none }
+      let read = InquiryHistoryFeature.markRead(inquiry, in: &state.inquiries, client: self.client) {
+        .readFailed($0)
+      }
+      inquiry.isRead = true
+      return .merge(read, .send(.delegate(.showInquiry(inquiry))))
+    case let .readFailed(id):
+      state.inquiries.setRead(id, false)
+    case .historyTapped:
+      return .send(.delegate(.showHistory))
+    case let .followUpRequested(category):
+      state.draft.category = category
+      state.isComposing = true
+    case let .inquiryCancelled(id):
+      state.inquiries.removeAll { $0.id == id }
+      state.toast = InquiryText.cancelledToast
+    default:
+      break
+    }
+    return .none
   }
 
   private func edit(_ state: inout State, _ action: Action) {
@@ -134,4 +180,6 @@ struct HelpCenterFeature {
 
 enum HelpCenterDelegate: Equatable {
   case dismiss
+  case showInquiry(Inquiry)
+  case showHistory
 }
