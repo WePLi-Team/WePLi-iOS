@@ -58,6 +58,7 @@ struct ContentNavigation: Reducer {
          .notificationSettings(.delegate(.dismiss)), .musicServices(.delegate(.dismiss)),
          .notices(.delegate(.dismiss)), .appInfo(.delegate(.dismiss)),
          .helpCenter(.delegate(.dismiss)),
+         .inquiryHistory(.delegate(.dismiss)), .inquiryDetail(.delegate(.dismiss)),
          .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
          .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)),

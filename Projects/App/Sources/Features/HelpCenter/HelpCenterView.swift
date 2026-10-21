@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-// REQ-111 · UI-7b — 고객센터. 자주 묻는 질문(펼치고 접기) → 1:1 문의하기 → 내 문의 내역
+// REQ-111 · UI-7b — 고객센터. 자주 묻는 질문(펼치고 접기) → 1:1 문의하기 → 내 문의 내역(줄 모양 · 상세는 UI-17a)
 
 struct HelpCenterView: View {
   @Perception.Bindable var store: StoreOf<HelpCenterFeature>
@@ -28,9 +28,9 @@ struct HelpCenterView: View {
             self.faqs.padding(.horizontal, 16)
             self.composeCard.padding(.horizontal, 16).padding(.top, 20)
             if !self.store.inquiries.isEmpty {
-              self.sectionTitle("내 문의 내역").padding(.top, 24).padding(.bottom, 6)
-              ForEach(self.store.inquiries) { inquiry in
-                InquiryRow(inquiry: inquiry)
+              self.historyTitle.padding(.top, 24).padding(.bottom, 6)
+              ForEach(self.store.recentInquiries) { inquiry in
+                InquiryListRow(inquiry: inquiry) { self.store.send(.inquiryTapped(inquiry.id)) }
               }
             }
           }
@@ -62,6 +62,27 @@ struct HelpCenterView: View {
       .foregroundStyle(WePLiColor.textPrimary)
       .padding(.horizontal, 20)
       .accessibilityAddTraits(.isHeader)
+  }
+
+  /// 더 볼 문의가 있을 때만 꺾쇠 — 누르면 내 문의 내역(UI-17a)
+  @ViewBuilder private var historyTitle: some View {
+    if self.store.hasMoreInquiries {
+      Button {
+        self.store.send(.historyTapped)
+      } label: {
+        HStack(spacing: 4) {
+          Text("내 문의 내역").wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
+          Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(WePLiColor.textPrimary)
+        }
+        .padding(.horizontal, 20)
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityAddTraits(.isHeader)
+    } else {
+      self.sectionTitle("내 문의 내역")
+    }
   }
 
   private var faqs: some View {
@@ -122,34 +143,6 @@ struct HelpCenterView: View {
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
-  }
-}
-
-/// 내 문의 한 줄 — 제목 · 「유형 · 날짜」 · 답변 완료 / 답변 대기
-private struct InquiryRow: View {
-  let inquiry: Inquiry
-
-  var body: some View {
-    HStack(spacing: 12) {
-      VStack(alignment: .leading, spacing: 2) {
-        Text(self.inquiry.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
-        Text("\(self.inquiry.category.title) · \(self.inquiry.dateText)").wepliFont(.caption)
-          .foregroundStyle(WePLiColor.textQuaternary)
-      }
-      Spacer(minLength: 8)
-      Text(self.inquiry.isAnswered ? "답변 완료" : "답변 대기")
-        .wepliFont(.caption, weight: .semibold)
-        .foregroundStyle(self.inquiry.isAnswered ? WePLiColor.positive : WePLiColor.textTertiary)
-        .padding(.horizontal, 8)
-        .frame(height: 24)
-        .background(
-          self.inquiry.isAnswered ? WePLiColor.positive.opacity(0.14) : WePLiColor.disabledFill,
-          in: Capsule()
-        )
-    }
-    .padding(.horizontal, 20)
-    .padding(.vertical, 12)
-    .accessibilityElement(children: .combine)
   }
 }
 
