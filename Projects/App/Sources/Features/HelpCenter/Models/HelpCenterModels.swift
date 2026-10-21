@@ -70,6 +70,13 @@ struct Inquiry: Equatable, Identifiable, Sendable {
     }
   }
 
+  var isAppealResult: Bool {
+    if case .appealResult = self.kind {
+      return true
+    }
+    return false
+  }
+
   /// 「1:1 문의」 · 「이의 신청 결과」
   var kindTitle: String {
     switch self.kind {
