@@ -117,7 +117,6 @@ extension MainTabFeatureTests {
   }
 
   func testHelpCenterInquiry_opensDetailAndFollowUpReturnsToComposer() async throws {
-    // 지연 효과가 sleep을 걸기 전에 advance하면 CI에서 놓친다 → 바로 지나가는 시계
     let clock = ImmediateClock()
     let store = TestStore(initialState: self.myTabWithHelpCenter()) { MainTabFeature() } withDependencies: {
       $0.helpCenterClient.markRead = { _ in }
@@ -126,13 +125,15 @@ extension MainTabFeatureTests {
     store.exhaustivity = .off
     let helpID = try XCTUnwrap(store.state.myPath.ids.first)
     await store.send(.myPath(.element(id: helpID, action: .helpCenter(.inquiryTapped("q1")))))
-    // 받은 액션 수를 세지 않고 효과가 끝난 뒤 상태로 확인한다(CI 16.2에서 액션 순서 · 개수가 달랐음)
+    // 받은 액션 수를 세지 않고, 효과가 끝난 뒤 받은 액션을 모두 반영해 상태로 확인한다
     await store.finish()
+    await store.skipReceivedActions()
     guard case let .inquiryDetail(detail)? = store.state.myPath.last else { return XCTFail("문의 상세가 열려야 한다") }
     XCTAssertTrue(detail.inquiry.isRead)
     let detailID = try XCTUnwrap(store.state.myPath.ids.last)
     await store.send(.myPath(.element(id: detailID, action: .inquiryDetail(.followUpTapped))))
     await store.finish()
+    await store.skipReceivedActions()
     XCTAssertEqual(store.state.myPath.count, 1)
     let help = store.state.myPath[id: helpID, case: \.helpCenter]
     XCTAssertEqual(help?.isComposing, true)
