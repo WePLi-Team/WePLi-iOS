@@ -104,6 +104,7 @@ struct MainTabFeature {
     case dailySong(DailySongFeature)
     case myRecommendation(MyRecommendationFeature)
     case topPrediction(TopPredictionFeature)
+    case seasonRanking(SeasonRankingFeature)
     case completedPlaylist(CompletedPlaylistFeature)
     case exportedPlaylist(ExportedPlaylistFeature)
     case notifications(NotificationsFeature)

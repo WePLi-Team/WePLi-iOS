@@ -42,6 +42,7 @@ struct ContentNavigation: Reducer {
          .batonRelay(.delegate(.dismiss)), .liveTrend(.delegate(.dismiss)),
          .dailySong(.delegate(.dismiss)),
          .myRecommendation(.delegate(.dismiss)), .topPrediction(.delegate(.dismiss)),
+         .seasonRanking(.delegate(.dismiss)),
          .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
@@ -106,6 +107,9 @@ struct ContentNavigation: Reducer {
     case let .library(.delegate(.showPlaylist(id))):
       // 보관함 「내 플레이리스트」 → 내 플레이리스트 · 편집(UI-10d)
       return .myPlaylist(MyPlaylistFeature.State(playlistID: id))
+    case .topPrediction(.delegate(.showSeasonRanking)):
+      // 1위 예측 「내 칭호」 머리 → 시즌 랭킹(UI-8f, 사용자 결정)
+      return .seasonRanking(SeasonRankingFeature.State())
     default:
       return nil
     }
