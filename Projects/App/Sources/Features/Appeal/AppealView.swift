@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 // REQ-073 · UI-11d — 이의 신청. 대상 카드 → 사유 · 설명 · 기준 안내 → 「이의 신청 보내기」, 보내면 진행 타임라인
-// 원본의 흰 선택 칩 · 흰 버튼은 DEC-009(흰 바탕 버튼 금지)에 따라 라벤더 칩 · 그라데이션 버튼으로
+// 사유는 라벤더 선택 칩(34 · 14pt), 보내기는 그라데이션 버튼(DEC-009)
 
 struct AppealView: View {
   let store: StoreOf<AppealFeature>
@@ -65,14 +65,14 @@ struct AppealView: View {
 
   private var form: some View {
     VStack(alignment: .leading, spacing: 18) {
-      VStack(alignment: .leading, spacing: 12) {
+      VStack(alignment: .leading, spacing: 8) {
         Text("어떤 점이 잘못되었나요?")
           .wepliFont(.body, weight: .semibold)
           .foregroundStyle(WePLiColor.textPrimary)
           .padding(.horizontal, 4)
         HStack(spacing: 8) {
           ForEach(AppealReason.allCases, id: \.self) { reason in
-            WePLiChip(title: reason.title, isOn: self.store.draft.reason == reason) {
+            WePLiChip(title: reason.title, isOn: self.store.draft.reason == reason, size: .large) {
               self.store.send(.reasonSelected(reason))
             }
           }
