@@ -65,10 +65,6 @@ extension FriendProfileFeature {
     case .moreTapped:
       state.isNowPlayingMenuOpen = false
       state.overlay = .menu
-    case .dismissed:
-      guard state.overlay != .blockConfirm else { return .none }
-      state.overlay = nil
-      state.reportReason = nil
     case .copyLinkTapped:
       state.overlay = nil
       guard let profile = state.profile, let url = FriendProfileText.link(profile) else { return .none }
@@ -78,26 +74,42 @@ extension FriendProfileFeature {
       return self.block(isOn: action == .blockConfirmed, &state)
     case .reportSubmitted:
       return self.report(&state)
+    case .reportHistoryTapped:
+      state.overlay = nil
+      return .send(.delegate(.showInquiryHistory))
     default:
       Self.step(action, &state)
     }
     return .none
   }
 
-  /// 메뉴 → 차단 확인 · 신고 시트, 신고 사유 고르기, 접수 안내
+  /// 메뉴 → 차단 확인 · 신고 시트(이미 신고했으면 기록), 신고 사유 고르기, 접수 안내
   private static func step(_ action: FriendProfileMenuAction, _ state: inout State) {
     switch action {
-    case .blockTapped:
+    case .blockTapped, .reportBlockTapped:
       state.overlay = .blockConfirm
     case .reportTapped:
       state.reportReason = nil
-      state.overlay = .report
+      state.reportDetail = ""
+      state.overlay = state.profile?.myReport == nil ? .report : .reportExisting
     case let .reasonSelected(reason):
       state.reportReason = reason
+    case let .reportDetailChanged(text):
+      state.reportDetail = String(text.prefix(FriendProfileText.reportDetailLimit))
+    case .dismissed:
+      // 차단 확인 창으로 넘어가는 중이거나 신고를 보내는 중이면 그대로 둔다
+      guard state.overlay != .blockConfirm, !state.isReporting else { return }
+      state.overlay = nil
+      state.reportReason = nil
+      state.reportDetail = ""
     case .blockCancelled:
       state.overlay = nil
-    case .reported:
-      state.toast = FriendProfileText.reported
+    case let .reported(report):
+      state.isReporting = false
+      state.reportReason = nil
+      state.reportDetail = ""
+      state.profile?.myReport = report
+      state.overlay = .reportDone
     default:
       break
     }
@@ -118,15 +130,16 @@ extension FriendProfileFeature {
     return self.send(rollback) { try await self.client.setBlocked(userID, isOn) }
   }
 
+  /// 접수되면 안내 시트로 바꾼다. 보내는 동안 시트는 그대로 둔다
   private func report(_ state: inout State) -> Effect<Action> {
-    guard let reason = state.reportReason else { return .none }
-    state.overlay = nil
-    state.reportReason = nil
+    guard state.canSubmitReport, let reason = state.reportReason else { return .none }
+    state.isReporting = true
+    let detail = reason == .other ? state.reportDetail.trimmingCharacters(in: .whitespacesAndNewlines) : nil
     let userID = state.userID
     return .run { send in
       do {
-        try await self.client.report(userID, reason)
-        await send(.menu(.reported))
+        let report = try await self.client.report(userID, reason, detail)
+        await send(.menu(.reported(report)))
       } catch {
         await send(.rollback(.report))
       }
@@ -161,7 +174,9 @@ extension FriendProfileFeature {
     case .saveSong:
       state.isSongSaved = false
     case .report:
-      break
+      // 시트 뒤에서는 토스트가 보이지 않아 닫고 알린다
+      state.isReporting = false
+      state.overlay = nil
     }
     state.toast = FriendProfileText.failed
   }
