@@ -42,17 +42,24 @@ struct WePLiUnderlineTabs<Item: Hashable>: View {
 }
 
 struct WePLiChip: View {
+  /// 기본 32 · 13pt, 큰 칩 34 · 14pt(11d 사유)
+  enum Size {
+    case regular
+    case large
+  }
+
   let title: String
   let isOn: Bool
+  var size: Size = .regular
   let action: () -> Void
 
   var body: some View {
     Button(action: self.action) {
       Text(self.title)
-        .wepliFont(.footnote, weight: self.isOn ? .semibold : .regular)
+        .wepliFont(self.size == .large ? .subheadline : .footnote, weight: self.isOn ? .semibold : .regular)
         .foregroundStyle(self.isOn ? WePLiColor.accent : WePLiColor.textSecondary)
         .padding(.horizontal, 14)
-        .frame(height: 32)
+        .frame(height: self.size == .large ? 34 : 32)
         .background(self.isOn ? WePLiColor.chipOn : WePLiColor.chipOff, in: Capsule())
     }
     .buttonStyle(.plain)

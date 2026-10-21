@@ -1,6 +1,6 @@
 import SwiftUI
 
-// UI-3e 필드 라벨(n/한도) · 나의 성향 목록(행 66, 체크 원형 24)
+// UI-3e 필드 라벨(n/한도) · 나의 성향 목록(행 66, 고른 줄 라벤더 글자 + 체크 20 — DEC-017)
 
 struct ProfileFieldLabel: View {
   let title: String
