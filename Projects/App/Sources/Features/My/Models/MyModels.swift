@@ -54,6 +54,8 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
   case noticesAndTerms
   /// 고객센터(UI-7b · DEC-013)
   case helpCenter
+  /// 계정 관리 · 회원 탈퇴(UI-7c) — 고객센터 FAQ 「마이 › 계정 관리」
+  case accountManagement
   case developerMode
 
   var title: String {
@@ -67,6 +69,7 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
     case .serviceGuide: "서비스 이용 가이드"
     case .noticesAndTerms: "공지 • 이용약관"
     case .helpCenter: "고객센터"
+    case .accountManagement: "계정 관리"
     case .developerMode: "개발자 모드"
     }
   }
@@ -82,6 +85,7 @@ enum MyMenu: Equatable, CaseIterable, Sendable {
     case .serviceGuide: "book.closed"
     case .noticesAndTerms: "doc.text"
     case .helpCenter: "questionmark.bubble"
+    case .accountManagement: "person.crop.circle"
     case .developerMode: "terminal"
     }
   }
@@ -107,7 +111,7 @@ enum MyMenuSection: CaseIterable, Equatable {
   func menus(isDeveloperModeEnabled: Bool) -> [MyMenu] {
     switch self {
     case .activity: [.myPlaylists, .joinedRelays, .likesAndSaves]
-    case .settings: [.notificationSettings, .musicServices, .listeningShare]
+    case .settings: [.notificationSettings, .musicServices, .listeningShare, .accountManagement]
     case .appInfo: [.serviceGuide, .noticesAndTerms, .helpCenter]
     case .etc: isDeveloperModeEnabled ? [.developerMode] : []
     }

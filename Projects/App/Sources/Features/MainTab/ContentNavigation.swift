@@ -17,7 +17,7 @@ struct ContentNavigation: Reducer {
         return .none
       }
       let next = self.music(action, source, state) ?? self.relay(action, source, state)
-        ?? self.notice(action, source, state)
+        ?? self.notice(action, source, state) ?? Self.account(action)
       if let next {
         state[stack: source.tab].append(next)
         return .none
@@ -31,8 +31,17 @@ struct ContentNavigation: Reducer {
         state.my.isDeveloperModeEnabled = true
         return .none
       }
+      if case .accountManagement(.delegate(.signedOut)) = action {
+        return .send(.delegate(.signedOut))
+      }
       return self.mine(action, source, &state)
     }
+  }
+
+  /// 내 정보 수정 「회원 탈퇴」 → 탈퇴 사유 단계부터(UI-7c)
+  private static func account(_ action: Path.Action) -> Path.State? {
+    guard case .editProfile(.delegate(.showWithdraw)) = action else { return nil }
+    return .accountManagement(AccountManagementFeature.State(entry: .reason))
   }
 
   /// 뒤로 — 모든 화면 공통
@@ -51,7 +60,8 @@ struct ContentNavigation: Reducer {
          .helpCenter(.delegate(.dismiss)),
          .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
-         .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)):
+         .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)),
+         .accountManagement(.delegate(.dismiss)):
       true
     default:
       false
