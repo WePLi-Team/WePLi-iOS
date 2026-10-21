@@ -44,7 +44,7 @@ struct CommunityFeedFeature {
     case showNotifications
     /// 게시글 상세 · 댓글 (UI-2c · 9c · 9d)
     case showPost(Post.ID)
-    /// 사용자 프로필 (UI-5a)
+    /// 친구 프로필(UI-13g — 5a를 대신함, DEC-010)
     case showProfile(String)
     case showStory(Story.ID)
   }

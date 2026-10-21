@@ -55,9 +55,9 @@ struct FriendFeedFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case let .railTapped(id):
-        // 「나」 → 연결과 공개 범위(UI-13a). 친구 프로필(UI-13g)은 아직 없다
-        guard state.feed?.rail.first(where: { $0.id == id })?.isMe == true else { return .none }
-        return .send(.delegate(.showListeningShare))
+        // 「나」 → 연결과 공개 범위(UI-13a), 친구 → 친구 프로필(UI-13g)
+        guard let row = state.feed?.rail.first(where: { $0.id == id }) else { return .none }
+        return .send(.delegate(row.isMe ? .showListeningShare : .showProfile(id)))
       case .sameSongTapped, .headphonesSent, .playTapped, .requestFailed:
         return self.listen(&state, action)
       case let .reactionTapped(id, reaction):
@@ -136,4 +136,6 @@ enum FriendFeedDelegate: Equatable {
   /// 「나」 → 연결과 공개 범위(UI-13a)
   case showListeningShare
   case showSong(String)
+  /// 친구 프로필(UI-13g)
+  case showProfile(String)
 }

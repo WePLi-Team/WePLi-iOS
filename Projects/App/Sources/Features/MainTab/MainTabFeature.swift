@@ -119,6 +119,7 @@ struct MainTabFeature {
     case songDetail(SongDetailFeature)
     case artist(ArtistFeature)
     case playlistDetail(PlaylistDetailFeature)
+    case friendProfile(FriendProfileFeature)
   }
 
   enum Action: Equatable {
@@ -194,6 +195,7 @@ struct MainTabFeature {
         SongNavigation()
         SongMenuNavigation()
         PlaybackNavigation()
+        ProfileNavigation()
         Reduce { state, action in
           switch action {
           case let .tabSelected(tab):

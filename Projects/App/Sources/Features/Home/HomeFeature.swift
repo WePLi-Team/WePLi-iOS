@@ -142,8 +142,12 @@ struct HomeFeature {
         guard let song = state.feed?.chart.first(where: { $0.id == id }) else { return .none }
         return .send(.delegate(.songMenu(song.track)))
 
-      // 원본에 목적지가 없다(전체듣기 · 완성된 플리 전체듣기 · 배너 · 친구) — 재생 · 화면이 생기면 잇는다
-      case .chartPlayAllTapped, .bannerTapped, .friendTapped, .delegate:
+      // 원본에 목적지가 없다(전체듣기 · 완성된 플리 전체듣기 · 배너) — 재생 · 화면이 생기면 잇는다
+      case let .friendTapped(id):
+        // 친구가 지금 듣는 중 → 친구 프로필(UI-13g)
+        return .send(.delegate(.showFriend(id)))
+
+      case .chartPlayAllTapped, .bannerTapped, .delegate:
         return .none
 
       default:
@@ -325,6 +329,8 @@ enum HomeDelegate: Equatable {
   case showLiveTrend
   /// 오늘의 한 곡(UI-6c)
   case showDailySong
+  /// 친구 프로필(UI-13g)
+  case showFriend(String)
   case switchTab(MainTabFeature.Tab)
 }
 

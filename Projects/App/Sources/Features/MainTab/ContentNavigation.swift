@@ -49,7 +49,8 @@ struct ContentNavigation: Reducer {
          .notices(.delegate(.dismiss)), .appInfo(.delegate(.dismiss)),
          .helpCenter(.delegate(.dismiss)),
          .myPlaylist(.delegate(.dismiss)),
-         .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)):
+         .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
+         .friendProfile(.delegate(.dismiss)):
       true
     default:
       false

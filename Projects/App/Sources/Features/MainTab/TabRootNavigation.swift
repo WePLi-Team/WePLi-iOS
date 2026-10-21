@@ -108,12 +108,13 @@ struct TabRootNavigation: Reducer {
     }
   }
 
-  /// 홈에서 push하는 화면 — 알림 · 곡 · 아티스트 · 게시글 · 플리
+  /// 홈에서 push하는 화면 — 알림 · 곡 · 아티스트 · 게시글 · 플리 · 친구
   private static func homeContentScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
     switch delegate {
     case .showNotifications: .notifications(NotificationsFeature.State())
     case .showLiveTrend: .liveTrend(LiveTrendFeature.State())
     case .showDailySong: .dailySong(DailySongFeature.State())
+    case let .showFriend(id): .friendProfile(FriendProfileFeature.State(userID: id))
     case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
     case let .showArtist(name): .artist(ArtistFeature.State(artistID: name))
     case let .showPost(id): .postDetail(PostDetailFeature.State(postID: id))

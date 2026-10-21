@@ -50,9 +50,11 @@ final class FriendFeedFeatureTests: XCTestCase {
     await store.send(.playTapped("minsu")) { $0.toast = "Apple Music에서 ‘Supernova’을(를) 열어요" }
   }
 
-  func testMe_opensListeningShare() async {
+  func testMe_opensListeningShare_friendOpensProfile() async {
     let store = TestStore(initialState: self.loaded()) { FriendFeedFeature() }
+    // 친구 → 친구 프로필(UI-13g)
     await store.send(.railTapped("jisoo"))
+    await store.receive(.delegate(.showProfile("jisoo")))
     await store.send(.railTapped("me"))
     await store.receive(.delegate(.showListeningShare))
   }
