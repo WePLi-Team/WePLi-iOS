@@ -26,7 +26,6 @@ analyzer_rules:
   - explicit_self
 
 opt_in_rules:
-  - anyobject_protocol
   - attributes
   - closure_spacing
   - collection_alignment
@@ -39,7 +38,6 @@ opt_in_rules:
   - multiline_arguments
   - multiline_parameters
   - operator_usage_whitespace
-  - ordered_imports
   - prefer_self_type_over_type_of_self
   - redundant_nil_coalescing
   - unneeded_parentheses_in_closure_argument

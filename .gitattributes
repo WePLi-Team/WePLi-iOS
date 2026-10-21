@@ -64,7 +64,8 @@
 
 # Archives / bundles
 *.zip           binary
-*.car           binary   # Asset catalog compiled archive
+# Asset catalog compiled archive
+*.car           binary
 *.xcarchive     binary
 *.xcframework   binary
 
