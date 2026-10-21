@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -71,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Apply labels from config
-        uses: crazy-max/ghaction-github-labeler@v5
+        uses: crazy-max/ghaction-github-labeler@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           yaml-file: .github/labels.yml
@@ -98,7 +98,7 @@ jobs:
 
       - name: Install lint tools (pinned in .mise.toml)
         if: ${{ steps.has_swift.outputs.present == 'true' }}
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
         with:
           install_args: swiftformat swiftlint
 
@@ -158,7 +158,7 @@ jobs:
             ${{ runner.os }}-tuist-
 
       - name: Setup mise (Tuist via mise)
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
 
       - name: Install tools via mise
         run: |
@@ -206,7 +206,7 @@ jobs:
 
       - name: Upload Xcode Build Log on Failure
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: xcodebuild-log
           path: xcodebuild.log
