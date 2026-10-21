@@ -12,6 +12,16 @@ final class TasteMatchFeatureTests: XCTestCase {
     XCTAssertEqual(TasteMatchText.headline(name: "chuuuuu__", score: 82), "chuuuuu__님과 꽤 잘 맞아요")
   }
 
+  func testHeadline_bands() {
+    let cases: [(Int, String)] = [
+      (85, "정말 잘 맞아요"), (84, "꽤 잘 맞아요"), (70, "꽤 잘 맞아요"),
+      (69, "비슷한 점이 많아요"), (50, "비슷한 점이 많아요"), (49, "서로 새로운 곡을 알려줄 수 있어요"),
+    ]
+    for (score, phrase) in cases {
+      XCTAssertEqual(TasteMatchText.headline(name: "지수", score: score), "지수님과 \(phrase)", "\(score)")
+    }
+  }
+
   func testRecommend_oncePerSongAndRollsBack() async {
     var state = TasteMatchFeature.State(userID: "jisoo", name: "지수")
     state.match = .mock(userID: "jisoo")

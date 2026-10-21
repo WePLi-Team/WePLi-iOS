@@ -48,6 +48,14 @@ extension SeasonRanking {
         Entry(rank: 5, name: "younha_holic", title: "예언자", score: 6980),
         Entry(rank: 6, name: "woogi", title: "역전의 명수", score: 6420),
         Entry(rank: 7, name: "boyoung0212_official", title: "호스트", score: 5990),
+        Entry(rank: 8, name: "jisu.wav", title: "플레이리스트 MD", score: 5410),
+        Entry(rank: 9, name: "haneul.fm", title: "예언자", score: 5120),
+        Entry(rank: 10, name: "sonder_", title: "호스트", score: 4880),
+      ],
+      nearby: [
+        Entry(rank: 127, name: "cafe.bgm", title: "예언자", score: 2356),
+        Entry(rank: 128, name: "김동", title: "플레이리스트 MD", score: 2340),
+        Entry(rank: 129, name: "night.drive", title: "호스트", score: 2331),
       ],
       hosts: [
         SeasonHost(
