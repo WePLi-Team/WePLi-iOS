@@ -18,6 +18,8 @@ final class AppFeatureTests: XCTestCase {
     await store.send(.login(.appleLoginButtonTapped)) {
       $0 = .login(LoginFeature.State(isLoading: true))
     }
+    // 로그인 직후 계정 상태를 확인한다(UI-17e) — 정상 계정이면 그대로 로그인을 마친다
+    await store.receive(\.login.accountChecked)
     await store.receive(\.login.loginResponse) {
       $0 = .login(LoginFeature.State(isLoading: false))
     }
@@ -37,6 +39,8 @@ final class AppFeatureTests: XCTestCase {
     await store.send(.login(.googleLoginButtonTapped)) {
       $0 = .login(LoginFeature.State(isLoading: true))
     }
+    // 로그인 직후 계정 상태를 확인한다(UI-17e) — 정상 계정이면 그대로 로그인을 마친다
+    await store.receive(\.login.accountChecked)
     await store.receive(\.login.loginResponse) {
       $0 = .login(LoginFeature.State(isLoading: false))
     }
@@ -66,5 +70,14 @@ final class AppFeatureTests: XCTestCase {
     await store.receive(\.login.loginResponse) {
       $0 = .login(LoginFeature.State(isLoading: false, error: "실패"))
     }
+  }
+
+  func testSignedOut_returnsToLogin() async {
+    let store = TestStore(initialState: AppFeature.State.mainTab(MainTabFeature.State())) {
+      AppFeature()
+    }
+    store.exhaustivity = .off
+    await store.send(.mainTab(.delegate(.signedOut)))
+    XCTAssertEqual(store.state, .login(LoginFeature.State()))
   }
 }
