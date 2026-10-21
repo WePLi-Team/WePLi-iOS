@@ -82,7 +82,8 @@ jobs:
     name: Lint (SwiftFormat & SwiftLint)
     needs: changes
     if: ${{ needs.changes.outputs.lint == 'true' }}
-    runs-on: macos-14
+    # SwiftFormat · SwiftLint 모두 Linux 바이너리가 있어 macOS 러너를 기다리지 않는다
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Checkout
