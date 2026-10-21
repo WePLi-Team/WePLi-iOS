@@ -19,6 +19,8 @@ struct SystemStatusFeature {
     var appVersion = ""
     /// 이용 제한 시트에서 연 이의 신청(UI-11d)
     @Presents var appeal: AppealFeature.State?
+    /// 이용 제한 시트에서 연 운영정책(UI-17b)
+    @Presents var policy: CommunityPolicyFeature.State?
 
     /// 겹치면 강제 업데이트 > 점검 > 오프라인 > 이용 제한 > 이벤트(DEC-014)
     var status: SystemStatus? {
@@ -49,6 +51,8 @@ struct SystemStatusFeature {
     case restrictionClosed
     case appealTapped
     case appeal(PresentationAction<AppealFeature.Action>)
+    case policyTapped
+    case policy(PresentationAction<CommunityPolicyFeature.Action>)
     case eventClosed
     case eventHiddenToday
   }
@@ -95,6 +99,7 @@ struct SystemStatusFeature {
       case .restrictionClosed:
         state.closedRestriction = true
         state.appeal = nil
+        state.policy = nil
         return .none
       case .appealTapped:
         guard let restriction = state.restriction else { return .none }
@@ -104,6 +109,14 @@ struct SystemStatusFeature {
         state.appeal = nil
         return .none
       case .appeal:
+        return .none
+      case .policyTapped:
+        state.policy = CommunityPolicyFeature.State()
+        return .none
+      case .policy(.presented(.delegate(.dismiss))):
+        state.policy = nil
+        return .none
+      case .policy:
         return .none
       case .eventClosed:
         state.closedEventID = state.config?.event?.id
@@ -116,6 +129,7 @@ struct SystemStatusFeature {
       }
     }
     .ifLet(\.$appeal, action: \.appeal) { AppealFeature() }
+    .ifLet(\.$policy, action: \.policy) { CommunityPolicyFeature() }
   }
 
   private func loadConfig() -> Effect<Action> {

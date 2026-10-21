@@ -112,4 +112,14 @@ final class SystemStatusFeatureTests: XCTestCase {
     await store.send(.appeal(.presented(.closeTapped)))
     await store.receive(.appeal(.presented(.delegate(.dismiss)))) { $0.appeal = nil }
   }
+
+  func testPolicy_opensFromRestrictionAndBackReturns() async {
+    var initial = SystemStatusFeature.State()
+    initial.restriction = self.restriction
+    initial.now = self.now
+    let store = TestStore(initialState: initial) { SystemStatusFeature() }
+    await store.send(.policyTapped) { $0.policy = CommunityPolicyFeature.State() }
+    await store.send(.policy(.presented(.backButtonTapped)))
+    await store.receive(.policy(.presented(.delegate(.dismiss)))) { $0.policy = nil }
+  }
 }

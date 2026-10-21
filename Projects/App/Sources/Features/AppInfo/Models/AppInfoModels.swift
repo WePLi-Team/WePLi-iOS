@@ -12,6 +12,8 @@ struct AppDocument: Equatable, Identifiable, Sendable {
   let title: String
   let clauses: [Clause]
 
+  static let policyID = "policy"
+
   /// 원본 순서 — 서비스 이용약관 · 개인정보처리방침 · 커뮤니티 운영정책 · 오픈소스 라이선스
   static let all: [AppDocument] = [
     AppDocument(id: "terms", title: "서비스 이용약관", clauses: [
@@ -35,13 +37,8 @@ struct AppDocument: Equatable, Identifiable, Sendable {
         body: "회원 탈퇴 시 지체 없이 파기합니다. 단, 관련 법령에 따라 보관이 필요한 정보는 정해진 기간 동안 보관합니다."
       ),
     ]),
-    AppDocument(id: "policy", title: "커뮤니티 운영정책", clauses: [
-      Clause(title: "금지되는 행동", body: "욕설·비하·혐오 표현, 광고·스팸, 음란물, 타인의 권리를 침해하는 콘텐츠"),
-      Clause(
-        title: "이용 제한 단계",
-        body: "경고 → 3일 제한 → 7일 제한 → 영구 제한 순으로 적용되며, 모든 단계에서 이의를 신청할 수 있습니다."
-      ),
-    ]),
+    // 본문은 운영정책 화면(UI-17b · CommunityPolicyText)에 있다
+    AppDocument(id: policyID, title: "커뮤니티 운영정책", clauses: []),
     // 미결정 — 원본은 Pretendard 하나만 적었다. 출시 전 실제 의존성(TCA · Moya · Kingfisher · Supabase 등)으로 채운다
     AppDocument(id: "licenses", title: "오픈소스 라이선스", clauses: [
       Clause(title: "Pretendard", body: "SIL Open Font License 1.1"),

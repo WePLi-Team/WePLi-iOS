@@ -17,7 +17,7 @@ struct ContentNavigation: Reducer {
         return .none
       }
       let next = self.music(action, source, state) ?? self.relay(action, source, state)
-        ?? self.notice(action, source, state) ?? Self.account(action)
+        ?? self.notice(action, source, state) ?? Self.operations(action) ?? Self.account(action)
       if let next {
         state[stack: source.tab].append(next)
         return .none
@@ -62,7 +62,7 @@ struct ContentNavigation: Reducer {
          .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
          .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)),
-         .accountManagement(.delegate(.dismiss)):
+         .communityPolicy(.delegate(.dismiss)), .accountManagement(.delegate(.dismiss)):
       true
     default:
       false
@@ -147,6 +147,16 @@ struct ContentNavigation: Reducer {
       return .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
     default:
       return nil
+    }
+  }
+
+  /// 운영 화면 — 앱 정보(7g) 「커뮤니티 운영정책」 → 운영정책(UI-17b)
+  private static func operations(_ action: Path.Action) -> Path.State? {
+    switch action {
+    case .appInfo(.delegate(.showCommunityPolicy)):
+      .communityPolicy(CommunityPolicyFeature.State())
+    default:
+      nil
     }
   }
 
