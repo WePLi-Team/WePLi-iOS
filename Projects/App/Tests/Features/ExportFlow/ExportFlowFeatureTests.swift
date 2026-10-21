@@ -39,6 +39,13 @@ final class ExportFlowFeatureTests: XCTestCase {
     }
   }
 
+  func testLastService_staysWhenAnotherIsSelected() async {
+    let store = TestStore(initialState: self.makeState()) { ExportFlowFeature() }
+    XCTAssertEqual(store.state.lastService, .appleMusic)
+    await store.send(.serviceSelected(.spotify)) { $0.service = .spotify }
+    XCTAssertEqual(store.state.lastService, .appleMusic)
+  }
+
   func testOtherApps_goesToCopyList_andBack() async {
     let store = TestStore(initialState: self.makeState()) { ExportFlowFeature() } withDependencies: {
       $0.exportClient.isConnected = { $0 == .appleMusic }

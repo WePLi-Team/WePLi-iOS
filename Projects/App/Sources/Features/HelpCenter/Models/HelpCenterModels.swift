@@ -1,6 +1,6 @@
 import Foundation
 
-// REQ-111 · UI-7b — 고객센터. FAQ 답변은 원본 예시(정책 문구는 확인 필요)
+// REQ-111 · UI-7b · UI-17a — 고객센터 · 내 문의 내역. FAQ 답변은 원본 예시(정책 문구는 확인 필요)
 
 struct HelpFAQ: Equatable, Identifiable, Sendable {
   let id: Int
@@ -21,7 +21,12 @@ struct HelpFAQ: Equatable, Identifiable, Sendable {
       answer: "위플리에서는 30초 미리듣기를 제공해요. 전체 곡은 ‘Music에서 듣기’를 눌러 Apple Music 앱에서 들을 수 있어요."
     ),
     HelpFAQ(id: 3, question: "닉네임과 성향을 바꾸고 싶어요", answer: "마이 › 내 정보 수정에서 언제든 바꿀 수 있어요."),
-    HelpFAQ(id: 4, question: "계정을 삭제하려면 어떻게 하나요?", answer: "마이 › 계정 관리 › 회원 탈퇴에서 바로 삭제할 수 있어요."),
+    // 탈퇴 유예 14일(UI-7c · 17e) — 원본 「바로 삭제할 수 있어요」를 맞춤
+    HelpFAQ(
+      id: 4,
+      question: "계정을 삭제하려면 어떻게 하나요?",
+      answer: "마이 › 계정 관리 › 회원 탈퇴에서 신청할 수 있어요. 14일 안에 다시 로그인하면 되살릴 수 있고, 14일이 지나면 모든 정보가 삭제돼요."
+    ),
   ]
 }
 
@@ -43,13 +48,115 @@ enum InquiryCategory: CaseIterable, Equatable, Hashable, Sendable {
   }
 }
 
+/// 내 문의 내역 한 건 — 1:1 문의 답변과 이의 신청 결과가 한 목록에 온다(UI-17a · DEC-024 · DEC-025)
 struct Inquiry: Equatable, Identifiable, Sendable {
+  enum Kind: Equatable, Sendable {
+    /// 1:1 문의 — 답변이 없으면 답변 대기
+    case question(InquiryCategory, reply: InquiryReply?)
+    /// 이의 신청 결과(UI-11d)
+    case appealResult(InquiryAppealResult)
+  }
+
   let id: String
   let title: String
-  let category: InquiryCategory
   /// 「2026.09.28」 · 「방금」
   let dateText: String
-  var isAnswered: Bool
+  var kind: Kind
+  /// 내가 보낸 내용
+  var body = ""
+  var isRead = true
+  /// 「답변이 도움이 됐나요?」 — 네 true · 아니요 false
+  var isHelpful: Bool?
+
+  var status: InquiryStatus {
+    switch self.kind {
+    case let .question(_, reply): reply == nil ? .waiting : .answered
+    case let .appealResult(result): result.isAccepted ? .accepted : .rejected
+    }
+  }
+
+  var isAppealResult: Bool {
+    if case .appealResult = self.kind {
+      return true
+    }
+    return false
+  }
+
+  /// 「1:1 문의」 · 「이의 신청 결과」
+  var kindTitle: String {
+    switch self.kind {
+    case .question: "1:1 문의"
+    case .appealResult: "이의 신청 결과"
+    }
+  }
+
+  /// 「릴레이 · 투표 · 2026.09.28」 · 「게시글 · 2026.10.19」
+  var meta: String {
+    switch self.kind {
+    case let .question(category, _): "\(category.title) · \(self.dateText)"
+    case let .appealResult(result): "\(result.targetLabel) · \(self.dateText)"
+    }
+  }
+
+  /// 읽지 않은 점 — 답을 받았고 아직 열지 않았을 때만(원본)
+  var showsUnreadDot: Bool {
+    !self.isRead && self.status != .waiting
+  }
+}
+
+enum InquiryStatus: Equatable, Sendable {
+  case answered
+  case accepted
+  case rejected
+  case waiting
+
+  var title: String {
+    switch self {
+    case .answered: "답변 완료"
+    case .accepted: "받아들여짐"
+    // 원본에 없는 상태 — 디자인 확인 필요
+    case .rejected: "받아들여지지 않음"
+    case .waiting: "답변 대기"
+    }
+  }
+}
+
+/// 위플리 운영팀 답변
+struct InquiryReply: Equatable, Sendable {
+  /// 「2026.09.29 오전 10:12」 — 서버 값
+  let dateText: String
+  let text: String
+}
+
+/// 이의 신청 결과 — 결과 · 설명 · 진행 기록은 서버가 정한다(DEC-004)
+struct InquiryAppealResult: Equatable, Sendable {
+  /// 「게시글」 · 「이용 제한」
+  let targetLabel: String
+  /// 결과를 보고 열 내 게시글 — 이용 제한 대상이면 없다
+  let postID: String?
+  let isAccepted: Bool
+  let message: String
+  let steps: [InquiryStep]
+
+  var headline: String {
+    // 받아들여지지 않은 결과는 원본에 없는 문구 — 디자인 확인 필요
+    self.isAccepted ? "이의 신청이 받아들여졌어요" : "이의 신청이 받아들여지지 않았어요"
+  }
+}
+
+/// 진행 기록 한 줄 — 「이의 신청 접수」 · 「10월 19일 오후 3:20」
+struct InquiryStep: Equatable, Identifiable, Sendable {
+  let id: Int
+  let title: String
+  let dateText: String
+}
+
+extension [Inquiry] {
+  /// 읽음 표시 — 먼저 반영하고 실패하면 되돌린다
+  mutating func setRead(_ id: Inquiry.ID, _ isRead: Bool) {
+    guard let index = self.firstIndex(where: { $0.id == id }) else { return }
+    self[index].isRead = isRead
+  }
 }
 
 struct InquiryDraft: Equatable, Sendable {

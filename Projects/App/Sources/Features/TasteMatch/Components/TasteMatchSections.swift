@@ -43,9 +43,13 @@ struct TasteMatchScore: View {
       .frame(width: 210, height: 210)
       .accessibilityElement(children: .combine)
       .accessibilityLabel("취향 일치 \(self.match.score)퍼센트")
+      // 50점 아래 문구는 한 줄을 넘어 가운데로 줄바꿈
       Text(TasteMatchText.headline(name: self.name, score: self.match.score))
         .wepliFont(.title2, weight: .semibold)
         .foregroundStyle(WePLiColor.textPrimary)
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, 20)
       if let persona = self.match.sharedPersona {
         HStack(spacing: 8) {
           Text(persona)

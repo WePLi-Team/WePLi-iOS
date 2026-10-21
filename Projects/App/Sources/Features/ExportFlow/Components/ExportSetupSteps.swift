@@ -72,9 +72,9 @@ struct ExportServiceStep: View {
     if service == .otherApps {
       return "곡 목록을 복사해 옮겨요"
     }
-    // 원본은 「연결됨 · 지난번에 담은 곳」 — 지난번 기록이 없을 때 문구는 원본에 없다
+    // 「지난번에 담은 곳」은 고른 줄이 아니라 지난번 기록을 따른다 — 그 밖의 연결된 곳 문구는 원본에 없다
     if self.isConnected(service) {
-      return service == self.store.service ? "연결됨 · 지난번에 담은 곳" : "연결됨"
+      return service == self.store.lastService ? "연결됨 · 지난번에 담은 곳" : "연결됨"
     }
     return "처음 한 번 계정 연결이 필요해요"
   }

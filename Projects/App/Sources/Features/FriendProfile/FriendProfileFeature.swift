@@ -1,8 +1,8 @@
 import ComposableArchitecture
 import Foundation
 
-// REQ-079 · UI-13g · DEC-010 · DEC-020 — 친구 프로필(push). 팔로우 · 차단 · 좋아요 · 초대는 먼저 반영하고
-// 서버가 거절하면 되돌린다(DEC-004). 신고는 접수된 뒤에 안내한다.
+// REQ-079 · UI-13g · UI-17d · DEC-010 · DEC-020 · DEC-029 — 친구 프로필(push). 팔로우 · 차단 · 좋아요 · 초대는
+// 먼저 반영하고 서버가 거절하면 되돌린다(DEC-004). 신고는 접수된 뒤에 안내하고, 같은 사람은 한 번만 신고한다.
 
 @Reducer
 struct FriendProfileFeature {
@@ -19,7 +19,16 @@ struct FriendProfileFeature {
     var isInviteSent = false
     var overlay: FriendProfileOverlay?
     var reportReason: ReportReason?
+    /// 「기타」 사유 — 200자까지, 적어야 보낼 수 있다
+    var reportDetail = ""
+    var isReporting = false
     var toast: String?
+
+    /// 사유를 골랐고, 「기타」면 사유를 적었다
+    var canSubmitReport: Bool {
+      guard let reason = self.reportReason, !self.isReporting else { return false }
+      return reason != .other || !self.reportDetail.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 
     init(userID: String) {
       self.userID = userID
@@ -130,8 +139,13 @@ enum FriendProfileMenuAction: Equatable {
   case unblockTapped
   case reportTapped
   case reasonSelected(ReportReason)
+  case reportDetailChanged(String)
   case reportSubmitted
-  case reported
+  case reported(FriendReport)
+  /// 접수 안내 · 이미 신고함 시트의 「{이름} 님 차단하기」 → 차단 확인 창
+  case reportBlockTapped
+  /// 「내 문의 내역에서 보기」
+  case reportHistoryTapped
 }
 
 /// 서버가 거절했을 때 되돌릴 값
@@ -152,4 +166,6 @@ enum FriendProfileDelegate: Equatable {
   case showRelay(String)
   case showArtist(String)
   case play(PlayerTrack)
+  /// 신고 결과는 내 문의 내역(UI-17a)으로 온다
+  case showInquiryHistory
 }

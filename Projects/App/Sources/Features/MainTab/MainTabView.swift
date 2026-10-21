@@ -67,7 +67,7 @@ extension MainTabView {
     }
   }
 
-  /// 탭 공용 push 화면 — 음악 · 게시글 화면
+  /// 탭 공용 push 화면 — 음악 · 게시글 화면 · 계정 관리
   @ViewBuilder
   private static func destination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
@@ -79,6 +79,7 @@ extension MainTabView {
     case let .vote(store): CardVoteView(store: store)
     case let .worldCup(store): SongWorldCupView(store: store)
     case let .topPrediction(store): TopPredictionView(store: store)
+    case let .accountManagement(store): AccountManagementView(store: store)
     default: accountDestination(store)
     }
   }
@@ -100,27 +101,29 @@ extension MainTabView {
     }
   }
 
-  /// 마이 설정 · 앱 정보 · 바통 릴레이 · 시즌 랭킹 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
+  /// 마이 설정 · 바통 릴레이 · 시즌 랭킹 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
   @ViewBuilder
   private static func settingsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
     case let .notificationSettings(store): NotificationSettingsView(store: store)
     case let .musicServices(store): MusicServicesView(store: store)
-    case let .notices(store): NoticesView(store: store)
-    case let .appInfo(store): AppInfoView(store: store)
-    case let .helpCenter(store): HelpCenterView(store: store)
     case let .batonRelay(store): BatonRelayView(store: store)
     case let .liveTrend(store): LiveTrendView(store: store)
     case let .dailySong(store): DailySongView(store: store)
     case let .seasonRanking(store): SeasonRankingView(store: store)
-    default: operationsDestination(store)
+    default: supportDestination(store)
     }
   }
 
-  /// 운영 push 화면 — 운영정책 · 내 가려진 글
+  /// 앱 정보 · 공지 · 고객센터 · 내 문의 내역 · 운영정책 · 내 가려진 글 push 화면
   @ViewBuilder
-  private static func operationsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+  private static func supportDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
+    case let .notices(store): NoticesView(store: store)
+    case let .appInfo(store): AppInfoView(store: store)
+    case let .helpCenter(store): HelpCenterView(store: store)
+    case let .inquiryHistory(store): InquiryHistoryView(store: store)
+    case let .inquiryDetail(store): InquiryDetailView(store: store)
     case let .communityPolicy(store): CommunityPolicyView(store: store)
     case let .hiddenPost(store): HiddenPostView(store: store)
     default: EmptyView()

@@ -2,7 +2,13 @@ import ComposableArchitecture
 @testable import WePLi
 import XCTest
 
-// REQ-079 · UI-13g · DEC-020 · DEC-023
+// REQ-079 · UI-13g · UI-17d · DEC-020 · DEC-023 · DEC-029
+
+private let reportRecord = FriendReport(
+  date: Date(timeIntervalSince1970: 1792400000),
+  reason: .abuse,
+  status: .reviewing
+)
 
 @MainActor
 final class FriendProfileFeatureTests: XCTestCase {
@@ -71,22 +77,104 @@ final class FriendProfileFeatureTests: XCTestCase {
     XCTAssertEqual(calls.value, [true, false])
   }
 
-  func testReport_needsReasonAndAnnouncesAfterServer() async {
-    let reason = LockIsolated<ReportReason?>(nil)
+  func testReport_needsReasonThenShowsDoneSheet() async {
+    let sent = LockIsolated<[ReportReason]>([])
     let store = TestStore(initialState: self.loaded()) { FriendProfileFeature() } withDependencies: {
-      $0.friendProfileClient.report = { _, value in reason.setValue(value) }
+      $0.friendProfileClient.report = { _, value, detail in
+        XCTAssertNil(detail)
+        sent.withValue { $0.append(value) }
+        return reportRecord
+      }
     }
     await store.send(.menu(.reportTapped)) { $0.overlay = .report }
     // 사유를 고르기 전에는 보내지 않는다
     await store.send(.menu(.reportSubmitted))
     await store.send(.menu(.reasonSelected(.spam))) { $0.reportReason = .spam }
     await store.send(.menu(.reasonSelected(.impersonation))) { $0.reportReason = .impersonation }
-    await store.send(.menu(.reportSubmitted)) {
-      $0.overlay = nil
+    // 보내는 동안 시트는 그대로 — 끌어내려도 닫히지 않는다
+    await store.send(.menu(.reportSubmitted)) { $0.isReporting = true }
+    await store.receive(.menu(.reported(reportRecord))) {
+      $0.isReporting = false
       $0.reportReason = nil
+      $0.profile?.myReport = reportRecord
+      $0.overlay = .reportDone
     }
-    await store.receive(.menu(.reported)) { $0.toast = FriendProfileText.reported }
-    XCTAssertEqual(reason.value, .impersonation)
+    // 접수 안내에서 바로 차단 확인 창으로
+    await store.send(.menu(.reportBlockTapped)) { $0.overlay = .blockConfirm }
+    XCTAssertEqual(sent.value, [.impersonation])
+  }
+
+  func testReport_otherNeedsDetailUpTo200() async {
+    let detail = LockIsolated<String?>(nil)
+    let store = TestStore(initialState: self.loaded()) { FriendProfileFeature() } withDependencies: {
+      $0.friendProfileClient.report = { _, _, text in
+        detail.setValue(text)
+        return reportRecord
+      }
+    }
+    await store.send(.menu(.reportTapped)) { $0.overlay = .report }
+    await store.send(.menu(.reasonSelected(.other))) { $0.reportReason = .other }
+    XCTAssertFalse(store.state.canSubmitReport)
+    // 빈칸만 적으면 아직 보낼 수 없다
+    await store.send(.menu(.reportDetailChanged("   "))) { $0.reportDetail = "   " }
+    XCTAssertFalse(store.state.canSubmitReport)
+    await store.send(.menu(.reportSubmitted))
+    let long = String(repeating: "가", count: 205)
+    await store.send(.menu(.reportDetailChanged(long))) { $0.reportDetail = String(repeating: "가", count: 200) }
+    await store.send(.menu(.reportDetailChanged(" 프로필 사진 도용 "))) { $0.reportDetail = " 프로필 사진 도용 " }
+    XCTAssertTrue(store.state.canSubmitReport)
+    await store.send(.menu(.reportSubmitted)) { $0.isReporting = true }
+    await store.receive(.menu(.reported(reportRecord))) {
+      $0.isReporting = false
+      $0.reportReason = nil
+      $0.reportDetail = ""
+      $0.profile?.myReport = reportRecord
+      $0.overlay = .reportDone
+    }
+    XCTAssertEqual(detail.value, "프로필 사진 도용")
+  }
+
+  func testReport_againShowsExistingRecordAndOpensHistory() async {
+    var state = self.loaded()
+    state.profile?.myReport = reportRecord
+    let store = TestStore(initialState: state) { FriendProfileFeature() }
+    // 같은 사람은 한 번만 — 신고 시트 대신 기록을 보인다
+    await store.send(.menu(.reportTapped)) { $0.overlay = .reportExisting }
+    await store.send(.menu(.reportHistoryTapped)) { $0.overlay = nil }
+    await store.receive(.delegate(.showInquiryHistory))
+  }
+
+  func testReport_failureClosesSheetAndAlerts() async {
+    let store = TestStore(initialState: self.loaded()) { FriendProfileFeature() } withDependencies: {
+      $0.friendProfileClient.report = { _, _, _ in throw Failure() }
+    }
+    await store.send(.menu(.reportTapped)) { $0.overlay = .report }
+    await store.send(.menu(.reasonSelected(.abuse))) { $0.reportReason = .abuse }
+    await store.send(.menu(.reportSubmitted)) { $0.isReporting = true }
+    await store.receive(.rollback(.report)) {
+      $0.isReporting = false
+      $0.overlay = nil
+      $0.toast = FriendProfileText.failed
+    }
+  }
+
+  func testReportDate_seoul() {
+    // 2026-10-19 15:00 UTC = 10월 20일 0시(서울)
+    XCTAssertEqual(FriendProfileText.reportDate(Date(timeIntervalSince1970: 1792422000)), "10월 20일")
+  }
+
+  func testInquiryHistory_opensInquiryList() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .community
+    let store = TestStore(initialState: initial) { MainTabFeature() }
+    store.exhaustivity = .off
+    await store.send(.community(.authorTapped("jisoo")))
+    await store.receive(.community(.delegate(.showProfile("jisoo"))))
+    guard let id = store.state.communityPath.ids.last else { return XCTFail("프로필이 없어요") }
+    await store.send(.communityPath(.element(id: id, action: .friendProfile(.delegate(.showInquiryHistory)))))
+    guard case .inquiryHistory? = store.state.communityPath.last else {
+      return XCTFail("내 문의 내역이 열리지 않았어요")
+    }
   }
 
   func testPostLike_andInviteOnce() async {

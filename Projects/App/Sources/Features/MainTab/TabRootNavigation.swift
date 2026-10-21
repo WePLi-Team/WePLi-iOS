@@ -134,19 +134,32 @@ struct TabRootNavigation: Reducer {
 
   /// 마이 메뉴 — 「내 활동」 세 메뉴는 보관함의 해당 세그먼트로(UI-5c 노트 01)
   private func openMyMenu(_ menu: MyMenu, _ state: inout State) {
+    if let screen = Self.myScreen(menu) {
+      state.myPath.append(screen)
+      return
+    }
     switch menu {
-    case .myPlaylists: state.myPath.append(.library(LibraryFeature.State(segment: .playlists)))
-    case .joinedRelays: state.myPath.append(.library(LibraryFeature.State(segment: .relays)))
-    case .likesAndSaves: state.myPath.append(.library(LibraryFeature.State(segment: .likes)))
-    case .notificationSettings: state.myPath.append(.notificationSettings(NotificationSettingsFeature.State()))
-    case .musicServices: state.myPath.append(.musicServices(MusicServicesFeature.State()))
     case .serviceGuide: state.serviceGuide = ServiceGuideFeature.State()
     case .listeningShare:
       state.listeningShare = ListeningShareFeature.State(nickname: state.my.profile?.nickname ?? "")
+    default: break
+    }
+  }
+
+  /// 마이 메뉴에서 push하는 화면
+  private static func myScreen(_ menu: MyMenu) -> MainTabFeature.Path.State? {
+    switch menu {
+    case .myPlaylists: .library(LibraryFeature.State(segment: .playlists))
+    case .joinedRelays: .library(LibraryFeature.State(segment: .relays))
+    case .likesAndSaves: .library(LibraryFeature.State(segment: .likes))
+    case .notificationSettings: .notificationSettings(NotificationSettingsFeature.State())
+    case .musicServices: .musicServices(MusicServicesFeature.State())
     // 「공지 • 이용약관」은 공지(7a)로 — 약관은 앱 정보(7g, 「앱 버전」)에 있다
-    case .noticesAndTerms: state.myPath.append(.notices(NoticesFeature.State()))
-    case .helpCenter: state.myPath.append(.helpCenter(HelpCenterFeature.State()))
-    case .developerMode: state.myPath.append(.appInfo(AppInfoFeature.State(isDeveloperModeEnabled: true)))
+    case .noticesAndTerms: .notices(NoticesFeature.State())
+    case .helpCenter: .helpCenter(HelpCenterFeature.State())
+    case .accountManagement: .accountManagement(AccountManagementFeature.State())
+    case .developerMode: .appInfo(AppInfoFeature.State(isDeveloperModeEnabled: true))
+    default: nil
     }
   }
 

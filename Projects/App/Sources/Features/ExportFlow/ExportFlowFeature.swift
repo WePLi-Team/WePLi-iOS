@@ -14,8 +14,10 @@ struct ExportFlowFeature {
     let recommenderCount: Int
     let songs: [ExportSong]
     var step: ExportStep = .service
+    /// 지난번에 담은 곳 — 기록이 서버에 생기기 전까지는 원본 예시(Apple Music)
+    let lastService: ExportService
     /// 지난번에 담은 곳이 먼저 골라져 있다(14c)
-    var service: ExportService = .appleMusic
+    var service: ExportService
     var connected: Set<ExportService> = []
     var name: String
     var selection: ExportSelection = .all
@@ -54,9 +56,10 @@ struct ExportFlowFeature {
       self.recommenderCount = recommenderCount
       self.songs = songs
       self.name = String("WePLi · \(title)".prefix(ExportText.nameLimit))
+      self.lastService = exported?.service ?? .appleMusic
+      self.service = self.lastService
       // 같은 릴레이를 다시 내보내면 새로 만들지, 기존 플리를 맞출지 먼저 묻는다(14n)
       if let exported {
-        self.service = exported.service
         self.step = .problem(.alreadyExported(exported))
       }
     }

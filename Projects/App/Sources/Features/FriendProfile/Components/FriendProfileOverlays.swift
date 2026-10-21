@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-// UI-13g · DEC-020 — ··· 메뉴 시트 · 차단 확인 창 · 차단한 사용자 화면 · 신고 시트
+// UI-13g · DEC-020 — ··· 메뉴 시트 · 차단 확인 창 · 차단한 사용자 화면. 신고 시트는 FriendReportSheets(UI-17d)
 
 /// ··· 메뉴 — 프로필 공유하기 · 프로필 링크 복사 / 차단하기(차단했으면 차단 해제) · 신고하기
 struct FriendProfileMenuSheet: View {
@@ -28,7 +28,7 @@ struct FriendProfileMenuSheet: View {
         Button { self.store.send(.menu(.copyLinkTapped)) } label: { FriendMenuRow(title: "프로필 링크 복사") }
       }
       FriendMenuGroup {
-        // 차단한 뒤에는 메뉴에서도 풀 수 있게 한다(원본은 같은 메뉴를 다시 보임)
+        // 차단한 뒤에는 「차단 해제」(흰 글자) — 누르면 바로 푼다
         if self.store.isBlocked {
           Button { self.store.send(.menu(.unblockTapped)) } label: { FriendMenuRow(title: "차단 해제") }
         } else {
@@ -140,60 +140,5 @@ struct FriendBlockedView: View {
     }
     .padding(.horizontal, 40)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-  }
-}
-
-/// 신고 — 사유 5개 중 하나(고른 줄만 라벤더 + 체크) · 안내 · 신고하기
-struct FriendReportSheet: View {
-  let store: StoreOf<FriendProfileFeature>
-  let name: String
-
-  var body: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      VStack(alignment: .leading, spacing: 4) {
-        Text("신고하기").wepliFont(.title3).foregroundStyle(WePLiColor.textPrimary)
-        Text(FriendProfileText.reportSubtitle(self.name))
-          .wepliFont(.footnote, weight: .light)
-          .foregroundStyle(WePLiColor.textTertiary)
-      }
-      .padding(EdgeInsets(top: 6, leading: 8, bottom: 0, trailing: 8))
-      VStack(spacing: 0) {
-        ForEach(ReportReason.allCases, id: \.self) { reason in
-          self.reasonRow(reason)
-        }
-      }
-      .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 20))
-      Text(FriendProfileText.reportNotice)
-        .wepliFont(.caption, weight: .light)
-        .foregroundStyle(WePLiColor.textQuaternary)
-        .padding(.horizontal, 8)
-      Spacer(minLength: 0)
-      WePLiPrimaryButton(title: "신고하기", isEnabled: self.store.reportReason != nil) {
-        self.store.send(.menu(.reportSubmitted))
-      }
-    }
-    .padding(EdgeInsets(top: 20, leading: 12, bottom: 24, trailing: 12))
-    .wepliSheetStyle(detents: [.large])
-  }
-
-  private func reasonRow(_ reason: ReportReason) -> some View {
-    let isOn = self.store.reportReason == reason
-    return Button {
-      self.store.send(.menu(.reasonSelected(reason)))
-    } label: {
-      HStack(spacing: 10) {
-        Text(reason.title)
-          .wepliFont(.callout)
-          .foregroundStyle(isOn ? WePLiColor.accent : WePLiColor.textPrimary)
-        Spacer()
-        WePLiSelectionCheck(isOn: isOn)
-      }
-      .padding(.horizontal, 18)
-      .frame(height: 52)
-      .contentShape(Rectangle())
-      .overlay(alignment: .bottom) { Rectangle().fill(Color.white.opacity(0.08)).frame(height: 0.5) }
-    }
-    .buttonStyle(.plain)
-    .accessibilityAddTraits(isOn ? [.isButton, .isSelected] : .isButton)
   }
 }

@@ -116,6 +116,8 @@ struct MainTabFeature {
     case notices(NoticesFeature)
     case appInfo(AppInfoFeature)
     case helpCenter(HelpCenterFeature)
+    case inquiryHistory(InquiryHistoryFeature)
+    case inquiryDetail(InquiryDetailFeature)
     case myPlaylist(MyPlaylistFeature)
     case songDetail(SongDetailFeature)
     case artist(ArtistFeature)
@@ -124,6 +126,7 @@ struct MainTabFeature {
     case tasteMatch(TasteMatchFeature)
     case communityPolicy(CommunityPolicyFeature)
     case hiddenPost(HiddenPostFeature)
+    case accountManagement(AccountManagementFeature)
   }
 
   enum Action: Equatable {
@@ -151,6 +154,7 @@ struct MainTabFeature {
     case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
     case replySongPicker(PresentationAction<SongPickerFeature.Action>)
+    case delegate(MainTabDelegate)
   }
 
   var body: some ReducerOf<Self> {
@@ -200,6 +204,7 @@ struct MainTabFeature {
         SongMenuNavigation()
         PlaybackNavigation()
         ProfileNavigation()
+        InquiryNavigation()
         Reduce { state, action in
           switch action {
           case let .tabSelected(tab):
@@ -245,6 +250,11 @@ struct MainTabFeature {
       }
     }
   }
+}
+
+enum MainTabDelegate: Equatable {
+  /// 탈퇴 신청 뒤 로그아웃(UI-7c) — 앱 루트가 로그인 화면으로 돌아간다
+  case signedOut
 }
 
 extension MainTabFeature.Path.State: Equatable {}
