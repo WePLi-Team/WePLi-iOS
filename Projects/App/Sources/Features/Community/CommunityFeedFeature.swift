@@ -15,6 +15,10 @@ struct CommunityFeedFeature {
     /// 게시글 / 친구(UI-13b)
     var segment: CommunitySegment = .posts
     var friends = FriendFeedFeature.State()
+    /// 신고로 가려진 내 글(UI-7e 안내 카드 · UI-17c)
+    var hiddenMine: HiddenPost?
+    /// 안내 카드에서 연 이의 신청(UI-11d)
+    @Presents var appeal: AppealFeature.State?
   }
 
   enum Action: Equatable {
@@ -34,6 +38,10 @@ struct CommunityFeedFeature {
     case storyTapped(Story.ID)
     case segmentSelected(CommunitySegment)
     case friends(FriendFeedFeature.Action)
+    case hiddenNoticeTapped
+    case hiddenAppealTapped
+    case hiddenPolicyTapped
+    case appeal(PresentationAction<AppealFeature.Action>)
     case delegate(Delegate)
   }
 
@@ -47,6 +55,10 @@ struct CommunityFeedFeature {
     /// 친구 프로필(UI-13g — 5a를 대신함, DEC-010)
     case showProfile(String)
     case showStory(Story.ID)
+    /// 내 가려진 글(UI-17c)
+    case showHiddenPost(HiddenPost)
+    /// 커뮤니티 운영정책(UI-17b)
+    case showPolicy
   }
 
   @Dependency(\.communityClient)
@@ -70,6 +82,7 @@ struct CommunityFeedFeature {
         state.hasLoaded = true
         state.stories = feed.stories
         state.posts = IdentifiedArray(uniqueElements: feed.posts)
+        state.hiddenMine = feed.hiddenMine
         return .none
 
       case .feedFailed:
@@ -126,10 +139,32 @@ struct CommunityFeedFeature {
         state.segment = segment
         return .none
 
+      case .hiddenNoticeTapped, .hiddenAppealTapped, .hiddenPolicyTapped, .appeal:
+        return self.hiddenNotice(action, &state)
+
       case .friends, .delegate:
         return .none
       }
     }
+    .ifLet(\.$appeal, action: \.appeal) { AppealFeature() }
+  }
+
+  /// 맨 위 안내 카드 — 누르면 17c, 「이의 신청하기」는 11d 시트, 「운영정책 보기」는 17b
+  private func hiddenNotice(_ action: Action, _ state: inout State) -> Effect<Action> {
+    guard let post = state.hiddenMine else { return .none }
+    switch action {
+    case .hiddenNoticeTapped:
+      return .send(.delegate(.showHiddenPost(post)))
+    case .hiddenAppealTapped:
+      state.appeal = AppealFeature.State(target: post.appealTarget)
+    case .hiddenPolicyTapped:
+      return .send(.delegate(.showPolicy))
+    case .appeal(.presented(.delegate(.dismiss))):
+      state.appeal = nil
+    default:
+      break
+    }
+    return .none
   }
 
   /// 좋아요 상태를 바꾸고 수를 ±1 한다(같은 값이면 그대로).

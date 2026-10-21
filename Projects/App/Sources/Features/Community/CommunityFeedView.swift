@@ -4,7 +4,7 @@ import SwiftUI
 // REQ-060 · UI-1d — 커뮤니티 피드 · REQ-079 · UI-13b 친구 탭
 
 struct CommunityFeedView: View {
-  let store: StoreOf<CommunityFeedFeature>
+  @Perception.Bindable var store: StoreOf<CommunityFeedFeature>
 
   var body: some View {
     WithPerceptionTracking {
@@ -25,6 +25,9 @@ struct CommunityFeedView: View {
           self.store.send(.friends(.toastDismissed))
         }
       }))
+      .sheet(item: self.$store.scope(state: \.appeal, action: \.appeal)) { appealStore in
+        AppealView(store: appealStore).wepliSheetStyle(detents: [.large])
+      }
       .onAppear { self.store.send(.onAppear) }
     }
   }
@@ -87,6 +90,15 @@ struct CommunityFeedView: View {
       )
       .padding(.vertical, 60)
     } else {
+      if let hidden = self.store.hiddenMine {
+        HiddenPostNotice(
+          post: hidden,
+          onOpen: { self.store.send(.hiddenNoticeTapped) },
+          onAppeal: { self.store.send(.hiddenAppealTapped) },
+          onPolicy: { self.store.send(.hiddenPolicyTapped) }
+        )
+        .padding(.top, 14)
+      }
       CommunityStoryRow(stories: self.store.stories) { self.store.send(.storyTapped($0)) }
       if self.store.posts.isEmpty {
         WePLiEmptyState.feed { self.store.send(.composeButtonTapped) }
