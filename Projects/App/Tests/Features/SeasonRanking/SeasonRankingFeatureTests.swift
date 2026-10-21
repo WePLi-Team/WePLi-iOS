@@ -12,11 +12,33 @@ final class SeasonRankingFeatureTests: XCTestCase {
     let ranking = SeasonRanking.mock(now: self.now)
     XCTAssertEqual(SeasonText.deadline(ranking.endsAt, now: self.now).prefix(4), "D-23")
     XCTAssertEqual(SeasonText.score(2340), "2,340")
-    XCTAssertEqual(SeasonText.change(12), "▲12")
-    XCTAssertEqual(SeasonText.change(-3), "▼3")
+    XCTAssertEqual(SeasonText.change(12), "어제보다 ▲12")
+    XCTAssertEqual(SeasonText.change(-3), "어제보다 ▼3")
     XCTAssertNil(SeasonText.change(0))
     XCTAssertEqual(ranking.podium.map(\.rank), [1, 2, 3])
-    XCTAssertEqual(ranking.list.first?.rank, 4)
+    XCTAssertEqual(ranking.list.map(\.rank), Array(4 ... 10))
+  }
+
+  func testList_topTenGapAndNearby() {
+    let ranking = SeasonRanking.mock(now: self.now)
+    XCTAssertTrue(ranking.showsGap)
+    XCTAssertEqual(ranking.nearbyList.map(\.rank), [127, 128, 129])
+    XCTAssertEqual(ranking.nearbyList.filter(ranking.isMe).map(\.rank), [128])
+  }
+
+  func testList_nearbyJoinsTopTenWithoutGap() {
+    let base = SeasonRanking.mock(now: self.now)
+    let ranking = SeasonRanking(
+      seasonName: base.seasonName,
+      endsAt: base.endsAt,
+      me: .init(rank: 10, change: 0, pointsToTop100: nil, score: 4880),
+      entries: base.entries,
+      nearby: [base.entries[8], base.entries[9], .init(rank: 11, name: "a", title: nil, score: 4800)],
+      hosts: []
+    )
+    XCTAssertFalse(ranking.showsGap)
+    XCTAssertEqual(ranking.nearbyList.map(\.rank), [11])
+    XCTAssertTrue(ranking.isMe(ranking.list[6]))
   }
 
   func testLoad_andTabs() async {

@@ -21,7 +21,12 @@ struct HelpFAQ: Equatable, Identifiable, Sendable {
       answer: "위플리에서는 30초 미리듣기를 제공해요. 전체 곡은 ‘Music에서 듣기’를 눌러 Apple Music 앱에서 들을 수 있어요."
     ),
     HelpFAQ(id: 3, question: "닉네임과 성향을 바꾸고 싶어요", answer: "마이 › 내 정보 수정에서 언제든 바꿀 수 있어요."),
-    HelpFAQ(id: 4, question: "계정을 삭제하려면 어떻게 하나요?", answer: "마이 › 계정 관리 › 회원 탈퇴에서 바로 삭제할 수 있어요."),
+    // 탈퇴 유예 14일(UI-7c · 17e) — 원본 「바로 삭제할 수 있어요」를 맞춤
+    HelpFAQ(
+      id: 4,
+      question: "계정을 삭제하려면 어떻게 하나요?",
+      answer: "마이 › 계정 관리 › 회원 탈퇴에서 신청할 수 있어요. 14일 안에 다시 로그인하면 되살릴 수 있고, 14일이 지나면 모든 정보가 삭제돼요."
+    ),
   ]
 }
 
