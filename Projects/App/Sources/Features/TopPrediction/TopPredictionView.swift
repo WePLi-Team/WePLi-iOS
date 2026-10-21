@@ -71,7 +71,12 @@ struct TopPredictionView: View {
       }
       self.record(prediction.record).padding(.horizontal, 20).padding(.top, 14)
       if let titles = self.store.titles {
-        TopPredictionTitles(board: titles) { self.store.send(.titleTapped($0)) }.padding(.top, 36)
+        TopPredictionTitles(
+          board: titles,
+          onTap: { self.store.send(.titleTapped($0)) },
+          onOpenRanking: { self.store.send(.rankingTapped) }
+        )
+        .padding(.top, 36)
       }
     }
     .padding(.bottom, 60)

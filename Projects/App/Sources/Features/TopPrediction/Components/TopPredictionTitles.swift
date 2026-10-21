@@ -6,20 +6,32 @@ import SwiftUI
 struct TopPredictionTitles: View {
   let board: TitleBoard
   let onTap: (UserTitle.ID) -> Void
+  /// 머리 → 시즌 랭킹(UI-8f) — 더 볼 화면이 있어 꺾쇠를 붙이고 제목 전체를 누른다
+  let onOpenRanking: () -> Void
 
   private let columns = Array(repeating: GridItem(.flexible(), spacing: 10, alignment: .top), count: 3)
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
-      VStack(alignment: .leading, spacing: 4) {
-        Text("내 칭호")
-          .wepliFont(.headline)
-          .foregroundStyle(WePLiColor.textPrimary)
-          .accessibilityAddTraits(.isHeader)
-        Text("눌러서 대표 칭호로 설정하면 프로필과 명함에 붙어요")
-          .wepliFont(.caption, weight: .light)
-          .foregroundStyle(WePLiColor.textTertiary)
+      Button(action: self.onOpenRanking) {
+        VStack(alignment: .leading, spacing: 4) {
+          HStack(spacing: 4) {
+            Text("내 칭호").wepliFont(.headline).foregroundStyle(WePLiColor.textPrimary)
+            Image(systemName: "chevron.right")
+              .font(.system(size: 14, weight: .semibold))
+              .foregroundStyle(WePLiColor.textPrimary)
+              .accessibilityHidden(true)
+          }
+          Text("눌러서 대표 칭호로 설정하면 프로필과 명함에 붙어요")
+            .wepliFont(.caption, weight: .light)
+            .foregroundStyle(WePLiColor.textTertiary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
+      .accessibilityAddTraits(.isHeader)
+      .accessibilityHint("시즌 랭킹을 열어요")
       self.preview.padding(.top, 14)
       LazyVGrid(columns: self.columns, spacing: 14) {
         ForEach(self.board.titles) { title in

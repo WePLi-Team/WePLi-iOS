@@ -39,6 +39,7 @@ struct TopPredictionFeature {
     case titlesLoaded(TitleBoard)
     case titleTapped(UserTitle.ID)
     case representativeFailed(previous: UserTitle.ID?)
+    case rankingTapped
     case toastDismissed
     case delegate(TopPredictionDelegate)
   }
@@ -90,6 +91,8 @@ struct TopPredictionFeature {
         // 원본에 없는 문구 — 디자인 확인 필요
         state.toast = "예측하지 못했어요. 다시 시도해 주세요"
         return .none
+      case .rankingTapped:
+        return .send(.delegate(.showSeasonRanking))
       case .titlesLoaded, .titleTapped, .representativeFailed:
         return self.titles(&state, action)
       case .toastDismissed:
@@ -156,4 +159,6 @@ enum TopPredictionDelegate: Equatable {
   case dismiss
   /// 확정했다 — 홈 1위 예측 섹션도 「예측 완료」로 바꾼다
   case predicted(relayID: String, optionID: TopPrediction.Option.ID)
+  /// 「내 칭호」 머리 → 시즌 랭킹(UI-8f)
+  case showSeasonRanking
 }
