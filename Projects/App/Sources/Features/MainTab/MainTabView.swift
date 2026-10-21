@@ -101,19 +101,29 @@ extension MainTabView {
     }
   }
 
-  /// 마이 설정 · 앱 정보 · 바통 릴레이 · 시즌 랭킹 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
+  /// 마이 설정 · 바통 릴레이 · 시즌 랭킹 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
   @ViewBuilder
   private static func settingsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
     case let .notificationSettings(store): NotificationSettingsView(store: store)
     case let .musicServices(store): MusicServicesView(store: store)
-    case let .notices(store): NoticesView(store: store)
-    case let .appInfo(store): AppInfoView(store: store)
-    case let .helpCenter(store): HelpCenterView(store: store)
     case let .batonRelay(store): BatonRelayView(store: store)
     case let .liveTrend(store): LiveTrendView(store: store)
     case let .dailySong(store): DailySongView(store: store)
     case let .seasonRanking(store): SeasonRankingView(store: store)
+    default: supportDestination(store)
+    }
+  }
+
+  /// 앱 정보 · 공지 · 고객센터 · 내 문의 내역 push 화면
+  @ViewBuilder
+  private static func supportDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+    switch store.case {
+    case let .notices(store): NoticesView(store: store)
+    case let .appInfo(store): AppInfoView(store: store)
+    case let .helpCenter(store): HelpCenterView(store: store)
+    case let .inquiryHistory(store): InquiryHistoryView(store: store)
+    case let .inquiryDetail(store): InquiryDetailView(store: store)
     default: EmptyView()
     }
   }

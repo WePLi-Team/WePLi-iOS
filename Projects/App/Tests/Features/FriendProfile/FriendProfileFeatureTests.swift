@@ -163,7 +163,7 @@ final class FriendProfileFeatureTests: XCTestCase {
     XCTAssertEqual(FriendProfileText.reportDate(Date(timeIntervalSince1970: 1792422000)), "10월 20일")
   }
 
-  func testInquiryHistory_opensHelpCenter() async {
+  func testInquiryHistory_opensInquiryList() async {
     var initial = MainTabFeature.State()
     initial.selectedTab = .community
     let store = TestStore(initialState: initial) { MainTabFeature() }
@@ -172,8 +172,8 @@ final class FriendProfileFeatureTests: XCTestCase {
     await store.receive(.community(.delegate(.showProfile("jisoo"))))
     guard let id = store.state.communityPath.ids.last else { return XCTFail("프로필이 없어요") }
     await store.send(.communityPath(.element(id: id, action: .friendProfile(.delegate(.showInquiryHistory)))))
-    guard case .helpCenter? = store.state.communityPath.last else {
-      return XCTFail("고객센터가 열리지 않았어요")
+    guard case .inquiryHistory? = store.state.communityPath.last else {
+      return XCTFail("내 문의 내역이 열리지 않았어요")
     }
   }
 

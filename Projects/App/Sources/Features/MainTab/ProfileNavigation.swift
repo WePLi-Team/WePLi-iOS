@@ -4,7 +4,7 @@ import Foundation
 // REQ-079 · UI-13g · DEC-010 — 친구 프로필을 여는 곳과 프로필에서 여는 화면.
 // 커뮤니티 글쓴이 · 친구 피드 · 검색 사용자 · 게시글 상세 글쓴이 → 친구 프로필(같은 탭 스택에 push)
 // 프로필 「나와 취향 N% 일치」 → 취향 궁합(UI-6d) → 둘이서 플레이리스트 만들기(릴레이 만들기 UI-6a)
-// 이미 신고함(UI-17d) 「내 문의 내역에서 보기」 → 고객센터(UI-7b) — 17a 내 문의 내역이 생기면 그 목록으로
+// 이미 신고함(UI-17d) 「내 문의 내역에서 보기」 → 내 문의 내역(UI-17a)
 
 struct ProfileNavigation: Reducer {
   typealias State = MainTabFeature.State
@@ -66,7 +66,7 @@ struct ProfileNavigation: Reducer {
     case let .friendProfile(.delegate(.showArtist(name))), let .tasteMatch(.delegate(.showArtist(name))):
       .artist(ArtistFeature.State(artistID: name))
     case .friendProfile(.delegate(.showInquiryHistory)):
-      .helpCenter(HelpCenterFeature.State())
+      .inquiryHistory(InquiryHistoryFeature.State())
     default:
       nil
     }
