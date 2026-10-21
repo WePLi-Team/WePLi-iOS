@@ -132,7 +132,7 @@ struct OfflineOverlay: View {
 struct RestrictionSheet: View {
   let restriction: CommunityRestriction
   let onAppeal: () -> Void
-  let onClose: () -> Void
+  let onPolicy: () -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 16) {
@@ -152,8 +152,8 @@ struct RestrictionSheet: View {
         .foregroundStyle(WePLiColor.textSecondary)
       Spacer(minLength: 0)
       ExportSecondaryButton(title: "이의 신청하기", action: self.onAppeal)
-      // 미결정 — 원본의 「운영정책 보기」는 대상(7g 운영정책)이 이 시트 밖이라 잇지 않았다. 커뮤니티만 막으니 닫을 수 있게 한다
-      Button("확인", action: self.onClose)
+      // 커뮤니티만 막으니 시트는 아래로 내려 닫을 수 있다
+      Button("운영정책 보기", action: self.onPolicy)
         .wepliFont(.callout)
         .foregroundStyle(WePLiColor.accent)
         .frame(maxWidth: .infinity)

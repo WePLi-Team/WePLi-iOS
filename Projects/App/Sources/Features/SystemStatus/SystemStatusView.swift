@@ -26,17 +26,20 @@ private struct SystemStatusModifier: ViewModifier {
     }
   }
 
-  /// 이용 제한 안내 — 「이의 신청하기」를 누르면 같은 시트 안에서 이의 신청(UI-11d)으로 바뀐다
+  /// 이용 제한 안내 — 「이의 신청하기」 · 「운영정책 보기」를 누르면 같은 시트 안에서 이의 신청(UI-11d) · 운영정책(UI-17b)으로 바뀐다
   @ViewBuilder
   private func restrictionSheet() -> some View {
     if let appealStore = self.store.scope(state: \.appeal, action: \.appeal.presented) {
       AppealView(store: appealStore)
         .wepliSheetStyle(detents: [.large])
+    } else if let policyStore = self.store.scope(state: \.policy, action: \.policy.presented) {
+      CommunityPolicyView(store: policyStore)
+        .wepliSheetStyle(detents: [.large])
     } else if let restriction = self.restriction {
       RestrictionSheet(
         restriction: restriction,
         onAppeal: { self.store.send(.appealTapped) },
-        onClose: { self.store.send(.restrictionClosed) }
+        onPolicy: { self.store.send(.policyTapped) }
       )
       .wepliSheetStyle(detents: [.large])
     }
