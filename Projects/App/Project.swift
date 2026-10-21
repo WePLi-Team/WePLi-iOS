@@ -8,11 +8,15 @@ let swiftLintScript: TargetScript = .pre(
   set -euo pipefail
   ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
-  if command -v swiftlint >/dev/null 2>&1; then
+  # Xcode 빌드 단계는 셸 설정을 읽지 않아 mise · Homebrew 경로를 직접 더한다
+  export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+  SWIFTLINT="$(cd "$ROOT" && mise which swiftlint 2>/dev/null || command -v swiftlint || true)"
+
+  if [ -n "$SWIFTLINT" ]; then
     echo "Running SwiftLint (non-strict)…"
-    swiftlint --quiet --config "$ROOT/.swiftlint.yml" || true
+    "$SWIFTLINT" --quiet --config "$ROOT/.swiftlint.yml" || true
   else
-    echo "warning: SwiftLint not installed"
+    echo "warning: SwiftLint not installed — mise install"
   fi
 
   # 의존성 분석용 스탬프 생성
