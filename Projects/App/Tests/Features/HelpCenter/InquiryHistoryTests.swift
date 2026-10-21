@@ -126,15 +126,14 @@ extension MainTabFeatureTests {
     store.exhaustivity = .off
     let helpID = try XCTUnwrap(store.state.myPath.ids.first)
     await store.send(.myPath(.element(id: helpID, action: .helpCenter(.inquiryTapped("q1")))))
-    await store.receive(\.myPath)
-    await store.receive(\.myPath)
+    // 받은 액션 수를 세지 않고 효과가 끝난 뒤 상태로 확인한다(CI 16.2에서 액션 순서 · 개수가 달랐음)
+    await store.finish()
     guard case let .inquiryDetail(detail)? = store.state.myPath.last else { return XCTFail("문의 상세가 열려야 한다") }
     XCTAssertTrue(detail.inquiry.isRead)
     let detailID = try XCTUnwrap(store.state.myPath.ids.last)
     await store.send(.myPath(.element(id: detailID, action: .inquiryDetail(.followUpTapped))))
-    await store.receive(\.myPath)
+    await store.finish()
     XCTAssertEqual(store.state.myPath.count, 1)
-    await store.receive(\.myPath)
     let help = store.state.myPath[id: helpID, case: \.helpCenter]
     XCTAssertEqual(help?.isComposing, true)
     XCTAssertEqual(help?.draft.category, .relay)
