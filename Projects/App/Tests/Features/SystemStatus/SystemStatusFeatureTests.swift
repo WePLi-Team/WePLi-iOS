@@ -13,7 +13,13 @@ final class SystemStatusFeatureTests: XCTestCase {
   }
 
   private var restriction: CommunityRestriction {
-    CommunityRestriction(reason: "신고 누적", days: 7, until: self.now.addingTimeInterval(7 * 86400), scope: "게시글")
+    CommunityRestriction(
+      id: "r1",
+      reason: "신고 누적",
+      days: 7,
+      until: self.now.addingTimeInterval(7 * 86400),
+      scope: "게시글"
+    )
   }
 
   func testPriority_updateThenMaintenanceThenOfflineThenRestrictionThenEvent() {
@@ -88,5 +94,22 @@ final class SystemStatusFeatureTests: XCTestCase {
     XCTAssertEqual(store.state.status, .restricted(self.restriction))
     await store.send(.restrictionClosed) { $0.closedRestriction = true }
     XCTAssertNil(store.state.status)
+  }
+
+  func testAppeal_opensFromRestrictionAndCloses() async {
+    var initial = SystemStatusFeature.State()
+    initial.restriction = self.restriction
+    initial.now = self.now
+    let store = TestStore(initialState: initial) { SystemStatusFeature() }
+    await store.send(.appealTapped) {
+      $0.appeal = AppealFeature.State(target: AppealTarget(
+        id: "r1",
+        kind: .restriction,
+        title: "커뮤니티 7일 이용 제한",
+        reason: "신고 누적"
+      ))
+    }
+    await store.send(.appeal(.presented(.closeTapped)))
+    await store.receive(.appeal(.presented(.delegate(.dismiss)))) { $0.appeal = nil }
   }
 }
