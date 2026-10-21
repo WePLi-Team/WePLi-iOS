@@ -106,7 +106,7 @@ struct HelpCenterFeature {
     case let .inquiryTapped(id):
       guard var inquiry = state.inquiries.first(where: { $0.id == id }) else { return .none }
       let read = InquiryHistoryFeature.markRead(inquiry, in: &state.inquiries, client: self.client) {
-        .readFailed($0)
+        Action.readFailed($0)
       }
       inquiry.isRead = true
       return .merge(read, .send(.delegate(.showInquiry(inquiry))))

@@ -55,7 +55,7 @@ struct InquiryHistoryFeature {
         guard var inquiries = state.inquiries, var inquiry = inquiries.first(where: { $0.id == id }) else {
           return .none
         }
-        let read = Self.markRead(inquiry, in: &inquiries, client: self.client) { .readFailed($0) }
+        let read = Self.markRead(inquiry, in: &inquiries, client: self.client) { Action.readFailed($0) }
         state.inquiries = inquiries
         inquiry.isRead = true
         return .merge(read, .send(.delegate(.showInquiry(inquiry))))
