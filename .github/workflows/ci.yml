@@ -211,12 +211,7 @@ jobs:
             -skipMacroValidation \
             -skipPackagePluginValidation \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            -showBuildTimingSummary \
             test | tee xcodebuild.log | xcbeautify
-
-      - name: Build Timing Summary
-        if: ${{ always() }}
-        run: sed -n '/Build Timing Summary/,/^\*\*/p' xcodebuild.log | head -40 || true
 
       - name: Trim DerivedData before cache save
         if: ${{ always() }}
