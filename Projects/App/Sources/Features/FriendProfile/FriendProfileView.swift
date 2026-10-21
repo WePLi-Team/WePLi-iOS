@@ -92,7 +92,7 @@ struct FriendProfileView: View {
   }
 }
 
-/// ··· 메뉴 · 신고 시트 — 하나만 뜬다. 차단 확인은 시트가 아니라 가운데 창
+/// ··· 메뉴 · 신고 · 접수 안내 · 이미 신고함 시트 — 하나만 뜬다. 차단 확인은 시트가 아니라 가운데 창
 private struct FriendProfileSheets: ViewModifier {
   let store: StoreOf<FriendProfileFeature>
 
@@ -109,6 +109,11 @@ private struct FriendProfileSheets: ViewModifier {
         switch overlay {
         case .menu: FriendProfileMenuSheet(store: self.store, profile: profile)
         case .report: FriendReportSheet(store: self.store, name: profile.name)
+        case .reportDone: FriendReportDoneSheet(store: self.store, name: profile.name)
+        case .reportExisting:
+          if let report = profile.myReport {
+            FriendReportExistingSheet(store: self.store, name: profile.name, report: report)
+          }
         case .blockConfirm: EmptyView()
         }
       }
