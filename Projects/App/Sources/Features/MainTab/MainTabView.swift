@@ -89,7 +89,6 @@ extension MainTabView {
     switch store.case {
     case let .notifications(store): NotificationsView(store: store)
     case let .myRecommendation(store): MyRecommendationView(store: store)
-    case let .seasonRanking(store): SeasonRankingView(store: store)
     case let .completedPlaylist(store): CompletedPlaylistView(store: store)
     case let .exportedPlaylist(store): ExportedPlaylistView(store: store)
     case let .editProfile(store): EditProfileView(store: store)
@@ -101,7 +100,7 @@ extension MainTabView {
     }
   }
 
-  /// 마이 설정 · 앱 정보 · 바통 릴레이 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
+  /// 마이 설정 · 앱 정보 · 바통 릴레이 · 시즌 랭킹 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
   @ViewBuilder
   private static func settingsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
@@ -113,6 +112,7 @@ extension MainTabView {
     case let .batonRelay(store): BatonRelayView(store: store)
     case let .liveTrend(store): LiveTrendView(store: store)
     case let .dailySong(store): DailySongView(store: store)
+    case let .seasonRanking(store): SeasonRankingView(store: store)
     default: EmptyView()
     }
   }
