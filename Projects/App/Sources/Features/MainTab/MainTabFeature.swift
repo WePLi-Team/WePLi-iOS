@@ -125,6 +125,7 @@ struct MainTabFeature {
     case friendProfile(FriendProfileFeature)
     case tasteMatch(TasteMatchFeature)
     case communityPolicy(CommunityPolicyFeature)
+    case hiddenPost(HiddenPostFeature)
     case accountManagement(AccountManagementFeature)
   }
 

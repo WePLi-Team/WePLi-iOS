@@ -29,6 +29,7 @@ final class CommunityFeedFeatureTests: XCTestCase {
       $0.hasLoaded = true
       $0.stories = CommunityFeed.mock.stories
       $0.posts = IdentifiedArray(uniqueElements: CommunityFeed.mock.posts)
+      $0.hiddenMine = .mock
     }
     await store.send(.onAppear)
   }

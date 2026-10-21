@@ -115,7 +115,7 @@ extension MainTabView {
     }
   }
 
-  /// 앱 정보 · 공지 · 고객센터 · 내 문의 내역 · 운영정책 push 화면
+  /// 앱 정보 · 공지 · 고객센터 · 내 문의 내역 · 운영정책 · 내 가려진 글 push 화면
   @ViewBuilder
   private static func supportDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
@@ -125,6 +125,7 @@ extension MainTabView {
     case let .inquiryHistory(store): InquiryHistoryView(store: store)
     case let .inquiryDetail(store): InquiryDetailView(store: store)
     case let .communityPolicy(store): CommunityPolicyView(store: store)
+    case let .hiddenPost(store): HiddenPostView(store: store)
     default: EmptyView()
     }
   }

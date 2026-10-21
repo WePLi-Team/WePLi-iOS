@@ -91,6 +91,8 @@ extension CommunityFeed {
         isLiked: true,
         isSaved: true
       ),
-    ]
+    ],
+    // 원본(UI-7e) 예시 — 신고로 가려진 내 글이 있으면 맨 위 안내 카드가 보인다
+    hiddenMine: .mock
   )
 }
