@@ -80,4 +80,28 @@ final class AppFeatureTests: XCTestCase {
     await store.send(.mainTab(.delegate(.signedOut)))
     XCTAssertEqual(store.state, .login(LoginFeature.State()))
   }
+
+  func testBrowseAsGuest_entersMainTabAsGuest() async {
+    let store = TestStore(initialState: AppFeature.State()) {
+      AppFeature()
+    }
+    store.exhaustivity = .off
+    await store.send(.login(.browseTapped))
+    await store.receive(\.login.delegate)
+    guard case let .mainTab(mainTab) = store.state else {
+      return XCTFail("메인 탭으로 들어가야 한다")
+    }
+    XCTAssertTrue(mainTab.isGuest)
+  }
+
+  func testGuestLoginRequested_returnsToLogin() async {
+    var guest = MainTabFeature.State()
+    guest.isGuest = true
+    let store = TestStore(initialState: AppFeature.State.mainTab(guest)) {
+      AppFeature()
+    }
+    store.exhaustivity = .off
+    await store.send(.mainTab(.delegate(.loginRequested)))
+    XCTAssertEqual(store.state, .login(LoginFeature.State()))
+  }
 }

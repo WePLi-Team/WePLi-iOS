@@ -80,6 +80,10 @@ struct MainTabFeature {
     @Presents var liveExport: LiveExportFeature.State?
     var liveExportSource: PathSource?
     var songMenuSource: PathSource?
+    /// 「먼저 둘러볼게요」로 들어온 손님(DEC-032) — 계정이 있어야 하는 동작은 로그인을 요청한다
+    var isGuest = false
+    /// 손님이 투표 · 추천 등을 눌렀을 때 띄우는 로그인 요청 시트
+    var loginPrompt: GuestPromptReason?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
     var hidesTabBar: Bool {
@@ -154,11 +158,15 @@ struct MainTabFeature {
     case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
     case replySongPicker(PresentationAction<SongPickerFeature.Action>)
+    /// 로그인 요청 시트 「계속 둘러보기」 · 닫기
+    case loginPromptDismissed
+    /// 로그인 요청 시트 · 마이 탭 손님 화면의 「로그인하기」
+    case guestLoginTapped
     case delegate(MainTabDelegate)
   }
 
   var body: some ReducerOf<Self> {
-    self.navigation
+    GuestGate(base: self.navigation)
       .ifLet(\.$compose, action: \.compose) {
         ComposePostFeature()
       }
@@ -255,6 +263,8 @@ struct MainTabFeature {
 enum MainTabDelegate: Equatable {
   /// 탈퇴 신청 뒤 로그아웃(UI-7c) — 앱 루트가 로그인 화면으로 돌아간다
   case signedOut
+  /// 손님이 「로그인하기」를 눌렀을 때 — 앱 루트가 로그인 화면으로 보낸다(DEC-032)
+  case loginRequested
 }
 
 extension MainTabFeature.Path.State: Equatable {}

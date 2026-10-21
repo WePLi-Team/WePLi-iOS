@@ -136,7 +136,11 @@ extension MainTabView {
     case .relay:
       RelayListView(store: self.store.scope(state: \.relay, action: \.relay))
     case .my:
-      MyView(store: self.store.scope(state: \.my, action: \.my))
+      if self.store.isGuest {
+        GuestMyView { self.store.send(.guestLoginTapped) }
+      } else {
+        MyView(store: self.store.scope(state: \.my, action: \.my))
+      }
     case .community:
       CommunityFeedView(store: self.store.scope(state: \.community, action: \.community))
     case .search:
@@ -186,6 +190,21 @@ private struct MainTabSheets: ViewModifier {
         .sheet(item: self.$store.scope(state: \.songMenu, action: \.songMenu)) { menuStore in
           SongMenuView(store: menuStore)
             .wepliSheetStyle(detents: [.height(SongMenuView.height)])
+        }
+        .sheet(item: Binding(
+          get: { self.store.loginPrompt },
+          set: {
+            if $0 == nil {
+              self.store.send(.loginPromptDismissed)
+            }
+          }
+        )) { reason in
+          GuestLoginSheet(
+            reason: reason,
+            onLogin: { self.store.send(.guestLoginTapped) },
+            onClose: { self.store.send(.loginPromptDismissed) }
+          )
+          .wepliSheetStyle(detents: [.height(GuestLoginSheet.height)])
         }
     }
   }

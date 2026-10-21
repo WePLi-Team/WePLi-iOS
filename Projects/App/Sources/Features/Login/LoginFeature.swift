@@ -19,11 +19,15 @@ struct LoginFeature {
     case loginResponse(Result<Void, Error>)
     case termsOfServiceTapped
     case privacyPolicyTapped
+    /// 「먼저 둘러볼게요」(UI-16d · DEC-032)
+    case browseTapped
     case delegate(Delegate)
   }
 
   enum Delegate: Equatable {
     case didLogIn
+    /// 로그인 없이 메인 탭으로 — 투표 · 추천 등을 누르면 그때 로그인을 요청한다
+    case browseAsGuest
   }
 
   @Dependency(\.authClient)
@@ -75,6 +79,9 @@ struct LoginFeature {
 
       case .privacyPolicyTapped:
         return .none
+
+      case .browseTapped:
+        return .send(.delegate(.browseAsGuest))
 
       case .delegate:
         return .none
