@@ -26,6 +26,14 @@ struct ContentNavigation: Reducer {
         Self.markHomePrediction(relayID: relayID, optionID: optionID, &state)
         return .none
       }
+      if case let .hiddenPost(.delegate(.deleted(id))) = action {
+        // 지운 글은 커뮤니티 맨 위 안내 카드에서도 뺀다
+        state[stack: source.tab].pop(from: source.id)
+        if state.community.hiddenMine?.id == id {
+          state.community.hiddenMine = nil
+        }
+        return .none
+      }
       if case .appInfo(.delegate(.developerModeEnabled)) = action {
         // 마이 「기타」에 개발자 모드 행을 보인다(UI-7g 노트 02)
         state.my.isDeveloperModeEnabled = true
@@ -52,7 +60,7 @@ struct ContentNavigation: Reducer {
          .myPlaylist(.delegate(.dismiss)),
          .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
          .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)),
-         .communityPolicy(.delegate(.dismiss)):
+         .communityPolicy(.delegate(.dismiss)), .hiddenPost(.delegate(.dismiss)):
       true
     default:
       false
@@ -140,10 +148,10 @@ struct ContentNavigation: Reducer {
     }
   }
 
-  /// 운영 화면 — 앱 정보(7g) 「커뮤니티 운영정책」 → 운영정책(UI-17b)
+  /// 운영 화면 — 앱 정보(7g) 「커뮤니티 운영정책」 · 내 가려진 글(17c) 「운영정책 보기」 → 운영정책(UI-17b)
   private static func operations(_ action: Path.Action) -> Path.State? {
     switch action {
-    case .appInfo(.delegate(.showCommunityPolicy)):
+    case .appInfo(.delegate(.showCommunityPolicy)), .hiddenPost(.delegate(.showPolicy)):
       .communityPolicy(CommunityPolicyFeature.State())
     default:
       nil

@@ -117,11 +117,12 @@ extension MainTabView {
     }
   }
 
-  /// 운영 push 화면 — 운영정책
+  /// 운영 push 화면 — 운영정책 · 내 가려진 글
   @ViewBuilder
   private static func operationsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
     case let .communityPolicy(store): CommunityPolicyView(store: store)
+    case let .hiddenPost(store): HiddenPostView(store: store)
     default: EmptyView()
     }
   }

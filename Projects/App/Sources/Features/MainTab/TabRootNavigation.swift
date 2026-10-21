@@ -45,6 +45,15 @@ struct TabRootNavigation: Reducer {
         state.communityPath.append(.postDetail(PostDetailFeature.State(postID: id)))
         return .none
 
+      case let .community(.delegate(.showHiddenPost(post))):
+        // 맨 위 안내 카드 → 내 가려진 글(UI-17c)
+        state.communityPath.append(.hiddenPost(HiddenPostFeature.State(post: post)))
+        return .none
+
+      case .community(.delegate(.showPolicy)):
+        state.communityPath.append(.communityPolicy(CommunityPolicyFeature.State()))
+        return .none
+
       case let .my(.delegate(.show(menu))):
         self.openMyMenu(menu, &state)
         return .none
