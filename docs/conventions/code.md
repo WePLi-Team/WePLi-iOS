@@ -46,7 +46,7 @@ Projects/App/Resources/{Assets,Colors}.xcassets · Localizable.xcstrings
   | 글자 | `.wepliFont(.body)` · `.wepliFont(.title2)` · 굵기만 바꿀 때 `.wepliFont(.subheadline, weight: .medium)` |
   | OS별 크롬 | `@Environment(\.wepliChrome)` → `.glass`(iOS 26) / `.material`(iOS 16–25). 수치는 `chrome.sheetCornerRadius` 등 |
   | 컴포넌트 | `WePLiIconButton` · `WePLiPrimaryButton` · `.wepliToast($message)` · `.wepliSheetStyle()` |
-- iOS 26 전용 API(`glassEffect` 등)는 CI의 Xcode 16.2에서 컴파일되지 않는다. 쓰려면 `#if compiler(>=6.2)`로 감싸고, 기본은 디자인 값(`wepliGlass`)으로 그린다.
+- iOS 26 전용 API(`glassEffect` 등)는 배포 대상이 iOS 16이라 `if #available(iOS 26, *)`로 감싸고, 그 밖의 OS는 디자인 값(`wepliGlass`)으로 그린다. CI도 Xcode 26.5라 `#if compiler(>=6.2)` 가드는 더 필요 없다.
 - 기존 `Colors.xcassets`(Neutral · CoolGray)는 원본 디자인 토큰이 아니다. 새 화면에서는 `WePLiColor`를 쓴다.
 - 생성물은 손으로 고치지 않는다.
 
