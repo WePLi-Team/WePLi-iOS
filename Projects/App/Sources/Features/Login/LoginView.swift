@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct LoginView: View {
-  let store: StoreOf<LoginFeature>
+  @Perception.Bindable var store: StoreOf<LoginFeature>
 
   var body: some View {
     WithPerceptionTracking {
@@ -30,6 +30,10 @@ struct LoginView: View {
         if store.isLoading {
           loadingOverlay
         }
+      }
+      // 탈퇴 유예 · 재가입 제한(UI-17e)
+      .fullScreenCover(item: $store.scope(state: \.accountGrace, action: \.accountGrace)) { graceStore in
+        AccountGraceView(store: graceStore)
       }
     }
   }

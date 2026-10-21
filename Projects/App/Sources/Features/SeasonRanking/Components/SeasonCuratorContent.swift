@@ -1,6 +1,6 @@
 import SwiftUI
 
-// UI-8f 큐레이터 탭 — 시즌 머리 · 보상 → 내 순위 캡슐 → 점수 얻는 법 → 시상대(2 · 1 · 3) → 4위부터 목록.
+// UI-8f 큐레이터 탭 — 시즌 머리 · 보상 → 내 순위 캡슐 → 점수 얻는 법 → 시상대(2 · 1 · 3) → 4–10위 · 줄임표 · 내 위아래(DEC-030).
 // 원본 맨 아래 옛 점수식 줄은 새 점수 기준과 달라 넣지 않는다(사용자 결정)
 
 struct SeasonCuratorContent: View {
@@ -19,7 +19,13 @@ struct SeasonCuratorContent: View {
       SeasonPodium(entries: self.ranking.podium).padding(.horizontal, 20).padding(.top, 28)
       VStack(spacing: 0) {
         ForEach(self.ranking.list) { entry in
-          SeasonRankRow(entry: entry)
+          SeasonRankRow(entry: entry, isMe: self.ranking.isMe(entry))
+        }
+        if self.ranking.showsGap {
+          SeasonRankGap()
+        }
+        ForEach(self.ranking.nearbyList) { entry in
+          SeasonRankRow(entry: entry, isMe: self.ranking.isMe(entry))
         }
       }
       .padding(.horizontal, 20)
@@ -53,7 +59,7 @@ private struct SeasonStandingCapsule: View {
         HStack(spacing: 4) {
           Text("\(self.standing.rank)위").wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
           if let change = SeasonText.change(self.standing.change) {
-            Text(change).wepliFont(.caption).foregroundStyle(WePLiColor.positive)
+            Text(change).wepliFont(.caption, weight: .semibold).foregroundStyle(WePLiColor.positive)
           }
         }
         if let points = self.standing.pointsToTop100 {
@@ -122,31 +128,53 @@ private struct SeasonPodium: View {
   }
 }
 
-/// 4위부터 — 순위 · 아바타 36 · 이름 · 대표 칭호 · 점수, 높이 58
+/// 목록 한 줄 — 순위 34 · 아바타 40 · 이름 · 대표 칭호 · 점수, 높이 60. 내 줄은 라벤더 + 「· 나」
 private struct SeasonRankRow: View {
   let entry: SeasonRanking.Entry
+  let isMe: Bool
+
+  private var color: Color {
+    self.isMe ? WePLiColor.accent : WePLiColor.textPrimary
+  }
 
   var body: some View {
     HStack(spacing: 12) {
       Text("\(self.entry.rank)")
-        .wepliFont(.body, weight: .bold)
+        .wepliFont(.body, weight: .semibold)
         .monospacedDigit()
-        .foregroundStyle(WePLiColor.textTertiary)
-        .frame(width: 24)
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 36, height: 36).accessibilityHidden(true)
-      VStack(alignment: .leading, spacing: 1) {
-        Text(self.entry.name).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
+        .foregroundStyle(self.color)
+        .frame(width: 34)
+      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 40, height: 40).accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: 2) {
+        Text(self.isMe ? "\(self.entry.name) · 나" : self.entry.name)
+          .wepliFont(.body)
+          .foregroundStyle(self.color)
+          .lineLimit(1)
         if let title = self.entry.title {
-          Text(title).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
+          Text(title).wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.textTertiary)
         }
       }
       Spacer(minLength: 8)
       Text(SeasonText.score(self.entry.score))
-        .wepliFont(.subheadline)
+        .wepliFont(.subheadline, weight: .semibold)
         .monospacedDigit()
-        .foregroundStyle(WePLiColor.textMuted)
+        .foregroundStyle(self.color)
     }
-    .frame(height: 58)
+    .frame(height: 60)
     .accessibilityElement(children: .combine)
+  }
+}
+
+/// TOP 10과 내 주변 사이 줄임표 — 점 4 세 개, 높이 30
+private struct SeasonRankGap: View {
+  var body: some View {
+    HStack(spacing: 4) {
+      ForEach(0 ..< 3, id: \.self) { _ in
+        Circle().fill(WePLiColor.textLocked).frame(width: 4, height: 4)
+      }
+    }
+    .frame(maxWidth: .infinity)
+    .frame(height: 30)
+    .accessibilityHidden(true)
   }
 }

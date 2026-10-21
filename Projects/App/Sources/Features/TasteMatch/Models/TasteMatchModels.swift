@@ -28,13 +28,13 @@ struct TasteMatchSong: Equatable, Identifiable, Sendable {
 }
 
 enum TasteMatchText {
-  /// 「chuuuuu__님과 꽤 잘 맞아요」 — 미결정: 점수 구간별 문구(원본은 82점 예시 하나)
+  /// 「chuuuuu__님과 꽤 잘 맞아요」 — 원본 구간 85 · 70 · 50
   static func headline(name: String, score: Int) -> String {
     let phrase = switch score {
-    case 90...: "정말 잘 맞아요"
+    case 85...: "정말 잘 맞아요"
     case 70...: "꽤 잘 맞아요"
-    case 40...: "조금 맞아요"
-    default: "아직 잘 몰라요"
+    case 50...: "비슷한 점이 많아요"
+    default: "서로 새로운 곡을 알려줄 수 있어요"
     }
     return "\(name)님과 \(phrase)"
   }
