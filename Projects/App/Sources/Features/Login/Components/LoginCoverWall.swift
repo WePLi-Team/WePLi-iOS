@@ -42,13 +42,16 @@ struct LoginCoverWall: View {
     .accessibilityHidden(true)
   }
 
+  /// 줄 높이(두 벌)가 화면보다 커도 화면 크기만 차지하게 overlay로 얹는다 — 문구 · 버튼을 밀어내지 않는다
   private func wall(at time: TimeInterval) -> some View {
-    HStack(alignment: .top, spacing: Metric.gap) {
-      ForEach(Self.columns.indices, id: \.self) { index in
-        Self.columns[index].view(at: time)
+    Color.clear
+      .overlay(alignment: .top) {
+        HStack(alignment: .top, spacing: Metric.gap) {
+          ForEach(Self.columns.indices, id: \.self) { index in
+            Self.columns[index].view(at: time)
+          }
+        }
       }
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
 
   /// y300부터 40% 지점까지 블러가 차오른다
