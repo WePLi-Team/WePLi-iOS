@@ -3,14 +3,16 @@ import Foundation
 import UIKit
 
 // REQ-079 · DEC-004 · DEC-020 — 친구 프로필. 백엔드가 정해지기 전까지 원본(UI-13g) 예시를 돌려주는 목업이다.
-// 차단 · 신고는 서버가 처리한다(서로 팔로우 해제 · 서로 비공개 · 5명 신고 시 임시 가림). 사용자 정보는 로그에 남기지 않는다.
+// 차단 · 신고는 서버가 처리한다(서로 팔로우 해제 · 서로 비공개 · 5명 신고 시 임시 가림 · 같은 사람은 한 번만 신고).
+// 사용자 정보와 신고 사유는 로그에 남기지 않는다.
 
 struct FriendProfileClient {
   var fetch: @Sendable (_ userID: String) async throws -> FriendProfile
   var setFollowing: @Sendable (_ userID: String, _ isOn: Bool) async throws -> Void
   /// 차단하면 서버가 서로 팔로우를 끊는다
   var setBlocked: @Sendable (_ userID: String, _ isOn: Bool) async throws -> Void
-  var report: @Sendable (_ userID: String, _ reason: ReportReason) async throws -> Void
+  /// 신고 — 「기타」면 적은 사유를 함께 보낸다. 서버가 접수한 기록(날 · 사유 · 상태)을 돌려준다
+  var report: @Sendable (_ userID: String, _ reason: ReportReason, _ detail: String?) async throws -> FriendReport
   var invite: @Sendable (_ userID: String, _ relayID: String) async throws -> Void
   var likePost: @Sendable (_ postID: String, _ isOn: Bool) async throws -> Void
   /// 지금 듣는 곡을 내 플리에 담기
@@ -23,7 +25,7 @@ extension FriendProfileClient: DependencyKey {
     fetch: { userID in .mock(id: userID) },
     setFollowing: { _, _ in },
     setBlocked: { _, _ in },
-    report: { _, _ in },
+    report: { _, reason, _ in FriendReport(date: Date(), reason: reason, status: .reviewing) },
     invite: { _, _ in },
     likePost: { _, _ in },
     saveSong: { _, _ in },

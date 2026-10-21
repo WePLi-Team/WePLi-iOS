@@ -11,6 +11,8 @@ enum WePLiColor {
   static let surface2 = Color(rgbHex: 0x1C1C22)
   static let surface3 = Color(rgbHex: 0x212129)
   static let surface4 = Color(rgbHex: 0x2A2A33)
+  /// 아직 오지 않은 진행 단계 점 (11d)
+  static let stepPending = Color(rgbHex: 0x3A3A44)
 
   // MARK: 텍스트
 
