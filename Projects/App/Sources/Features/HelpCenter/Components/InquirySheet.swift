@@ -2,7 +2,7 @@ import ComposableArchitecture
 import PhotosUI
 import SwiftUI
 
-// UI-7b 1:1 문의 시트 — 유형(필수) · 내용(필수, 1000자) · 사진(최대 3장) · 답변 받을 이메일 · 자동 첨부 안내 · 보내기
+// UI-7b 1:1 문의 시트 — 유형(필수) · 내용(필수, 1000자) · 사진(최대 3장) · 답변 받는 곳(DEC-025) · 자동 첨부 안내 · 보내기
 // 원본의 흰 선택 칩은 DEC-009(흰 바탕 버튼 금지)에 따라 라벤더 칩(WePLiChip)으로
 
 struct InquirySheet: View {
@@ -27,15 +27,7 @@ struct InquirySheet: View {
         self.categories
         self.textBox
         self.photos
-        HStack {
-          Text("답변 받을 이메일").foregroundStyle(WePLiColor.textQuaternary)
-          Spacer()
-          Text(self.store.email ?? "로그인 계정 이메일").foregroundStyle(WePLiColor.textPrimary)
-        }
-        .wepliFont(.subheadline)
-        .padding(.horizontal, 16)
-        .frame(height: 50)
-        .background(WePLiColor.surface3, in: RoundedRectangle(cornerRadius: 16))
+        self.reply
         Text("문의를 보내면 앱 버전, 기기 모델, iOS 버전이 함께 전달돼요.")
           .wepliFont(.caption)
           .foregroundStyle(WePLiColor.textQuaternary)
@@ -49,6 +41,42 @@ struct InquirySheet: View {
       .padding(.bottom, 24)
       .task(id: self.pickerItems) { await self.loadPhotos() }
     }
+  }
+
+  /// 답변 받는 곳 — 앱 알림 · 내 문의 내역이 기본, 「이메일로도 받기」를 켜면 주소 칸
+  private var reply: some View {
+    VStack(spacing: 0) {
+      HStack {
+        Text("답변 받는 곳").foregroundStyle(WePLiColor.textQuaternary)
+        Spacer()
+        Text("앱 알림 · 내 문의 내역").foregroundStyle(WePLiColor.textPrimary)
+      }
+      .frame(height: 50)
+      Divider().overlay(Color.white.opacity(0.08))
+      Toggle(isOn: Binding(get: { self.store.draft.wantsEmail }, set: { self.store.send(.emailToggled($0)) })) {
+        Text("이메일로도 받기").foregroundStyle(WePLiColor.textPrimary)
+      }
+      .tint(WePLiColor.accent)
+      .frame(height: 50)
+      if self.store.draft.wantsEmail {
+        Divider().overlay(Color.white.opacity(0.08))
+        TextField(
+          "",
+          text: Binding(get: { self.store.draft.email }, set: { self.store.send(.emailChanged($0)) }),
+          prompt: Text("받을 이메일 주소").foregroundColor(WePLiColor.textDisabled)
+        )
+        .foregroundStyle(WePLiColor.textPrimary)
+        .keyboardType(.emailAddress)
+        .textContentType(.emailAddress)
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .frame(height: 50)
+      }
+    }
+    .wepliFont(.subheadline)
+    .padding(.horizontal, 16)
+    .background(WePLiColor.surface3, in: RoundedRectangle(cornerRadius: 16))
+    .animation(.easeOut(duration: 0.18), value: self.store.draft.wantsEmail)
   }
 
   private var categories: some View {
