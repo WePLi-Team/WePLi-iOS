@@ -52,8 +52,8 @@ struct ExportDoneStep: View {
   private var actions: some View {
     VStack(spacing: 10) {
       ExportToggleRow(
-        title: "다음 릴레이부터 자동으로 담기",
-        detail: "추천하거나 투표한 릴레이가 완성되면 바로",
+        title: "완성되면 자동으로 담기",
+        detail: "곡을 추천하거나 투표한 릴레이가 끝나면 바로 담아요",
         isOn: self.store.autoExport
       ) { self.store.send(.autoExportToggled($0)) }
         .padding(.bottom, 8)

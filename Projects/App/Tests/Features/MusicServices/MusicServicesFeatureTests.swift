@@ -14,7 +14,12 @@ final class MusicServicesFeatureTests: XCTestCase {
 
   func testStatusText() {
     let connections = MusicServiceSettings.mock.connections
-    XCTAssertEqual(connections.map(\.status), ["연결됨 · iCloud 보관함", "연결됨 · dongdong0915", "연결 안 됨"])
+    XCTAssertEqual(
+      connections.map(\.status),
+      ["연결됨 · 내보내기 · 지금 듣는 중", "연결됨 · 내보내기 · 지금 듣는 중", "내보내기만", "지금 듣는 중만"]
+    )
+    // Last.fm은 플리를 받을 수 없어 기본으로 담을 곳에서 뺀다(DEC-018)
+    XCTAssertEqual(MusicServiceSettings.mock.destinations.map(\.service), [.appleMusic, .spotify, .youtubeMusic])
   }
 
   func testDisconnectingDefault_movesDefaultToFirstConnected() {
@@ -23,19 +28,21 @@ final class MusicServicesFeatureTests: XCTestCase {
     XCTAssertEqual(settings.defaultService, .spotify)
     settings.setConnected(.spotify, false)
     XCTAssertNil(settings.defaultService)
+    // Last.fm을 연결해도 기본으로 담을 곳이 되지 않는다
+    settings.setConnected(.lastFM, true)
+    XCTAssertNil(settings.defaultService)
     settings.setConnected(.youtubeMusic, true)
     XCTAssertEqual(settings.defaultService, .youtubeMusic)
   }
 
-  func testConnect_marksConnectedWithDetail() async {
+  func testConnect_marksConnected() async {
     let store = TestStore(initialState: self.loaded()) { MusicServicesFeature() } withDependencies: {
-      $0.musicServicesClient.connect = { _ in "dong@gmail" }
+      $0.musicServicesClient.connect = { _ in }
     }
-    await store.send(.connectTapped(.youtubeMusic)) { $0.connecting = .youtubeMusic }
-    await store.receive(.connected(.youtubeMusic, detail: "dong@gmail")) {
+    await store.send(.connectTapped(.lastFM)) { $0.connecting = .lastFM }
+    await store.receive(.connected(.lastFM)) {
       $0.connecting = nil
-      $0.settings?.connections[2].isConnected = true
-      $0.settings?.connections[2].detail = "dong@gmail"
+      $0.settings?.connections[3].isConnected = true
     }
   }
 
@@ -59,7 +66,6 @@ final class MusicServicesFeatureTests: XCTestCase {
     }
     await store.send(.disconnectTapped(.appleMusic)) {
       $0.settings?.connections[0].isConnected = false
-      $0.settings?.connections[0].detail = nil
       $0.settings?.defaultService = .spotify
     }
     await store.send(.autoExportToggled(false)) { $0.settings?.autoExport = false }

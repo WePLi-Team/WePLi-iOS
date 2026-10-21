@@ -11,7 +11,7 @@ struct MusicServicesFeature {
     var settings: MusicServiceSettings?
     var loadFailed = false
     /// 연결하는 중인 서비스 — 그동안 같은 버튼을 다시 받지 않는다
-    var connecting: ExportService?
+    var connecting: MusicConnectionService?
     var toast: String?
   }
 
@@ -21,10 +21,10 @@ struct MusicServicesFeature {
     case loadFailed
     case retryButtonTapped
     case backButtonTapped
-    case connectTapped(ExportService)
-    case connected(ExportService, detail: String?)
-    case connectFailed(ExportService)
-    case disconnectTapped(ExportService)
+    case connectTapped(MusicConnectionService)
+    case connected(MusicConnectionService)
+    case connectFailed(MusicConnectionService)
+    case disconnectTapped(MusicConnectionService)
     case defaultSelected(ExportService)
     case autoExportToggled(Bool)
     case saveFailed(previous: MusicServiceSettings)
@@ -87,14 +87,15 @@ struct MusicServicesFeature {
       state.connecting = service
       return .run { send in
         do {
-          try await send(.connected(service, detail: self.client.connect(service)))
+          try await self.client.connect(service)
+          await send(.connected(service))
         } catch {
           await send(.connectFailed(service))
         }
       }
-    case let .connected(service, detail):
+    case let .connected(service):
       state.connecting = nil
-      state.settings?.setConnected(service, true, detail: detail)
+      state.settings?.setConnected(service, true)
       return .none
     case let .connectFailed(service):
       state.connecting = nil
