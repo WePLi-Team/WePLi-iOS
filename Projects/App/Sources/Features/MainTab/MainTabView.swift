@@ -113,6 +113,15 @@ extension MainTabView {
     case let .liveTrend(store): LiveTrendView(store: store)
     case let .dailySong(store): DailySongView(store: store)
     case let .seasonRanking(store): SeasonRankingView(store: store)
+    default: operationsDestination(store)
+    }
+  }
+
+  /// 운영 push 화면 — 운영정책
+  @ViewBuilder
+  private static func operationsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+    switch store.case {
+    case let .communityPolicy(store): CommunityPolicyView(store: store)
     default: EmptyView()
     }
   }

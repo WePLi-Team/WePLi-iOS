@@ -56,10 +56,16 @@ final class AppInfoFeatureTests: XCTestCase {
 
   func testDocument_opensAndBackReturns() async {
     let store = TestStore(initialState: AppInfoFeature.State()) { AppInfoFeature() }
-    await store.send(.documentTapped("policy")) { $0.document = AppDocument.all[2] }
+    await store.send(.documentTapped("terms")) { $0.document = AppDocument.all[0] }
     await store.send(.backButtonTapped) { $0.document = nil }
     await store.send(.backButtonTapped)
     await store.receive(.delegate(.dismiss))
+  }
+
+  func testPolicyDocument_opensCommunityPolicyScreen() async {
+    let store = TestStore(initialState: AppInfoFeature.State()) { AppInfoFeature() }
+    await store.send(.documentTapped(AppDocument.policyID))
+    await store.receive(.delegate(.showCommunityPolicy))
   }
 }
 

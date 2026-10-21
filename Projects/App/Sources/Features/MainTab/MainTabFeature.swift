@@ -122,6 +122,7 @@ struct MainTabFeature {
     case playlistDetail(PlaylistDetailFeature)
     case friendProfile(FriendProfileFeature)
     case tasteMatch(TasteMatchFeature)
+    case communityPolicy(CommunityPolicyFeature)
   }
 
   enum Action: Equatable {

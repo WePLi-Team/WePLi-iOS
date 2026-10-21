@@ -68,6 +68,8 @@ struct AppInfoFeature {
       case .versionTapped:
         return self.countTap(&state)
       case let .documentTapped(id):
+        // 커뮤니티 운영정책은 이용 제한 단계 표가 있는 화면(UI-17b)으로 연다
+        guard id != AppDocument.policyID else { return .send(.delegate(.showCommunityPolicy)) }
         state.document = AppDocument.all.first { $0.id == id }
         return .none
       case .toastExpired:
@@ -100,4 +102,6 @@ enum AppInfoDelegate: Equatable {
   case dismiss
   /// 마이 「기타」에 개발자 모드 행을 보인다
   case developerModeEnabled
+  /// 커뮤니티 운영정책(UI-17b)
+  case showCommunityPolicy
 }
