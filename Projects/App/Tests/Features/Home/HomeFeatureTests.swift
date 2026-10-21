@@ -114,12 +114,14 @@ final class HomeParticipationTests: XCTestCase {
     XCTAssertEqual(feed.prediction?.subtitle, "8번 중 5번 적중 · 1일 12시간 남음")
     var first = feed.prediction
     first?.pickedID = "easy"
+    XCTAssertEqual(first?.subtitle, "8번 중 5번 적중 · 1일 12시간 남음")
+    first?.isLocked = true
     XCTAssertEqual(first?.subtitle, "예측 완료 · 마감되면 결과를 알려드릴게요")
     let live = HomeLiveListening.mock(now: self.now)
     XCTAssertTrue((1275 ... 1293).contains(live.total))
   }
 
-  func testPrediction_isOneShotAndRollsBackOnFailure() async {
+  func testPrediction_picksThenLocksAndRollsBackOnFailure() async {
     var initial = HomeFeature.State()
     initial.feed = .mock(now: self.now)
     let calls = LockIsolated(0)
@@ -135,16 +137,21 @@ final class HomeParticipationTests: XCTestCase {
       }
     }
 
+    // 고르기 전에는 잠글 수 없다
+    await store.send(.predictionPredictTapped)
     await store.send(.predictionOptionTapped("easy")) { $0.feed?.prediction?.pickedID = "easy" }
-    await store.receive(.predictionFailed) {
-      $0.feed?.prediction?.pickedID = nil
-      $0.toast = "예측을 저장하지 못했어요. 다시 골라 주세요"
-    }
+    // 잠그기 전에는 바꿀 수 있다
     await store.send(.predictionOptionTapped("supernova")) { $0.feed?.prediction?.pickedID = "supernova" }
+    await store.send(.predictionPredictTapped) { $0.feed?.prediction?.isLocked = true }
+    await store.receive(.predictionFailed) {
+      $0.feed?.prediction?.isLocked = false
+      $0.toast = "예측을 저장하지 못했어요. 다시 시도해 주세요"
+    }
+    await store.send(.predictionPredictTapped) { $0.feed?.prediction?.isLocked = true }
     await store.receive(.predictionLoaded(HomePrediction.mockOptions)) {
       $0.feed?.prediction?.options = HomePrediction.mockOptions
     }
-    // 이미 골랐으면 바꿀 수 없다
+    // 잠근 뒤에는 바꿀 수 없다
     await store.send(.predictionOptionTapped("easy"))
   }
 

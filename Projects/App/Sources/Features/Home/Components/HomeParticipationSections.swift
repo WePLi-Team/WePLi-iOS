@@ -103,11 +103,13 @@ struct HomeVotingRelaysSection: View {
   }
 }
 
-/// 1위 예측 — 한 번만 고름. 고르면 비율 · 막대가 나온다(막대는 0.5초, 줄마다 0.06초 늦게)
+/// 1위 예측 — 곡 고르기 → 반투명 「예측하기」 → 잠김(DEC-016).
+/// 잠근 뒤에만 비율 · 막대가 나온다(막대는 0.5초, 줄마다 0.06초 늦게)
 struct HomePredictionSection: View {
   let prediction: HomePrediction
   let onOpen: () -> Void
   let onPick: (HomePrediction.Option.ID) -> Void
+  let onPredict: () -> Void
 
   @Environment(\.accessibilityReduceMotion)
   private var reduceMotion
@@ -124,11 +126,32 @@ struct HomePredictionSection: View {
           self.row(option, index: index)
         }
       }
+      if !self.prediction.isLocked {
+        self.predictButton
+      }
     }
+    .animation(.easeOut(duration: 0.3), value: self.prediction.isLocked)
+  }
+
+  /// 반투명 알약 44 — 고르기 전에는 흐리게
+  private var predictButton: some View {
+    let isEnabled = self.prediction.pickedID != nil
+    return Button(action: self.onPredict) {
+      Text("예측하기")
+        .wepliFont(.body, weight: .semibold)
+        .foregroundStyle(isEnabled ? WePLiColor.textPrimary : WePLiColor.textDisabled)
+        .frame(maxWidth: .infinity)
+        .frame(height: 44)
+        .background(isEnabled ? WePLiColor.secondaryButtonFill : Color.white.opacity(0.05), in: Capsule())
+        .contentShape(Capsule())
+    }
+    .buttonStyle(.plain)
+    .disabled(!isEnabled)
+    .padding(EdgeInsets(top: 6, leading: 20, bottom: 0, trailing: 20))
   }
 
   private func row(_ option: HomePrediction.Option, index: Int) -> some View {
-    let isPicked = self.prediction.pickedID != nil
+    let isPicked = self.prediction.isLocked
     let isSelected = self.prediction.pickedID == option.id
     return Button {
       self.onPick(option.id)
