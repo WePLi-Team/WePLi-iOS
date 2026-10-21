@@ -106,8 +106,8 @@ struct HelpCenterFeature {
       guard state.draft.canSend, !state.isSending else { return .none }
       state.isSending = true
       let draft = state.draft
-      let device = self.client.deviceInfo()
       return .run { send in
+        let device = await self.client.deviceInfo()
         do {
           try await send(.sent(self.client.submit(draft, device)))
         } catch {
