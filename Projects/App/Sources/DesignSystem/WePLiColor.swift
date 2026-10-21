@@ -21,6 +21,8 @@ enum WePLiColor {
   /// 꺼진 칩 · 배지 글자 (10a)
   static let textMuted = Color(rgbHex: 0xD8D8DD)
   static let textDisabled = Color(rgbHex: 0x6B6B7C)
+  /// 아직 못 얻은 칭호 아이콘 (8d)
+  static let textLocked = Color(rgbHex: 0x4A4A55)
   /// CTA 그라디언트 위 글자
   static let textOnCTA = Color(rgbHex: 0x171821)
 

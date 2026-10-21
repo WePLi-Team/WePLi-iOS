@@ -14,6 +14,8 @@ struct TopPredictionFeature {
     var selectedID: TopPrediction.Option.ID?
     var isSubmitting = false
     var toast: String?
+    /// 아래쪽 「내 칭호」(DEC-021)
+    var titles: TitleBoard?
 
     init(relayID: String) {
       self.relayID = relayID
@@ -34,6 +36,9 @@ struct TopPredictionFeature {
     case predictTapped
     case predicted(TopPrediction)
     case predictFailed
+    case titlesLoaded(TitleBoard)
+    case titleTapped(UserTitle.ID)
+    case representativeFailed(previous: UserTitle.ID?)
     case toastDismissed
     case delegate(TopPredictionDelegate)
   }
@@ -46,7 +51,7 @@ struct TopPredictionFeature {
       switch action {
       case .onAppear:
         guard state.prediction == nil else { return .none }
-        return self.load(&state)
+        return .merge(self.load(&state), self.loadTitles())
       case let .loaded(prediction):
         state.prediction = prediction
         return .none
@@ -85,12 +90,52 @@ struct TopPredictionFeature {
         // 원본에 없는 문구 — 디자인 확인 필요
         state.toast = "예측하지 못했어요. 다시 시도해 주세요"
         return .none
+      case .titlesLoaded, .titleTapped, .representativeFailed:
+        return self.titles(&state, action)
       case .toastDismissed:
         state.toast = nil
         return .none
       case .delegate:
         return .none
       }
+    }
+  }
+
+  // MARK: 내 칭호
+
+  private func loadTitles() -> Effect<Action> {
+    .run { send in
+      // 칭호를 못 받아도 예측은 쓸 수 있다 — 칭호 영역만 비워 둔다
+      if let board = try? await self.client.titles() {
+        await send(.titlesLoaded(board))
+      }
+    }
+  }
+
+  /// 얻은 칭호만 대표로 고를 수 있다. 먼저 반영하고 실패하면 되돌린다(DEC-004)
+  private func titles(_ state: inout State, _ action: Action) -> Effect<Action> {
+    switch action {
+    case let .titlesLoaded(board):
+      state.titles = board
+      return .none
+    case let .titleTapped(id):
+      guard let board = state.titles, board.canChoose(id) else { return .none }
+      let previous = board.representativeID
+      state.titles?.representativeID = id
+      return .run { send in
+        do {
+          try await self.client.setRepresentative(id)
+        } catch {
+          await send(.representativeFailed(previous: previous))
+        }
+      }
+    case let .representativeFailed(previous):
+      state.titles?.representativeID = previous
+      // 원본에 없는 문구 — 디자인 확인 필요
+      state.toast = "대표 칭호를 바꾸지 못했어요"
+      return .none
+    default:
+      return .none
     }
   }
 
