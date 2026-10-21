@@ -160,6 +160,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-
 
+      # 새 러너는 시뮬레이터 첫 부팅이 오래 걸려, Tuist 설치 · 생성과 겹치도록 먼저 백그라운드로 부팅한다
+      - name: Pick & Boot Simulator
+        id: sim
+        run: |
+          SIM_ID=$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/{print $2; exit}')
+          if [ -z "$SIM_ID" ]; then
+            echo "No available iPhone simulator found"; exit 1
+          fi
+          echo "SIM_ID=$SIM_ID" >> $GITHUB_OUTPUT
+          nohup xcrun simctl bootstatus "$SIM_ID" -b > simulator-boot.log 2>&1 &
+
       - name: Setup mise (Tuist via mise)
         uses: jdx/mise-action@v4
 
@@ -185,16 +196,6 @@ jobs:
       - name: Tuist Generate
         run: tuist generate --no-open
 
-      - name: Pick & Boot Simulator
-        id: sim
-        run: |
-          SIM_ID=$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/{print $2; exit}')
-          if [ -z "$SIM_ID" ]; then
-            echo "No available iPhone simulator found"; exit 1
-          fi
-          echo "SIM_ID=$SIM_ID" >> $GITHUB_OUTPUT
-          xcrun simctl boot "$SIM_ID" || true
-
       # 커버리지 · 인덱스는 CI에서 쓰지 않아 끈다. clean 없이 캐시된 DerivedData 위에서 빌드한다
       - name: Build & Test
         env:
@@ -210,7 +211,12 @@ jobs:
             -skipMacroValidation \
             -skipPackagePluginValidation \
             COMPILER_INDEX_STORE_ENABLE=NO \
+            -showBuildTimingSummary \
             test | tee xcodebuild.log | xcbeautify
+
+      - name: Build Timing Summary
+        if: ${{ always() }}
+        run: sed -n '/Build Timing Summary/,/^\*\*/p' xcodebuild.log | head -40 || true
 
       - name: Trim DerivedData before cache save
         if: ${{ always() }}
