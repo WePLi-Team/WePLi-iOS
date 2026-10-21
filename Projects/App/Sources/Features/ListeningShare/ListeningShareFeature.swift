@@ -82,7 +82,7 @@ struct ListeningShareFeature {
       case .toastDismissed:
         state.toast = nil
         return .none
-      case .groupsLoaded, .delegate:
+      case .delegate:
         return .none
       }
     }

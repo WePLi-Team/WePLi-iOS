@@ -7,7 +7,7 @@ import UIKit
 
 struct HelpCenterClient {
   var inquiries: @Sendable () async throws -> [Inquiry]
-  var deviceInfo: @Sendable () -> InquiryDeviceInfo
+  var deviceInfo: @Sendable () async -> InquiryDeviceInfo
   var submit: @Sendable (_ draft: InquiryDraft, _ device: InquiryDeviceInfo) async throws -> Inquiry
 }
 
@@ -18,11 +18,14 @@ extension HelpCenterClient: DependencyKey {
     },
     deviceInfo: {
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-      return InquiryDeviceInfo(
-        appVersion: version,
-        deviceModel: UIDevice.current.model,
-        systemVersion: UIDevice.current.systemVersion
-      )
+      // UIDevice는 MainActor 격리 — 메인에서 읽는다
+      return await MainActor.run {
+        InquiryDeviceInfo(
+          appVersion: version,
+          deviceModel: UIDevice.current.model,
+          systemVersion: UIDevice.current.systemVersion
+        )
+      }
     },
     submit: { draft, _ in
       @Dependency(\.uuid)

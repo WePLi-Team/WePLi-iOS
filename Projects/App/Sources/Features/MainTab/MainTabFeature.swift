@@ -94,7 +94,7 @@ struct MainTabFeature {
   }
 
   /// 탭에서 push되는 화면 — 모든 탭이 같은 목록을 쓰고, 스택은 탭마다 따로 둔다(DEC-007)
-  @Reducer(state: .equatable, action: .equatable)
+  @Reducer
   enum Path {
     case relayDetail(RelayDetailFeature)
     case vote(CardVoteFeature)
@@ -244,3 +244,6 @@ struct MainTabFeature {
     }
   }
 }
+
+extension MainTabFeature.Path.State: Equatable {}
+extension MainTabFeature.Path.Action: Equatable {}

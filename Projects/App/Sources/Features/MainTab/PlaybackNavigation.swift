@@ -45,10 +45,8 @@ struct PlaybackNavigation: Reducer {
       return Request(queue: queue, source: Self.oneLine(playlist.title))
     case let (.playlistDetail(.delegate(.play(_, shuffled))), .playlistDetail(detail)):
       guard let playlist = detail.playlist else { return nil }
-      var queue = playlist.tracks.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
-      if shuffled {
-        self.withRandomNumberGenerator { queue.shuffle(using: &$0) }
-      }
+      let tracks = playlist.tracks.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
+      let queue = shuffled ? self.withRandomNumberGenerator { tracks.shuffled(using: &$0) } : tracks
       return Request(queue: queue, source: playlist.title)
     default:
       return nil
