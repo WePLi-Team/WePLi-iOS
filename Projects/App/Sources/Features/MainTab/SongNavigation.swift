@@ -47,10 +47,14 @@ struct SongNavigation: Reducer {
 
   /// 공유 카드 — 공유자는 마이 탭에서 불러온 프로필(없으면 공유 화면이 불러온다)
   func card(for song: SongDetail, in state: State) -> SongShareCard {
+    self.card(songID: song.id, title: song.title, artist: song.artist, in: state)
+  }
+
+  func card(songID: String, title: String, artist: String, in state: State) -> SongShareCard {
     SongShareCard(
-      songID: song.id,
-      title: song.title,
-      artist: song.artist,
+      songID: songID,
+      title: title,
+      artist: artist,
       sharerName: state.my.profile?.nickname,
       sharerPersona: state.my.profile?.persona?.name,
       today: self.now

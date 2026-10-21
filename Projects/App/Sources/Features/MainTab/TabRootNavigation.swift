@@ -11,8 +11,30 @@ struct TabRootNavigation: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case let .home(.delegate(delegate)):
+        return self.openFromHome(delegate, &state)
+
       case let .relay(.delegate(.showRelay(id))):
-        state.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
+        // 완성된 릴레이는 완성 플리 기준 화면(UI-14b 「8e·3c·4a의 완성된 플리가 모두 여기로」)
+        let relay = state.relay.relays.first { $0.id == id }
+        let isCompleted = relay.map { !$0.isLive } ?? false
+        if isCompleted {
+          state.relayPath.append(.completedPlaylist(CompletedPlaylistFeature.State(relayID: id)))
+        } else if relay?.voteFormat == .baton {
+          // 진행 중 바통 릴레이는 바통 화면(UI-8c) — 순위 · 투표가 없다
+          state.relayPath.append(.batonRelay(BatonRelayFeature.State(relayID: id)))
+        } else {
+          state.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
+        }
+        return .none
+
+      case .community(.friends(.delegate(.showListeningShare))):
+        // 친구 피드의 「나」 → 연결과 공개 범위(UI-13a)
+        state.listeningShare = ListeningShareFeature.State(nickname: state.my.profile?.nickname ?? "")
+        return .none
+
+      case let .community(.friends(.delegate(.showSong(id)))):
+        state.communityPath.append(.songDetail(SongDetailFeature.State(songID: id)))
         return .none
 
       case .community(.delegate(.showNotifications)):
@@ -23,8 +45,21 @@ struct TabRootNavigation: Reducer {
         state.communityPath.append(.postDetail(PostDetailFeature.State(postID: id)))
         return .none
 
+      case let .community(.delegate(.showHiddenPost(post))):
+        // 맨 위 안내 카드 → 내 가려진 글(UI-17c)
+        state.communityPath.append(.hiddenPost(HiddenPostFeature.State(post: post)))
+        return .none
+
+      case .community(.delegate(.showPolicy)):
+        state.communityPath.append(.communityPolicy(CommunityPolicyFeature.State()))
+        return .none
+
       case let .my(.delegate(.show(menu))):
         self.openMyMenu(menu, &state)
+        return .none
+
+      case .my(.delegate(.showAppInfo)):
+        state.myPath.append(.appInfo(AppInfoFeature.State(isDeveloperModeEnabled: state.my.isDeveloperModeEnabled)))
         return .none
 
       case .my(.delegate(.editProfile)):
@@ -46,15 +81,85 @@ struct TabRootNavigation: Reducer {
     }
   }
 
+  /// 홈(UI-12a) — 알림 · 릴레이 · 곡 · 곡 메뉴
+  private func openFromHome(_ delegate: HomeDelegate, _ state: inout State) -> Effect<Action> {
+    if let screen = Self.homeScreen(delegate) {
+      state.homePath.append(screen)
+      return .none
+    }
+    switch delegate {
+    case let .switchTab(tab):
+      state.selectedTab = tab
+    case let .songMenu(song):
+      state.songMenuSource = nil
+      state.songMenu = SongMenuFeature.State(
+        songID: song.id,
+        title: song.title,
+        artist: song.artist,
+        isLiked: false,
+        savesLike: true
+      )
+    default:
+      break
+    }
+    return .none
+  }
+
+  /// 홈에서 push하는 화면 — 릴레이 쪽
+  private static func homeScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
+    switch delegate {
+    case let .showRelay(id): .relayDetail(RelayDetailFeature.State(relayID: id))
+    case let .showMyRecommendation(relayID): .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
+    case let .showCompletedPlaylist(id): .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
+    case let .showPrediction(relayID): .topPrediction(TopPredictionFeature.State(relayID: relayID))
+    case let .showBaton(id): .batonRelay(BatonRelayFeature.State(relayID: id))
+    default: homeContentScreen(delegate)
+    }
+  }
+
+  /// 홈에서 push하는 화면 — 알림 · 곡 · 아티스트 · 게시글 · 플리 · 친구
+  private static func homeContentScreen(_ delegate: HomeDelegate) -> MainTabFeature.Path.State? {
+    switch delegate {
+    case .showNotifications: .notifications(NotificationsFeature.State())
+    case .showLiveTrend: .liveTrend(LiveTrendFeature.State())
+    case .showDailySong: .dailySong(DailySongFeature.State())
+    case let .showFriend(id): .friendProfile(FriendProfileFeature.State(userID: id))
+    case let .showSong(id): .songDetail(SongDetailFeature.State(songID: id))
+    case let .showArtist(name): .artist(ArtistFeature.State(artistID: name))
+    case let .showPost(id): .postDetail(PostDetailFeature.State(postID: id))
+    case let .showPlaylist(id): .playlistDetail(PlaylistDetailFeature.State(playlistID: id))
+    default: nil
+    }
+  }
+
   /// 마이 메뉴 — 「내 활동」 세 메뉴는 보관함의 해당 세그먼트로(UI-5c 노트 01)
   private func openMyMenu(_ menu: MyMenu, _ state: inout State) {
+    if let screen = Self.myScreen(menu) {
+      state.myPath.append(screen)
+      return
+    }
     switch menu {
-    case .myPlaylists: state.myPath.append(.library(LibraryFeature.State(segment: .playlists)))
-    case .joinedRelays: state.myPath.append(.library(LibraryFeature.State(segment: .relays)))
-    case .likesAndSaves: state.myPath.append(.library(LibraryFeature.State(segment: .likes)))
-    case .notificationSettings: state.myPath.append(.notificationSettings(NotificationSettingsFeature.State()))
-    // 원본에 화면이 없다(서비스 이용 가이드 · 공지 · 개발자 모드)
-    case .serviceGuide, .noticesAndTerms, .developerMode: break
+    case .serviceGuide: state.serviceGuide = ServiceGuideFeature.State()
+    case .listeningShare:
+      state.listeningShare = ListeningShareFeature.State(nickname: state.my.profile?.nickname ?? "")
+    default: break
+    }
+  }
+
+  /// 마이 메뉴에서 push하는 화면
+  private static func myScreen(_ menu: MyMenu) -> MainTabFeature.Path.State? {
+    switch menu {
+    case .myPlaylists: .library(LibraryFeature.State(segment: .playlists))
+    case .joinedRelays: .library(LibraryFeature.State(segment: .relays))
+    case .likesAndSaves: .library(LibraryFeature.State(segment: .likes))
+    case .notificationSettings: .notificationSettings(NotificationSettingsFeature.State())
+    case .musicServices: .musicServices(MusicServicesFeature.State())
+    // 「공지 • 이용약관」은 공지(7a)로 — 약관은 앱 정보(7g, 「앱 버전」)에 있다
+    case .noticesAndTerms: .notices(NoticesFeature.State())
+    case .helpCenter: .helpCenter(HelpCenterFeature.State())
+    case .accountManagement: .accountManagement(AccountManagementFeature.State())
+    case .developerMode: .appInfo(AppInfoFeature.State(isDeveloperModeEnabled: true))
+    default: nil
     }
   }
 

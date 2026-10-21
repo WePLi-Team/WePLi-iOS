@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import Foundation
 
-// REQ-036 · REQ-061 · REQ-064 · REQ-075 — 탭 위에 뜨는 시트 · 전체 화면: 릴레이 만들기 · 게시글 작성 · 노래로 답하기 곡 검색 · 명함 만들기
+// REQ-036 · REQ-050 · REQ-061 · REQ-064 · REQ-075 — 탭 위에 뜨는 시트 · 전체 화면: 릴레이 만들기 · 내보내기 · 게시글 작성 · 노래로 답하기 곡 검색 · 명함 만들기
 
 struct SheetNavigation: Reducer {
   typealias State = MainTabFeature.State
@@ -63,8 +63,36 @@ struct SheetNavigation: Reducer {
         state.relay.relays.insert(relay, at: 0)
         return .none
 
+      case .exportFlow(.presented(.delegate(.dismiss))):
+        state.exportFlow = nil
+        return .none
+
+      case .liveExport(.presented(.delegate(.dismiss))):
+        state.liveExport = nil
+        state.liveExportSource = nil
+        return .none
+
+      case let .liveExport(.presented(.delegate(.exported(playlist)))):
+        // 먼저 담았으면 시트를 닫고, 릴레이 상세가 있는 탭에 내보낸 플리(14m)를 연다
+        state.liveExport = nil
+        let tab = state.liveExportSource?.tab ?? state.selectedTab
+        state.liveExportSource = nil
+        state[stack: tab].append(.exportedPlaylist(ExportedPlaylistFeature.State(
+          playlistID: playlist.id,
+          playlist: playlist
+        )))
+        return .none
+
       case .businessCard(.presented(.delegate(.dismiss))):
         state.businessCard = nil
+        return .none
+
+      case .serviceGuide(.presented(.delegate(.dismiss))):
+        state.serviceGuide = nil
+        return .none
+
+      case .listeningShare(.presented(.delegate(.dismiss))):
+        state.listeningShare = nil
         return .none
 
       default:

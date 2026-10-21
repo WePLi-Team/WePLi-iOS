@@ -7,11 +7,15 @@ struct LoginFeature {
   struct State: Equatable {
     var isLoading: Bool = false
     var error: String?
+    /// 탈퇴 유예 · 재가입 제한(UI-17e) — 로그인 직후 계정 상태가 정상이 아니면 먼저 띄운다
+    @Presents var accountGrace: AccountGraceFeature.State?
   }
 
   enum Action {
     case appleLoginButtonTapped
     case googleLoginButtonTapped
+    case accountChecked(AccountStatus)
+    case accountGrace(PresentationAction<AccountGraceFeature.Action>)
     case loginResponse(Result<Void, Error>)
     case termsOfServiceTapped
     case privacyPolicyTapped
@@ -24,17 +28,22 @@ struct LoginFeature {
 
   @Dependency(\.authClient)
   var authClient
+  @Dependency(\.accountClient)
+  var accountClient
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .accountChecked, .accountGrace:
+        return self.account(&state, action)
+
       case .appleLoginButtonTapped:
         state.isLoading = true
         state.error = nil
         return .run { send in
           do {
             try await authClient.signInWithApple()
-            await send(.loginResponse(.success(())))
+            await send(.accountChecked((try? self.accountClient.status()) ?? .active))
           } catch {
             await send(.loginResponse(.failure(error)))
           }
@@ -46,7 +55,7 @@ struct LoginFeature {
         return .run { send in
           do {
             try await authClient.signInWithGoogle()
-            await send(.loginResponse(.success(())))
+            await send(.accountChecked((try? self.accountClient.status()) ?? .active))
           } catch {
             await send(.loginResponse(.failure(error)))
           }
@@ -71,6 +80,31 @@ struct LoginFeature {
         return .none
       }
     }
+    .ifLet(\.$accountGrace, action: \.accountGrace) {
+      AccountGraceFeature()
+    }
+  }
+
+  /// 로그인 직후 계정 상태(UI-17e) — 정상이면 로그인을 마치고, 아니면 17e를 띄운다
+  private func account(_ state: inout State, _ action: Action) -> Effect<Action> {
+    switch action {
+    case .accountChecked(.active):
+      return .send(.loginResponse(.success(())))
+    case let .accountChecked(.pendingDeletion(pending)):
+      state.isLoading = false
+      state.accountGrace = AccountGraceFeature.State(mode: .pending(pending))
+    case let .accountChecked(.rejoinBlocked(block)):
+      state.isLoading = false
+      state.accountGrace = AccountGraceFeature.State(mode: .blocked(block))
+    case .accountGrace(.presented(.delegate(.restored))):
+      state.accountGrace = nil
+      return .send(.loginResponse(.success(())))
+    case .accountGrace(.presented(.delegate(.signedOut))):
+      state.accountGrace = nil
+    default:
+      break
+    }
+    return .none
   }
 }
 

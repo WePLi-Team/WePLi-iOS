@@ -142,7 +142,10 @@ struct MyPlaylistFeature {
         return .none
 
       // 원본에 동작이 정해지지 않았다(커버 변경 · 재생 · 곡 메뉴) — 화면이 생기면 잇는다
-      case .coverTapped, .playTapped, .trackMenuTapped, .deleteDialog, .delegate:
+      case .playTapped:
+        return .send(.delegate(.play))
+
+      case .coverTapped, .trackMenuTapped, .deleteDialog, .delegate:
         return .none
       }
     }
@@ -207,4 +210,6 @@ enum MyPlaylistDelegate: Equatable {
   case deleted(MyPlaylist.ID)
   /// 게시글로 공유 → 이 플리의 곡을 담은 게시글 작성(UI-2b)
   case shareAsPost([ComposeTrack])
+  /// 재생 → 미리듣기 플레이어(UI-4b)
+  case play
 }

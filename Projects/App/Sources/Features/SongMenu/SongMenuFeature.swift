@@ -43,10 +43,13 @@ struct SongMenuFeature {
     let artist: String
     var isLiked: Bool
     var toast: String?
+    /// 곡 상세 없이 연 시트(홈 TOP 100 ···)는 좋아요를 직접 저장한다
+    var savesLike = false
   }
 
   enum Action: Equatable {
     case likeButtonTapped
+    case likeFailed(restore: Bool)
     case closeButtonTapped
     case itemTapped(SongMenuItem)
     case linkCopied
@@ -58,13 +61,28 @@ struct SongMenuFeature {
   @Dependency(\.songShareClient)
   var shareClient
 
+  @Dependency(\.songDetailClient)
+  var songDetailClient
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .likeButtonTapped:
         // 서버 저장 · 되돌리기는 곡 상세가 한다(같은 곡의 좋아요 하나). 시트는 바로 바꿔 보여 준다.
         state.isLiked.toggle()
-        return .send(.delegate(.toggleLike))
+        guard state.savesLike else { return .send(.delegate(.toggleLike)) }
+        let (id, isLiked) = (state.songID, state.isLiked)
+        return .run { send in
+          do {
+            try await self.songDetailClient.setLiked(id, isLiked)
+          } catch {
+            await send(.likeFailed(restore: !isLiked))
+          }
+        }
+
+      case let .likeFailed(restore):
+        state.isLiked = restore
+        return .none
 
       case .closeButtonTapped:
         return .send(.delegate(.dismiss))

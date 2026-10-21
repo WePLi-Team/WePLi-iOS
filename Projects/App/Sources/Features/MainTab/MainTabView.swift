@@ -25,35 +25,19 @@ struct MainTabView: View {
       .safeAreaInset(edge: .bottom, spacing: 0) {
         // iOS 26 검색 탭에서는 다른 탭이 홈 버튼 하나로 접히고 검색 화면이 하단 바를 그린다(UI-4c).
         if !(self.chrome == .glass && self.store.selectedTab == .search), !self.store.hidesTabBar {
-          MainTabBar(selectedTab: self.store.selectedTab) { tab in
-            self.store.send(.tabSelected(tab))
+          VStack(spacing: 0) {
+            // 재생 중이면 탭 바 위에 미니 플레이어(UI-4a 노트 02)
+            MiniPlayerView(store: self.store.scope(state: \.player, action: \.player))
+            MainTabBar(selectedTab: self.store.selectedTab) { tab in
+              self.store.send(.tabSelected(tab))
+            }
           }
         }
       }
       .ignoresSafeArea(.keyboard)
       .background(WePLiColor.background.ignoresSafeArea())
-      .sheet(item: self.$store.scope(state: \.compose, action: \.compose)) { composeStore in
-        ComposePostView(store: composeStore)
-          .wepliSheetStyle(detents: [.large])
-      }
-      .sheet(item: self.$store.scope(state: \.createRelay, action: \.createRelay)) { createStore in
-        CreateRelayView(store: createStore)
-          .wepliSheetStyle(detents: [.large])
-      }
-      .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
-        SongPickerView(store: pickerStore)
-          .wepliSheetStyle(detents: [.large])
-      }
-      .sheet(item: self.$store.scope(state: \.songMenu, action: \.songMenu)) { menuStore in
-        SongMenuView(store: menuStore)
-          .wepliSheetStyle(detents: [.height(SongMenuView.height)])
-      }
-      .fullScreenCover(item: self.$store.scope(state: \.businessCard, action: \.businessCard)) { cardStore in
-        BusinessCardFlowView(store: cardStore)
-      }
-      .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
-        SongShareView(store: shareStore)
-      }
+      .modifier(MainTabSheets(store: self.store))
+      .modifier(MainTabCovers(store: self.store))
     }
   }
 }
@@ -67,7 +51,7 @@ extension MainTabView {
     case .community: self.tabStack(.community, state: \.communityPath, action: \.communityPath)
     case .my: self.tabStack(.my, state: \.myPath, action: \.myPath)
     case .search: self.tabStack(.search, state: \.searchPath, action: \.searchPath)
-    case .home: NavigationStack { self.root(for: tab) }
+    case .home: self.tabStack(.home, state: \.homePath, action: \.homePath)
     }
   }
 
@@ -83,7 +67,7 @@ extension MainTabView {
     }
   }
 
-  /// 탭 공용 push 화면 — 음악 · 게시글 화면
+  /// 탭 공용 push 화면 — 음악 · 게시글 화면 · 계정 관리
   @ViewBuilder
   private static func destination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
@@ -94,20 +78,54 @@ extension MainTabView {
     case let .relayDetail(store): RelayDetailView(store: store)
     case let .vote(store): CardVoteView(store: store)
     case let .worldCup(store): SongWorldCupView(store: store)
+    case let .topPrediction(store): TopPredictionView(store: store)
+    case let .accountManagement(store): AccountManagementView(store: store)
     default: accountDestination(store)
     }
   }
 
-  /// 탭 공용 push 화면 — 알림 · 내 정보 · 보관함 · 내 플리
+  /// 탭 공용 push 화면 — 알림 · 내 정보 · 보관함 · 내 플리 · 친구 프로필 · 취향 궁합
   @ViewBuilder
   private static func accountDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
     switch store.case {
     case let .notifications(store): NotificationsView(store: store)
     case let .myRecommendation(store): MyRecommendationView(store: store)
+    case let .completedPlaylist(store): CompletedPlaylistView(store: store)
+    case let .exportedPlaylist(store): ExportedPlaylistView(store: store)
     case let .editProfile(store): EditProfileView(store: store)
     case let .library(store): LibraryView(store: store)
-    case let .notificationSettings(store): NotificationSettingsView(store: store)
     case let .myPlaylist(store): MyPlaylistView(store: store)
+    case let .friendProfile(store): FriendProfileView(store: store)
+    case let .tasteMatch(store): TasteMatchView(store: store)
+    default: settingsDestination(store)
+    }
+  }
+
+  /// 마이 설정 · 바통 릴레이 · 시즌 랭킹 push 화면 — Xcode 16.2가 큰 switch 타입을 제때 못 맞춰 나눈다
+  @ViewBuilder
+  private static func settingsDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+    switch store.case {
+    case let .notificationSettings(store): NotificationSettingsView(store: store)
+    case let .musicServices(store): MusicServicesView(store: store)
+    case let .batonRelay(store): BatonRelayView(store: store)
+    case let .liveTrend(store): LiveTrendView(store: store)
+    case let .dailySong(store): DailySongView(store: store)
+    case let .seasonRanking(store): SeasonRankingView(store: store)
+    default: supportDestination(store)
+    }
+  }
+
+  /// 앱 정보 · 공지 · 고객센터 · 내 문의 내역 · 운영정책 · 내 가려진 글 push 화면
+  @ViewBuilder
+  private static func supportDestination(_ store: StoreOf<MainTabFeature.Path>) -> some View {
+    switch store.case {
+    case let .notices(store): NoticesView(store: store)
+    case let .appInfo(store): AppInfoView(store: store)
+    case let .helpCenter(store): HelpCenterView(store: store)
+    case let .inquiryHistory(store): InquiryHistoryView(store: store)
+    case let .inquiryDetail(store): InquiryDetailView(store: store)
+    case let .communityPolicy(store): CommunityPolicyView(store: store)
+    case let .hiddenPost(store): HiddenPostView(store: store)
     default: EmptyView()
     }
   }
@@ -124,22 +142,8 @@ extension MainTabView {
     case .search:
       SearchView(store: self.store.scope(state: \.search, action: \.search))
     case .home:
-      TabPlaceholder(tab: tab)
-        .navigationTitle(tab.title)
+      HomeView(store: self.store.scope(state: \.home, action: \.home))
     }
-  }
-}
-
-private struct TabPlaceholder: View {
-  let tab: MainTabFeature.Tab
-
-  var body: some View {
-    WePLiEmptyState(
-      systemImage: self.tab.systemImage,
-      title: "\(self.tab.title) 화면을 준비하고 있어요",
-      message: "곧 이 탭에서 만나요."
-    )
-    .background(WePLiColor.background)
   }
 }
 
@@ -150,4 +154,68 @@ private struct TabPlaceholder: View {
 #Preview("iOS 16") {
   MainTabView(store: Store(initialState: MainTabFeature.State()) { MainTabFeature() })
     .environment(\.wepliChrome, .material)
+}
+
+/// 탭 위에 뜨는 시트 — Xcode 16.2가 한 식으로는 타입을 제때 못 맞춰 body에서 나눈다
+private struct MainTabSheets: ViewModifier {
+  @Perception.Bindable var store: StoreOf<MainTabFeature>
+
+  func body(content: Content) -> some View {
+    WithPerceptionTracking {
+      content
+        .sheet(item: self.$store.scope(state: \.compose, action: \.compose)) { composeStore in
+          ComposePostView(store: composeStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.createRelay, action: \.createRelay)) { createStore in
+          CreateRelayView(store: createStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.exportFlow, action: \.exportFlow)) { exportStore in
+          ExportFlowView(store: exportStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.liveExport, action: \.liveExport)) { liveStore in
+          LiveExportView(store: liveStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.replySongPicker, action: \.replySongPicker)) { pickerStore in
+          SongPickerView(store: pickerStore)
+            .wepliSheetStyle(detents: [.large])
+        }
+        .sheet(item: self.$store.scope(state: \.songMenu, action: \.songMenu)) { menuStore in
+          SongMenuView(store: menuStore)
+            .wepliSheetStyle(detents: [.height(SongMenuView.height)])
+        }
+    }
+  }
+}
+
+/// 탭 위에 뜨는 전체 화면
+private struct MainTabCovers: ViewModifier {
+  @Perception.Bindable var store: StoreOf<MainTabFeature>
+
+  func body(content: Content) -> some View {
+    WithPerceptionTracking {
+      content
+        .fullScreenCover(item: self.$store.scope(state: \.businessCard, action: \.businessCard)) { cardStore in
+          BusinessCardFlowView(store: cardStore)
+        }
+        .fullScreenCover(item: self.$store.scope(state: \.serviceGuide, action: \.serviceGuide)) { guideStore in
+          ServiceGuideView(store: guideStore)
+        }
+        .fullScreenCover(item: self.$store.scope(state: \.listeningShare, action: \.listeningShare)) { shareStore in
+          ListeningShareView(store: shareStore)
+        }
+        .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
+          SongShareView(store: shareStore)
+        }
+        .fullScreenCover(isPresented: Binding(
+          get: { self.store.player.isExpanded },
+          set: { self.store.send(.player(.expandedChanged($0))) }
+        )) {
+          NowPlayingView(store: self.store.scope(state: \.player, action: \.player))
+        }
+    }
+  }
 }

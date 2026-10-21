@@ -16,23 +16,62 @@ struct ContentNavigation: Reducer {
         state[stack: source.tab].pop(from: source.id)
         return .none
       }
-      if let next = self.music(action, source, state) ?? self.relay(action, source, state) {
+      let next = self.music(action, source, state) ?? self.relay(action, source, state)
+        ?? self.notice(action, source, state) ?? Self.operations(action) ?? Self.account(action)
+      if let next {
         state[stack: source.tab].append(next)
         return .none
       }
+      if case let .topPrediction(.delegate(.predicted(relayID, optionID))) = action {
+        Self.markHomePrediction(relayID: relayID, optionID: optionID, &state)
+        return .none
+      }
+      if case let .hiddenPost(.delegate(.deleted(id))) = action {
+        // 지운 글은 커뮤니티 맨 위 안내 카드에서도 뺀다
+        state[stack: source.tab].pop(from: source.id)
+        if state.community.hiddenMine?.id == id {
+          state.community.hiddenMine = nil
+        }
+        return .none
+      }
+      if case .appInfo(.delegate(.developerModeEnabled)) = action {
+        // 마이 「기타」에 개발자 모드 행을 보인다(UI-7g 노트 02)
+        state.my.isDeveloperModeEnabled = true
+        return .none
+      }
+      if case .accountManagement(.delegate(.signedOut)) = action {
+        return .send(.delegate(.signedOut))
+      }
       return self.mine(action, source, &state)
     }
+  }
+
+  /// 내 정보 수정 「회원 탈퇴」 → 탈퇴 사유 단계부터(UI-7c)
+  private static func account(_ action: Path.Action) -> Path.State? {
+    guard case .editProfile(.delegate(.showWithdraw)) = action else { return nil }
+    return .accountManagement(AccountManagementFeature.State(entry: .reason))
   }
 
   /// 뒤로 — 모든 화면 공통
   static func isDismiss(_ action: Path.Action) -> Bool {
     switch action {
     case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
-         .myRecommendation(.delegate(.dismiss)),
+         .batonRelay(.delegate(.dismiss)), .liveTrend(.delegate(.dismiss)),
+         .dailySong(.delegate(.dismiss)),
+         .myRecommendation(.delegate(.dismiss)), .topPrediction(.delegate(.dismiss)),
+         .seasonRanking(.delegate(.dismiss)),
+         .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
          .notifications(.delegate(.dismiss)),
          .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
-         .notificationSettings(.delegate(.dismiss)), .myPlaylist(.delegate(.dismiss)),
-         .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)):
+         .notificationSettings(.delegate(.dismiss)), .musicServices(.delegate(.dismiss)),
+         .notices(.delegate(.dismiss)), .appInfo(.delegate(.dismiss)),
+         .helpCenter(.delegate(.dismiss)),
+         .inquiryHistory(.delegate(.dismiss)), .inquiryDetail(.delegate(.dismiss)),
+         .myPlaylist(.delegate(.dismiss)),
+         .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
+         .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)),
+         .communityPolicy(.delegate(.dismiss)), .hiddenPost(.delegate(.dismiss)),
+         .accountManagement(.delegate(.dismiss)):
       true
     default:
       false
@@ -47,6 +86,8 @@ struct ContentNavigation: Reducer {
       let song = state[stack: source.tab][id: source.id, case: \.songDetail]?.song
       return song.map { .artist(ArtistFeature.State(artistID: $0.artist)) }
     case let .songDetail(.delegate(.showSong(id))),
+         let .liveTrend(.delegate(.showSong(id))),
+         let .completedPlaylist(.delegate(.showSong(id))),
          let .artist(.delegate(.showSong(id))),
          let .playlistDetail(.delegate(.showTrack(id))):
       return .songDetail(SongDetailFeature.State(songID: id))
@@ -83,19 +124,48 @@ struct ContentNavigation: Reducer {
       return .vote(CardVoteFeature.State(relayID: relayID, topic: topic))
     case let .library(.delegate(.showRelay(id))):
       return .relayDetail(RelayDetailFeature.State(relayID: id))
-    case let .notifications(.delegate(.open(id))):
-      // 「내 추천곡 순위 변동」 → 내 추천곡 실시간 순위(UI-8a), 마감 · 완성 알림 → 릴레이 상세
-      guard let notice = stack[id: source.id, case: \.notifications]?.notifications[id: id],
-            let relayID = notice.relayID
-      else { return nil }
-      return notice.kind == .rankChanged
-        ? .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
-        : .relayDetail(RelayDetailFeature.State(relayID: relayID))
     case let .library(.delegate(.showPlaylist(id))):
       // 보관함 「내 플레이리스트」 → 내 플레이리스트 · 편집(UI-10d)
       return .myPlaylist(MyPlaylistFeature.State(playlistID: id))
+    case .topPrediction(.delegate(.showSeasonRanking)):
+      // 1위 예측 「내 칭호」 머리 → 시즌 랭킹(UI-8f, 사용자 결정)
+      return .seasonRanking(SeasonRankingFeature.State())
     default:
       return nil
+    }
+  }
+
+  /// 알림 → 알림 종류에 맞는 화면 · 완성 플리 → 비슷한 플리 · 음악 서비스 → 내보낸 플리
+  private func notice(_ action: Path.Action, _ source: PathSource, _ state: State) -> Path.State? {
+    let stack = state[stack: source.tab]
+    switch action {
+    case let .notifications(.delegate(.open(id))):
+      // 「내 추천곡 순위 변동」 → 내 추천곡(UI-8a) · 완성 알림 → 완성 플리(UI-14b) · 마감 알림 → 릴레이 상세
+      guard let notice = stack[id: source.id, case: \.notifications]?.notifications[id: id],
+            let relayID = notice.relayID
+      else { return nil }
+      switch notice.kind {
+      case .rankChanged: return .myRecommendation(MyRecommendationFeature.State(relayID: relayID))
+      case .relayCompleted: return .completedPlaylist(CompletedPlaylistFeature.State(relayID: relayID))
+      default: return .relayDetail(RelayDetailFeature.State(relayID: relayID))
+      }
+    case let .musicServices(.delegate(.showExported(id))):
+      // 「내보낸 플레이리스트」 한 줄 → 내보낸 플리(UI-14m)
+      return .exportedPlaylist(ExportedPlaylistFeature.State(playlistID: id))
+    case let .completedPlaylist(.delegate(.showPlaylist(id))):
+      return .completedPlaylist(CompletedPlaylistFeature.State(relayID: id))
+    default:
+      return nil
+    }
+  }
+
+  /// 운영 화면 — 앱 정보(7g) 「커뮤니티 운영정책」 · 내 가려진 글(17c) 「운영정책 보기」 → 운영정책(UI-17b)
+  private static func operations(_ action: Path.Action) -> Path.State? {
+    switch action {
+    case .appInfo(.delegate(.showCommunityPolicy)), .hiddenPost(.delegate(.showPolicy)):
+      .communityPolicy(CommunityPolicyFeature.State())
+    default:
+      nil
     }
   }
 
@@ -113,6 +183,21 @@ struct ContentNavigation: Reducer {
       }
     case let .myPlaylist(.delegate(.shareAsPost(tracks))):
       state.compose = ComposePostFeature.State(tracks: tracks)
+    case let .completedPlaylist(.delegate(.songMenu(song))):
+      state.songMenuSource = nil
+      state.songMenu = SongMenuFeature.State(
+        songID: song.id,
+        title: song.title,
+        artist: song.artist,
+        isLiked: false,
+        savesLike: true
+      )
+    case .completedPlaylist(.delegate(.export)):
+      // 이미 담은 플리면 기존 플리를 맞출지 새로 만들지 먼저 묻는다(14n)
+      guard let playlist = state[stack: source.tab][id: source.id, case: \.completedPlaylist]?.playlist else { break }
+      state.exportFlow = ExportFlowFeature.State(playlist)
+    case .relayDetail(.delegate(.export)):
+      self.exportRelay(source, &state)
     case .postDetail(.delegate(.pickReplySong)):
       state.replySongTarget = source
       state.replySongPicker = SongPickerFeature.State()
@@ -120,5 +205,33 @@ struct ContentNavigation: Reducer {
       break
     }
     return .none
+  }
+
+  /// 릴레이 상세 「내 음악 앱으로」 — 완성됐으면 내보내기(14c), 진행 중이면 지금 순위로 먼저 담기(14l)
+  private func exportRelay(_ source: PathSource, _ state: inout State) {
+    guard let relay = state[stack: source.tab][id: source.id, case: \.relayDetail],
+          let detail = relay.detail
+    else { return }
+    let title = detail.title.replacingOccurrences(of: "\n", with: " ")
+    let songs = detail.ranking.map { ExportSong(id: $0.id, title: $0.title, artist: $0.artist, recommender: "") }
+    if let endsAt = detail.endsAt, relay.displayState != .completed {
+      state.liveExportSource = source
+      state.liveExport = LiveExportFeature.State(relayID: detail.id, title: title, endsAt: endsAt, songs: songs)
+    } else {
+      state.exportFlow = ExportFlowFeature.State(
+        relayID: detail.id,
+        title: title,
+        recommenderCount: detail.participantCount,
+        songs: songs
+      )
+    }
+  }
+
+  /// 1위 예측을 확정하면 홈 1위 예측도 「예측 완료」로 — 같은 릴레이 · 같은 곡이 홈 후보에 있을 때
+  private static func markHomePrediction(relayID: String, optionID: String, _ state: inout State) {
+    guard let prediction = state.home.feed?.prediction, prediction.relayID == relayID else { return }
+    guard prediction.options.contains(where: { $0.id == optionID }) else { return }
+    state.home.feed?.prediction?.pickedID = optionID
+    state.home.feed?.prediction?.isLocked = true
   }
 }

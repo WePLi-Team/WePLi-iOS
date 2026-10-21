@@ -1,0 +1,246 @@
+import ComposableArchitecture
+@testable import WePLi
+import XCTest
+
+// REQ-020 · UI-12a · DEC-008
+
+@MainActor
+final class HomeFeatureTests: XCTestCase {
+  private let now = Date(timeIntervalSince1970: 1791991800)
+
+  func testCountdown_matchesDesignFormat() {
+    XCTAssertEqual(HomeCountdown.clock(from: self.now, to: self.now.addingTimeInterval(187953)), "2일 04:12:33")
+    XCTAssertEqual(HomeCountdown.clock(from: self.now, to: self.now.addingTimeInterval(33410)), "09:16:50")
+    XCTAssertEqual(HomeCountdown.clock(from: self.now, to: self.now.addingTimeInterval(-5)), "00:00:00")
+  }
+
+  func testOnAppear_loadsAndTicks() async {
+    let clock = TestClock()
+    let feed = HomeFeed.mock(now: self.now)
+    let store = TestStore(initialState: HomeFeature.State()) {
+      HomeFeature()
+    } withDependencies: {
+      $0.continuousClock = clock
+      $0.date.now = self.now
+      $0.homeClient.fetch = { feed }
+    }
+
+    await store.send(.onAppear) { $0.now = self.now }
+    await store.receive(.loaded(feed)) { $0.feed = feed }
+    await clock.advance(by: .seconds(1))
+    await store.receive(.timerTicked)
+    await store.send(.onDisappear)
+  }
+
+  func testTaps_delegate() async {
+    var initial = HomeFeature.State()
+    initial.feed = .mock(now: self.now)
+    let store = TestStore(initialState: initial) {
+      HomeFeature()
+    }
+
+    await store.send(.heroTapped("cafe-bgm"))
+    await store.receive(.delegate(.showRelay("cafe-bgm")))
+    await store.send(.notificationsTapped)
+    await store.receive(.delegate(.showNotifications))
+    await store.send(.chartSongTapped("supernova"))
+    await store.receive(.delegate(.showSong("supernova")))
+    await store.send(.chartMoreTapped("bam"))
+    await store.receive(.delegate(.songMenu(ComposeTrack(id: "bam", title: "밤양갱", artist: "비비 (BIBI)"))))
+    await store.send(.heroPageChanged(2)) { $0.heroPage = 2 }
+  }
+
+  func testLoadFailure_thenRetry() async {
+    let store = TestStore(initialState: HomeFeature.State()) {
+      HomeFeature()
+    } withDependencies: {
+      $0.homeClient.fetch = { throw URLError(.notConnectedToInternet) }
+      $0.continuousClock = TestClock()
+      $0.date.now = Date(timeIntervalSince1970: 0)
+    }
+    store.exhaustivity = .off
+
+    await store.send(.onAppear)
+    await store.receive(.loadFailed) { $0.loadFailed = true }
+    await store.send(.retryButtonTapped) { $0.loadFailed = false }
+    await store.receive(.loadFailed)
+    await store.send(.onDisappear)
+  }
+}
+
+@MainActor
+final class HomeNavigationTests: XCTestCase {
+  func testHome_opensRelaySongNotificationsAndMenu() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .home
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.songDetailClient.setLiked = { _, _ in }
+    }
+    store.exhaustivity = .off
+
+    await store.send(.home(.delegate(.showRelay("cafe-bgm"))))
+    XCTAssertTrue(store.state.hidesTabBar)
+    await store.send(.home(.delegate(.showSong("supernova"))))
+    await store.send(.home(.delegate(.showNotifications)))
+    let ids = store.state.homePath.ids
+    XCTAssertEqual(ids.count, 3)
+    XCTAssertNotNil(store.state.homePath[id: ids[0], case: \.relayDetail])
+    XCTAssertNotNil(store.state.homePath[id: ids[1], case: \.songDetail])
+
+    // TOP 100 ··· — 곡 상세 없이 연 시트는 좋아요를 직접 저장하고, 아티스트는 홈 탭에 연다
+    await store.send(.home(.delegate(.songMenu(ComposeTrack(id: "bam", title: "밤양갱", artist: "비비 (BIBI)")))))
+    XCTAssertEqual(store.state.songMenu?.savesLike, true)
+    XCTAssertNil(store.state.songMenuSource)
+    await store.send(.songMenu(.presented(.likeButtonTapped))) { $0.songMenu?.isLiked = true }
+    await store.send(.songMenu(.presented(.itemTapped(.artist))))
+    await store.receive(.songMenu(.presented(.delegate(.selected(.artist)))))
+    XCTAssertNil(store.state.songMenu)
+    XCTAssertEqual(store.state.homePath.count, 4)
+  }
+}
+
+@MainActor
+final class HomeParticipationTests: XCTestCase {
+  private let now = Date(timeIntervalSince1970: 1791991800)
+
+  func testTexts() {
+    XCTAssertEqual(HomeText.shortRemaining(from: self.now, to: self.now.addingTimeInterval(18720)), "5시간 12분")
+    XCTAssertEqual(HomeText.shortRemaining(from: self.now, to: self.now.addingTimeInterval(94200)), "1일 2시간")
+    XCTAssertEqual(HomeText.count(1284), "1,284")
+    let feed = HomeFeed.mock(now: self.now)
+    XCTAssertEqual(feed.myRecommendations[0].relayLine, "첫 사랑이 생각나는 노래 모음 · 2위까지 42점")
+    XCTAssertEqual(feed.prediction?.subtitle, "8번 중 5번 적중 · 1일 12시간 남음")
+    var first = feed.prediction
+    first?.pickedID = "easy"
+    XCTAssertEqual(first?.subtitle, "8번 중 5번 적중 · 1일 12시간 남음")
+    first?.isLocked = true
+    XCTAssertEqual(first?.subtitle, "예측 완료 · 마감되면 결과를 알려드릴게요")
+    let live = HomeLiveListening.mock(now: self.now)
+    XCTAssertTrue((1275 ... 1293).contains(live.total))
+  }
+
+  func testPrediction_picksThenLocksAndRollsBackOnFailure() async {
+    var initial = HomeFeature.State()
+    initial.feed = .mock(now: self.now)
+    let calls = LockIsolated(0)
+    let store = TestStore(initialState: initial) {
+      HomeFeature()
+    } withDependencies: {
+      $0.homeClient.predict = { _, _ in
+        calls.withValue { $0 += 1 }
+        if calls.value == 1 {
+          throw URLError(.timedOut)
+        }
+        return HomePrediction.mockOptions
+      }
+    }
+
+    // 고르기 전에는 잠글 수 없다
+    await store.send(.predictionPredictTapped)
+    await store.send(.predictionOptionTapped("easy")) { $0.feed?.prediction?.pickedID = "easy" }
+    // 잠그기 전에는 바꿀 수 있다
+    await store.send(.predictionOptionTapped("supernova")) { $0.feed?.prediction?.pickedID = "supernova" }
+    await store.send(.predictionPredictTapped) { $0.feed?.prediction?.isLocked = true }
+    await store.receive(.predictionFailed) {
+      $0.feed?.prediction?.isLocked = false
+      $0.toast = "예측을 저장하지 못했어요. 다시 시도해 주세요"
+    }
+    await store.send(.predictionPredictTapped) { $0.feed?.prediction?.isLocked = true }
+    await store.receive(.predictionLoaded(HomePrediction.mockOptions)) {
+      $0.feed?.prediction?.options = HomePrediction.mockOptions
+    }
+    // 잠근 뒤에는 바꿀 수 없다
+    await store.send(.predictionOptionTapped("easy"))
+  }
+
+  func testLiveListening_refreshesEveryFiveSeconds() async {
+    let clock = TestClock()
+    var initial = HomeFeature.State()
+    initial.feed = .mock(now: self.now)
+    let refreshed = HomeLiveListening(total: 1300, songs: [])
+    let store = TestStore(initialState: initial) {
+      HomeFeature()
+    } withDependencies: {
+      $0.continuousClock = clock
+      $0.date.now = self.now
+      $0.homeClient.fetchLiveListening = { refreshed }
+    }
+    store.exhaustivity = .off
+
+    await store.send(.onAppear)
+    await clock.advance(by: HomeFeature.liveInterval)
+    await store.skipReceivedActions()
+    XCTAssertEqual(store.state.feed?.liveListening.total, 1300)
+    await store.send(.onDisappear)
+  }
+
+  func testTaps_delegate() async {
+    var initial = HomeFeature.State()
+    initial.feed = .mock(now: self.now)
+    let store = TestStore(initialState: initial) {
+      HomeFeature()
+    }
+
+    await store.send(.myRecommendationTapped("easy"))
+    await store.receive(.delegate(.showMyRecommendation(relayID: "first-love")))
+    await store.send(.votingRelayTapped("dawn-drive"))
+    await store.receive(.delegate(.showRelay("dawn-drive")))
+    await store.send(.liveSongTapped("how-sweet"))
+    await store.receive(.delegate(.showSong("how-sweet")))
+  }
+}
+
+@MainActor
+final class HomeDiscoveryTests: XCTestCase {
+  func testTimeOfDay_titlesAndSubtitle() {
+    XCTAssertEqual(HomeTimeOfDay(hour: 0).title, "잠 안 오는 새벽에")
+    XCTAssertEqual(HomeTimeOfDay.subtitle(hour: 0), "새벽 12시 · 이 시간에 위플리에서 많이 들은 곡")
+    XCTAssertEqual(HomeTimeOfDay(hour: 9).title, "출근길에 듣기 좋은")
+    XCTAssertEqual(HomeTimeOfDay.subtitle(hour: 15), "오후 3시 · 이 시간에 위플리에서 많이 들은 곡")
+    XCTAssertEqual(HomeTimeOfDay(hour: 18).title, "퇴근길에 듣기 좋은")
+    XCTAssertEqual(HomeTimeOfDay(hour: 22).title, "하루를 마무리하며")
+    // 2026-10-14 15:30 UTC = 10-15 00:30 KST
+    XCTAssertEqual(HomeTimeOfDay.hour(of: Date(timeIntervalSince1970: 1791991800)), 0)
+  }
+
+  func testPostMeta() {
+    let post = HomePopularPost(id: "p", title: "", body: "", author: "dlwlrma", likeCount: 10123, commentCount: 923)
+    XCTAssertEqual(post.meta, "dlwlrma · 좋아요 10,123 · 댓글 923")
+  }
+
+  func testTaps_delegate() async {
+    var initial = HomeFeature.State()
+    initial.feed = .mock(now: Date(timeIntervalSince1970: 0))
+    let store = TestStore(initialState: initial) {
+      HomeFeature()
+    }
+
+    await store.send(.todayPickTapped("bampyeonji"))
+    await store.receive(.delegate(.showSong("bampyeonji")))
+    await store.send(.favoriteArtistTapped)
+    await store.receive(.delegate(.showArtist("로이킴")))
+    await store.send(.favoriteArtistPlayTapped) { $0.isFavoriteArtistPlaying = true }
+    await store.send(.popularPostTapped("post-1"))
+    await store.receive(.delegate(.showPost("post-1")))
+    await store.send(.playlistTapped("p1"))
+    await store.receive(.delegate(.showPlaylist("p1")))
+    await store.send(.newUserActionTapped(.recommendFirstSong))
+    await store.receive(.delegate(.switchTab(.relay)))
+  }
+
+  func testHomeRoutes_inHomeTab() async {
+    let store = TestStore(initialState: MainTabFeature.State()) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.home(.delegate(.showArtist("로이킴"))))
+    await store.send(.home(.delegate(.showPost("post-1"))))
+    await store.send(.home(.delegate(.showPlaylist("p1"))))
+    XCTAssertEqual(store.state.homePath.count, 3)
+    await store.send(.home(.delegate(.switchTab(.search))))
+    XCTAssertEqual(store.state.selectedTab, .search)
+  }
+}

@@ -1,21 +1,33 @@
 import ComposableArchitecture
 import SwiftUI
 
-// REQ-060 · UI-1d — 커뮤니티 피드
+// REQ-060 · UI-1d — 커뮤니티 피드 · REQ-079 · UI-13b 친구 탭
 
 struct CommunityFeedView: View {
-  let store: StoreOf<CommunityFeedFeature>
+  @Perception.Bindable var store: StoreOf<CommunityFeedFeature>
 
   var body: some View {
     WithPerceptionTracking {
       ScrollView {
         LazyVStack(alignment: .leading, spacing: 0) {
           self.header
-          self.content
+          if self.store.segment == .friends {
+            FriendFeedView(store: self.store.scope(state: \.friends, action: \.friends))
+          } else {
+            self.content
+          }
         }
       }
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
+      .wepliToast(Binding(get: { self.store.friends.toast }, set: {
+        if $0 == nil {
+          self.store.send(.friends(.toastDismissed))
+        }
+      }))
+      .sheet(item: self.$store.scope(state: \.appeal, action: \.appeal)) { appealStore in
+        AppealView(store: appealStore).wepliSheetStyle(detents: [.large])
+      }
       .onAppear { self.store.send(.onAppear) }
     }
   }
@@ -50,6 +62,11 @@ struct CommunityFeedView: View {
         .padding(.top, 2)
         .padding(.bottom, 14)
         .accessibilityAddTraits(.isHeader)
+      // UI-13b — 제목 아래 밑줄 탭. 게시글은 지금 피드(1d) 그대로
+      WePLiUnderlineTabs(items: CommunitySegment.allCases, selected: self.store.segment, title: \.title) {
+        self.store.send(.segmentSelected($0))
+      }
+      .padding(.horizontal, 20)
     }
   }
 
@@ -73,6 +90,15 @@ struct CommunityFeedView: View {
       )
       .padding(.vertical, 60)
     } else {
+      if let hidden = self.store.hiddenMine {
+        HiddenPostNotice(
+          post: hidden,
+          onOpen: { self.store.send(.hiddenNoticeTapped) },
+          onAppeal: { self.store.send(.hiddenAppealTapped) },
+          onPolicy: { self.store.send(.hiddenPolicyTapped) }
+        )
+        .padding(.top, 14)
+      }
       CommunityStoryRow(stories: self.store.stories) { self.store.send(.storyTapped($0)) }
       if self.store.posts.isEmpty {
         WePLiEmptyState.feed { self.store.send(.composeButtonTapped) }

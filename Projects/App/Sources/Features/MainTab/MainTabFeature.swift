@@ -40,10 +40,13 @@ struct MainTabFeature {
   @ObservableState
   struct State: Equatable {
     var selectedTab: Tab = .home
+    var home = HomeFeature.State()
     var relay = RelayListFeature.State()
     var my = MyFeature.State()
     var community = CommunityFeedFeature.State()
     var search = SearchFeature.State()
+    /// 홈 탭 화면 이동(DEC-007)
+    var homePath = StackState<Path.State>()
     /// 릴레이 탭 화면 이동(DEC-007)
     var relayPath = StackState<Path.State>()
     /// 커뮤니티 탭 화면 이동(DEC-007)
@@ -63,8 +66,19 @@ struct MainTabFeature {
     @Presents var songMenu: SongMenuFeature.State?
     /// 명함 만들기(UI-2e) — 전체 화면
     @Presents var businessCard: BusinessCardFeature.State?
+    /// 서비스 이용 가이드(UI-7f) — 전체 화면
+    @Presents var serviceGuide: ServiceGuideFeature.State?
+    /// 지금 듣는 음악 — 연결과 공개 범위(UI-13a) · 전체 화면
+    @Presents var listeningShare: ListeningShareFeature.State?
     /// 릴레이리스트 만들기(UI-6a) — 시트
     @Presents var createRelay: CreateRelayFeature.State?
+    /// 내 음악 앱으로 내보내기(UI-14c–14o) — 시트
+    @Presents var exportFlow: ExportFlowFeature.State?
+    /// 미리듣기 플레이어 — 미니 플레이어(UI-4a)와 지금 재생 중(UI-4b)이 함께 쓴다
+    var player = PlayerFeature.State()
+    /// 진행 중 릴레이 먼저 담기(UI-14l) — 시트와 시트를 연 릴레이 상세
+    @Presents var liveExport: LiveExportFeature.State?
+    var liveExportSource: PathSource?
     var songMenuSource: PathSource?
 
     /// 하위 화면에서는 탭 바를 숨긴다 — 원본 3c · 3b · 4d는 탭 바 없는 push 화면이다
@@ -74,35 +88,55 @@ struct MainTabFeature {
       case .community: !self.communityPath.isEmpty
       case .my: !self.myPath.isEmpty
       case .search: !self.searchPath.isEmpty
-      case .home: false
+      case .home: !self.homePath.isEmpty
       }
     }
   }
 
   /// 탭에서 push되는 화면 — 모든 탭이 같은 목록을 쓰고, 스택은 탭마다 따로 둔다(DEC-007)
-  @Reducer(state: .equatable, action: .equatable)
+  @Reducer
   enum Path {
     case relayDetail(RelayDetailFeature)
     case vote(CardVoteFeature)
     case worldCup(SongWorldCupFeature)
+    case batonRelay(BatonRelayFeature)
+    case liveTrend(LiveTrendFeature)
+    case dailySong(DailySongFeature)
     case myRecommendation(MyRecommendationFeature)
+    case topPrediction(TopPredictionFeature)
+    case seasonRanking(SeasonRankingFeature)
+    case completedPlaylist(CompletedPlaylistFeature)
+    case exportedPlaylist(ExportedPlaylistFeature)
     case notifications(NotificationsFeature)
     case postDetail(PostDetailFeature)
     case editProfile(EditProfileFeature)
     case library(LibraryFeature)
     case notificationSettings(NotificationSettingsFeature)
+    case musicServices(MusicServicesFeature)
+    case notices(NoticesFeature)
+    case appInfo(AppInfoFeature)
+    case helpCenter(HelpCenterFeature)
+    case inquiryHistory(InquiryHistoryFeature)
+    case inquiryDetail(InquiryDetailFeature)
     case myPlaylist(MyPlaylistFeature)
     case songDetail(SongDetailFeature)
     case artist(ArtistFeature)
     case playlistDetail(PlaylistDetailFeature)
+    case friendProfile(FriendProfileFeature)
+    case tasteMatch(TasteMatchFeature)
+    case communityPolicy(CommunityPolicyFeature)
+    case hiddenPost(HiddenPostFeature)
+    case accountManagement(AccountManagementFeature)
   }
 
   enum Action: Equatable {
     case tabSelected(Tab)
+    case home(HomeFeature.Action)
     case relay(RelayListFeature.Action)
     case my(MyFeature.Action)
     case community(CommunityFeedFeature.Action)
     case search(SearchFeature.Action)
+    case homePath(StackActionOf<Path>)
     case relayPath(StackActionOf<Path>)
     case communityPath(StackActionOf<Path>)
     case myPath(StackActionOf<Path>)
@@ -110,11 +144,17 @@ struct MainTabFeature {
     case songShare(PresentationAction<SongShareFeature.Action>)
     case songMenu(PresentationAction<SongMenuFeature.Action>)
     case businessCard(PresentationAction<BusinessCardFeature.Action>)
+    case serviceGuide(PresentationAction<ServiceGuideFeature.Action>)
+    case listeningShare(PresentationAction<ListeningShareFeature.Action>)
     case createRelay(PresentationAction<CreateRelayFeature.Action>)
+    case exportFlow(PresentationAction<ExportFlowFeature.Action>)
+    case liveExport(PresentationAction<LiveExportFeature.Action>)
+    case player(PlayerFeature.Action)
     /// 시트가 닫히는 동안 다음 화면을 띄우면 무시되므로 잠시 뒤에 띄운다
     case presentAfterSheet(SongFollowUp)
     case compose(PresentationAction<ComposePostFeature.Action>)
     case replySongPicker(PresentationAction<SongPickerFeature.Action>)
+    case delegate(MainTabDelegate)
   }
 
   var body: some ReducerOf<Self> {
@@ -134,8 +174,20 @@ struct MainTabFeature {
       .ifLet(\.$businessCard, action: \.businessCard) {
         BusinessCardFeature()
       }
+      .ifLet(\.$serviceGuide, action: \.serviceGuide) {
+        ServiceGuideFeature()
+      }
+      .ifLet(\.$listeningShare, action: \.listeningShare) {
+        ListeningShareFeature()
+      }
       .ifLet(\.$createRelay, action: \.createRelay) {
         CreateRelayFeature()
+      }
+      .ifLet(\.$exportFlow, action: \.exportFlow) {
+        ExportFlowFeature()
+      }
+      .ifLet(\.$liveExport, action: \.liveExport) {
+        LiveExportFeature()
       }
   }
 
@@ -150,6 +202,9 @@ struct MainTabFeature {
         ContentNavigation()
         SongNavigation()
         SongMenuNavigation()
+        PlaybackNavigation()
+        ProfileNavigation()
+        InquiryNavigation()
         Reduce { state, action in
           switch action {
           case let .tabSelected(tab):
@@ -165,6 +220,7 @@ struct MainTabFeature {
           }
         }
       }
+      .forEach(\.homePath, action: \.homePath)
       .forEach(\.relayPath, action: \.relayPath)
       .forEach(\.communityPath, action: \.communityPath)
       .forEach(\.myPath, action: \.myPath)
@@ -174,6 +230,9 @@ struct MainTabFeature {
 
   private var tabs: some ReducerOf<Self> {
     CombineReducers {
+      Scope(state: \.home, action: \.home) {
+        HomeFeature()
+      }
       Scope(state: \.relay, action: \.relay) {
         RelayListFeature()
       }
@@ -186,6 +245,17 @@ struct MainTabFeature {
       Scope(state: \.search, action: \.search) {
         SearchFeature()
       }
+      Scope(state: \.player, action: \.player) {
+        PlayerFeature()
+      }
     }
   }
 }
+
+enum MainTabDelegate: Equatable {
+  /// 탈퇴 신청 뒤 로그아웃(UI-7c) — 앱 루트가 로그인 화면으로 돌아간다
+  case signedOut
+}
+
+extension MainTabFeature.Path.State: Equatable {}
+extension MainTabFeature.Path.Action: Equatable {}

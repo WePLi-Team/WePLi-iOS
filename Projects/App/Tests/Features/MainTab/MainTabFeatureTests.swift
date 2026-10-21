@@ -473,3 +473,90 @@ final class SharedPathNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.searchPath.isEmpty)
   }
 }
+
+extension MainTabFeatureTests {
+  func testCompletedPlaylistExport_presentsExportFlowAndCloses() async {
+    var initial = MainTabFeature.State()
+    var completed = CompletedPlaylistFeature.State(relayID: "summer")
+    completed.playlist = .mock(id: "summer")
+    initial.homePath.append(.completedPlaylist(completed))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+    let id = initial.homePath.ids[0]
+
+    await store.send(.homePath(.element(id: id, action: .completedPlaylist(.exportTapped))))
+    await store.receive(.homePath(.element(id: id, action: .completedPlaylist(.delegate(.export(relayID: "summer"))))))
+    XCTAssertEqual(store.state.exportFlow?.title, "졸릴 때 잠 깨는 청량맛 노동요")
+    XCTAssertEqual(store.state.exportFlow?.songs.count, 6)
+
+    await store.send(.exportFlow(.presented(.closeTapped)))
+    await store.receive(.exportFlow(.presented(.delegate(.dismiss))))
+    XCTAssertNil(store.state.exportFlow)
+  }
+}
+
+extension MainTabFeatureTests {
+  func testRelayDetailExport_completedOpensExportFlow_liveOpensLiveExportThenExportedPlaylist() async {
+    let now = Date(timeIntervalSince1970: 1800000000)
+    let live = RelayDetail.mock(id: "cafe", now: now)
+    var completed = live
+    completed.status = .completed
+    var liveState = RelayDetailFeature.State(relayID: "cafe", detail: live)
+    liveState.now = now
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .relay
+    initial.relayPath.append(.relayDetail(RelayDetailFeature.State(relayID: "done", detail: completed)))
+    initial.relayPath.append(.relayDetail(liveState))
+    let playlist = ExportedPlaylist.mock(id: "p", relayID: "cafe", title: "카페", service: .appleMusic, endsAt: now)
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.exportClient.exportLive = { _, _, _, _ in playlist }
+    }
+    store.exhaustivity = .off
+    let doneID = initial.relayPath.ids[0]
+    let liveID = initial.relayPath.ids[1]
+
+    await store.send(.relayPath(.element(id: doneID, action: .relayDetail(.delegate(.export(relayID: "done"))))))
+    XCTAssertNotNil(store.state.exportFlow)
+    XCTAssertNil(store.state.liveExport)
+    await store.send(.exportFlow(.dismiss))
+
+    await store.send(.relayPath(.element(id: liveID, action: .relayDetail(.delegate(.export(relayID: "cafe"))))))
+    XCTAssertNotNil(store.state.liveExport)
+    XCTAssertEqual(store.state.liveExportSource, PathSource(tab: .relay, id: liveID))
+
+    await store.send(.liveExport(.presented(.exportTapped)))
+    await store.receive(.liveExport(.presented(.delegate(.exported(playlist)))))
+    XCTAssertNil(store.state.liveExport)
+    XCTAssertEqual(store.state.relayPath.count, 3)
+    guard case let .exportedPlaylist(exported)? = store.state.relayPath.last else {
+      return XCTFail("내보낸 플리가 열려야 한다")
+    }
+    XCTAssertEqual(exported.playlistID, "p")
+  }
+}
+
+extension MainTabFeatureTests {
+  func testMusicServicesMenu_opensSettingsThenExportedPlaylist() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .my
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+    store.exhaustivity = .off
+
+    await store.send(.my(.menuTapped(.musicServices)))
+    await store.receive(.my(.delegate(.show(.musicServices))))
+    XCTAssertEqual(store.state.myPath.count, 1)
+    let id = store.state.myPath.ids[0]
+    await store.send(.myPath(.element(id: id, action: .musicServices(.exportedTapped("summer-work")))))
+    await store.receive(.myPath(.element(
+      id: id,
+      action: .musicServices(.delegate(.showExported(playlistID: "summer-work")))
+    )))
+    XCTAssertEqual(store.state.myPath.count, 2)
+  }
+}

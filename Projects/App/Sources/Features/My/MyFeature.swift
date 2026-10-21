@@ -26,6 +26,8 @@ struct MyFeature {
     case businessCardButtonTapped
     case profileTapped
     case menuTapped(MyMenu)
+    /// 「앱 버전」 → 앱 정보(UI-7g 노트 01)
+    case appVersionTapped
     case logoutTapped
     case delegate(Delegate)
   }
@@ -36,6 +38,8 @@ struct MyFeature {
     /// 내 정보 수정 (UI-3e)
     case editProfile
     case show(MyMenu)
+    /// 앱 정보 · 약관(UI-7g)
+    case showAppInfo
     case logout
   }
 
@@ -73,6 +77,9 @@ struct MyFeature {
 
       case let .menuTapped(menu):
         return .send(.delegate(.show(menu)))
+
+      case .appVersionTapped:
+        return .send(.delegate(.showAppInfo))
 
       case .logoutTapped:
         return .send(.delegate(.logout))

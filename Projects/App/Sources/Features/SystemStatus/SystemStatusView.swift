@@ -1,0 +1,85 @@
+import ComposableArchitecture
+import SwiftUI
+
+// REQ-112 · UI-7d · DEC-014 — 앱 전체를 감싸는 시스템 상태. 막는 상태(강제 업데이트 · 점검 · 오프라인)는 위를 덮고,
+// 이용 제한은 닫을 수 있는 시트, 이벤트는 아래 팝업으로 띄운다.
+
+private struct SystemStatusModifier: ViewModifier {
+  @Perception.Bindable var store: StoreOf<SystemStatusFeature>
+
+  func body(content: Content) -> some View {
+    WithPerceptionTracking {
+      content
+        .overlay { self.overlay() }
+        .animation(.easeInOut(duration: 0.25), value: self.store.status)
+        .sheet(isPresented: Binding(
+          get: { self.restriction != nil },
+          set: {
+            if !$0 {
+              self.store.send(.restrictionClosed)
+            }
+          }
+        )) {
+          self.restrictionSheet()
+        }
+        .task { self.store.send(.launched) }
+    }
+  }
+
+  /// 이용 제한 안내 — 「이의 신청하기」 · 「운영정책 보기」를 누르면 같은 시트 안에서 이의 신청(UI-11d) · 운영정책(UI-17b)으로 바뀐다
+  @ViewBuilder
+  private func restrictionSheet() -> some View {
+    if let appealStore = self.store.scope(state: \.appeal, action: \.appeal.presented) {
+      AppealView(store: appealStore)
+        .wepliSheetStyle(detents: [.large])
+    } else if let policyStore = self.store.scope(state: \.policy, action: \.policy.presented) {
+      CommunityPolicyView(store: policyStore)
+        .wepliSheetStyle(detents: [.large])
+    } else if let restriction = self.restriction {
+      RestrictionSheet(
+        restriction: restriction,
+        onAppeal: { self.store.send(.appealTapped) },
+        onPolicy: { self.store.send(.policyTapped) }
+      )
+      .wepliSheetStyle(detents: [.large])
+    }
+  }
+
+  private var restriction: CommunityRestriction? {
+    if case let .restricted(restriction) = self.store.status {
+      return restriction
+    }
+    return nil
+  }
+
+  @ViewBuilder
+  private func overlay() -> some View {
+    switch self.store.status {
+    case let .forceUpdate(current, update):
+      ForceUpdateScreen(current: current, update: update) { self.store.send(.updateTapped) }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(WePLiColor.background.ignoresSafeArea())
+    case let .maintenance(maintenance):
+      MaintenanceScreen(maintenance: maintenance, now: self.store.now)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(WePLiColor.background.ignoresSafeArea())
+    case .offline:
+      OfflineOverlay(retryCount: self.store.retryCount) { self.store.send(.retryTapped) }
+    case let .event(event):
+      EventPopup(
+        event: event,
+        onHideToday: { self.store.send(.eventHiddenToday) },
+        onClose: { self.store.send(.eventClosed) }
+      )
+    case .restricted, nil:
+      EmptyView()
+    }
+  }
+}
+
+extension View {
+  /// 앱 맨 바깥에 붙인다(App.swift)
+  func wepliSystemStatus(_ store: StoreOf<SystemStatusFeature>) -> some View {
+    self.modifier(SystemStatusModifier(store: store))
+  }
+}

@@ -11,6 +11,8 @@ enum WePLiColor {
   static let surface2 = Color(rgbHex: 0x1C1C22)
   static let surface3 = Color(rgbHex: 0x212129)
   static let surface4 = Color(rgbHex: 0x2A2A33)
+  /// 아직 오지 않은 진행 단계 점 (11d)
+  static let stepPending = Color(rgbHex: 0x3A3A44)
 
   // MARK: 텍스트
 
@@ -21,6 +23,8 @@ enum WePLiColor {
   /// 꺼진 칩 · 배지 글자 (10a)
   static let textMuted = Color(rgbHex: 0xD8D8DD)
   static let textDisabled = Color(rgbHex: 0x6B6B7C)
+  /// 아직 못 얻은 칭호 아이콘 (8d)
+  static let textLocked = Color(rgbHex: 0x4A4A55)
   /// CTA 그라디언트 위 글자
   static let textOnCTA = Color(rgbHex: 0x171821)
 
@@ -47,6 +51,8 @@ enum WePLiColor {
   static let imagePlaceholder = Self.surface2
   /// 입력 오류 — 위험 동작(#FF453A)과 구분한다 (모션 35)
   static let inputError = Color(rgbHex: 0xFF6961)
+  /// 오류 배너 글자 — 오프라인 · 이용 제한 (UI-7d)
+  static let errorText = Color(rgbHex: 0xFFB3AE)
   /// 고른 선택 카드 안쪽 (UI-6a 투표 방식)
   static let selectionFill = Color(rgbHex: 0x1A1A22)
   /// 명함 카드 면 · 테두리 · 말풍선 (UI-2e)

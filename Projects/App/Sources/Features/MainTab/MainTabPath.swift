@@ -11,22 +11,24 @@ struct PathSource: Equatable, Sendable {
 }
 
 extension MainTabFeature.State {
-  /// 탭의 스택. 홈은 아직 스택이 없어 검색 스택을 쓰지 않도록 부르는 쪽에서 막는다.
+  /// 탭의 스택
   subscript(stack tab: MainTabFeature.Tab) -> StackState<MainTabFeature.Path.State> {
     get {
       switch tab {
+      case .home: self.homePath
       case .relay: self.relayPath
       case .community: self.communityPath
       case .my: self.myPath
-      case .search, .home: self.searchPath
+      case .search: self.searchPath
       }
     }
     set {
       switch tab {
+      case .home: self.homePath = newValue
       case .relay: self.relayPath = newValue
       case .community: self.communityPath = newValue
       case .my: self.myPath = newValue
-      case .search, .home: self.searchPath = newValue
+      case .search: self.searchPath = newValue
       }
     }
   }
@@ -36,6 +38,7 @@ extension MainTabFeature.Action {
   /// 탭 스택의 화면에서 온 액션
   var pathElement: (source: PathSource, action: MainTabFeature.Path.Action)? {
     switch self {
+    case let .homePath(.element(id, action)): (PathSource(tab: .home, id: id), action)
     case let .relayPath(.element(id, action)): (PathSource(tab: .relay, id: id), action)
     case let .communityPath(.element(id, action)): (PathSource(tab: .community, id: id), action)
     case let .myPath(.element(id, action)): (PathSource(tab: .my, id: id), action)
@@ -47,10 +50,11 @@ extension MainTabFeature.Action {
   /// 탭 스택의 한 화면에 보낼 액션
   static func path(_ source: PathSource, _ action: MainTabFeature.Path.Action) -> Self {
     switch source.tab {
+    case .home: .homePath(.element(id: source.id, action: action))
     case .relay: .relayPath(.element(id: source.id, action: action))
     case .community: .communityPath(.element(id: source.id, action: action))
     case .my: .myPath(.element(id: source.id, action: action))
-    case .search, .home: .searchPath(.element(id: source.id, action: action))
+    case .search: .searchPath(.element(id: source.id, action: action))
     }
   }
 }
