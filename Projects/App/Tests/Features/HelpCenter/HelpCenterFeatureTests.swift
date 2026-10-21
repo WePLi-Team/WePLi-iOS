@@ -35,19 +35,13 @@ final class HelpCenterFeatureTests: XCTestCase {
 
   func testSend_addsPendingInquiryOnTop() async {
     var state = HelpCenterFeature.State()
-    state.inquiries = [Inquiry(
-      id: "q1",
-      title: "투표가 반영되지 않아요",
-      category: .relay,
-      dateText: "2026.09.28",
-      isAnswered: true
-    )]
+    state.inquiries = [MockInquiries.samples[0]]
     state.isComposing = true
     state.draft.category = .community
     state.draft.text = "게시글이 안 올라가요"
     state.draft.wantsEmail = true
     state.draft.email = " me@example.com "
-    let inquiry = Inquiry(id: "q2", title: "게시글이 안 올라가요", category: .community, dateText: "방금", isAnswered: false)
+    let inquiry = Inquiry(id: "q9", title: "게시글이 안 올라가요", dateText: "방금", kind: .question(.community, reply: nil))
     let device = LockIsolated<InquiryDeviceInfo?>(nil)
     let replyEmail = LockIsolated<String?>(nil)
     let store = TestStore(initialState: state) { HelpCenterFeature() } withDependencies: {
