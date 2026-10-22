@@ -3,7 +3,7 @@ import Foundation
 
 // REQ-022 — 화면의 재생 버튼 → 미리듣기 플레이어(UI-4b). 화면에 보이는 곡 목록을 대기열로 쓴다.
 // 릴레이 상세 전체 듣기 · 곡 재생(UI-3c), 완성 플리 전체 듣기(UI-14b), 플리 상세 재생 · 셔플(UI-3d),
-// 아티스트 인기곡(UI-5b), 카드 투표 미리듣기(UI-3b), 내 플리(UI-10d), 게시글 첨부 곡(UI-2c)
+// 아티스트 인기곡(UI-5b), 카드 투표 미리듣기(UI-3b), 내 플리(UI-10d), 게시글 첨부 곡(UI-2c), 곡 상세 함께 들으면 좋은 곡(UI-2d)
 
 struct PlaybackNavigation: Reducer {
   typealias State = MainTabFeature.State
@@ -16,7 +16,7 @@ struct PlaybackNavigation: Reducer {
     Reduce { state, action in
       guard let (source, action) = action.pathElement,
             let screen = state[stack: source.tab][id: source.id],
-            let request = self.request(action, screen) ?? self.mine(action, screen)
+            let request = self.request(action, screen) ?? self.mine(action, screen) ?? self.song(action, screen)
       else { return .none }
       return .send(.player(.play(queue: request.queue, startAt: request.startAt, source: request.source)))
     }
@@ -79,6 +79,15 @@ struct PlaybackNavigation: Reducer {
     default:
       return nil
     }
+  }
+
+  /// 곡 상세 「함께 들으면 좋은 곡」 재생 아이콘 — 목록을 대기열로
+  private func song(_ action: MainTabFeature.Path.Action, _ screen: MainTabFeature.Path.State) -> Request? {
+    guard case let (.songDetail(.delegate(.playRelated(id))), .songDetail(detail)) = (action, screen),
+          let song = detail.song
+    else { return nil }
+    let queue = song.related.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
+    return Request(queue: queue, startAt: queue.firstIndex { $0.id == id } ?? 0, source: song.title)
   }
 
   private static func attachment(_ attachment: Post.Attachment) -> Request? {

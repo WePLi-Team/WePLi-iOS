@@ -286,6 +286,21 @@ final class SongNavigationTests: XCTestCase {
     return (store, initial.searchPath.ids[0], song)
   }
 
+  /// 2d v2 — 곡이 올라간 릴레이 → 릴레이 상세, 함께 들으면 좋은 곡 재생 → 플레이어
+  func testSongDetailV2_relayRowAndRelatedPlay() async {
+    let (store, id, song) = self.menuStore()
+
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.relayTapped("first-love")))))
+    await store.receive(.searchPath(.element(id: id, action: .songDetail(.delegate(.showRelay("first-love"))))))
+    XCTAssertEqual(store.state.searchPath.count, 2)
+    XCTAssertEqual(store.state.searchPath.last?.relayDetail?.relayID, "first-love")
+
+    await store.send(.searchPath(.element(id: id, action: .songDetail(.relatedPlayTapped("관객이 될게 (I stan U)")))))
+    // 누른 곡부터 「함께 들으면 좋은 곡」 목록을 대기열로 재생한다
+    let queue = song.related.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
+    await store.receive(.player(.play(queue: queue, startAt: 1, source: song.title)))
+  }
+
   func testSongMenu_opensFromMoreAndSyncsLikeWithDetail() async {
     let (store, id, song) = self.menuStore()
 
