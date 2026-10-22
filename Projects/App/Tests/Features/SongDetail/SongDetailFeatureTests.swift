@@ -93,7 +93,8 @@ final class SongDetailFeatureTests: XCTestCase {
     await store.receive(.loaded(.mock(id: "s"))) {
       $0.song = .mock(id: "s")
     }
-    XCTAssertEqual(store.state.song?.meta, "밤편지 · 싱글 · 2017")
+    XCTAssertEqual(store.state.song?.meta, "밤편지 · 싱글 · 2017.03.24")
+    XCTAssertEqual(store.state.song?.artistTag, "#아이유(IU)")
   }
 
   func testTaps_sendDelegates() async {
@@ -107,5 +108,23 @@ final class SongDetailFeatureTests: XCTestCase {
     await store.receive(.delegate(.openInMusic(songID: "s")))
     await store.send(.artistTapped)
     await store.receive(.delegate(.showArtist))
+    await store.send(.recommendTapped)
+    await store.receive(.delegate(.recommendToRelay(songID: "s")))
+    await store.send(.relayTapped("first-love"))
+    await store.receive(.delegate(.showRelay("first-love")))
+  }
+
+  /// 2d v2 — 함께 들으면 좋은 곡의 재생 아이콘은 곡 상세 미리듣기를 멈추고 플레이어로 넘긴다
+  func testRelatedPlay_stopsPreviewAndSendsDelegate() async {
+    var state = SongDetailFeature.State(songID: "s", song: .mock(id: "s"))
+    state.isPlaying = true
+    let store = TestStore(initialState: state) {
+      SongDetailFeature()
+    }
+
+    await store.send(.relatedPlayTapped("Blueming")) {
+      $0.isPlaying = false
+    }
+    await store.receive(.delegate(.playRelated("Blueming")))
   }
 }

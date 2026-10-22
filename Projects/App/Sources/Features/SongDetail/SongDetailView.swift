@@ -1,39 +1,47 @@
 import ComposableArchitecture
 import SwiftUI
 
-// REQ-023 · UI-2d — 곡 상세
+// REQ-023 · UI-2d v2 — 곡 상세
 
 struct SongDetailView: View {
   let store: StoreOf<SongDetailFeature>
+  /// 스크롤한 거리 — 히어로가 넓어지는 정도(UI-2d v2 노트 01)
+  @State private var scrollY: CGFloat = 0
 
   var body: some View {
     WithPerceptionTracking {
       ZStack(alignment: .top) {
         ScrollView {
           if let song = self.store.song {
-            VStack(spacing: 28) {
-              SongHero(
+            VStack(spacing: 0) {
+              SongHero(song: song, progress: min(max(self.scrollY / SongHero.Metric.collapse, 0), 1))
+                .background(alignment: .top) { self.scrollReader }
+              SongControls(
                 song: song,
                 isPlaying: self.store.isPlaying,
                 position: self.store.position,
                 onPreview: { self.store.send(.previewButtonTapped) },
                 onOpenInMusic: { self.store.send(.openInMusicTapped) },
-                onArtist: { self.store.send(.artistTapped) }
-              )
-              SongActionBar(
-                song: song,
                 onLike: { self.store.send(.likeButtonTapped) },
-                onComments: { self.store.send(.commentsTapped) },
+                onRecommend: { self.store.send(.recommendTapped) },
                 onAddToPlaylist: { self.store.send(.addToPlaylistTapped) }
               )
-              .padding(.horizontal, 20)
-              SongInfoCards(song: song) { self.store.send(.albumTapped) }
-                .padding(.horizontal, 20)
-              SongRelatedSections(
-                song: song,
-                onSong: { self.store.send(.relatedSongTapped($0)) },
-                onAlbum: { self.store.send(.otherAlbumTapped($0)) }
-              )
+              VStack(alignment: .leading, spacing: 36) {
+                if !song.relays.isEmpty {
+                  SongRelaySection(relays: song.relays) { self.store.send(.relayTapped($0)) }
+                }
+                SongInfoList(song: song) { self.store.send(.albumTapped) }
+                SongCommentSection(count: song.commentCount, comments: song.comments) {
+                  self.store.send(.commentsTapped)
+                }
+                SongRelatedSections(
+                  song: song,
+                  onSong: { self.store.send(.relatedSongTapped($0)) },
+                  onPlay: { self.store.send(.relatedPlayTapped($0)) },
+                  onAlbum: { self.store.send(.otherAlbumTapped($0)) }
+                )
+              }
+              .padding(.top, 36)
             }
             .padding(.bottom, 40)
           } else if self.store.loadFailed {
@@ -53,6 +61,8 @@ struct SongDetailView: View {
               .frame(maxWidth: .infinity, minHeight: 500)
           }
         }
+        .coordinateSpace(name: Self.scrollSpace)
+        .onPreferenceChange(SongScrollOffsetKey.self) { self.scrollY = $0 }
         .ignoresSafeArea(edges: .top)
 
         self.topButtons
@@ -61,6 +71,17 @@ struct SongDetailView: View {
       .toolbar(.hidden, for: .navigationBar)
       .onAppear { self.store.send(.onAppear) }
       .onDisappear { self.store.send(.onDisappear) }
+    }
+  }
+
+  private static let scrollSpace = "songDetailScroll"
+
+  private var scrollReader: some View {
+    GeometryReader { proxy in
+      Color.clear.preference(
+        key: SongScrollOffsetKey.self,
+        value: -proxy.frame(in: .named(Self.scrollSpace)).minY
+      )
     }
   }
 
@@ -79,6 +100,14 @@ struct SongDetailView: View {
     }
     .padding(.horizontal, 16)
     .frame(height: 48)
+  }
+}
+
+private struct SongScrollOffsetKey: PreferenceKey {
+  static let defaultValue: CGFloat = 0
+
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = nextValue()
   }
 }
 

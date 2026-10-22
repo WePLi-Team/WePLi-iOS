@@ -1,116 +1,158 @@
 import SwiftUI
 
-// UI-2d 3분할 카드 · 곡/앨범 정보 · 함께 들으면 좋은 곡 · 이 가수의 다른 앨범
+// UI-2d v2 섹션 — 이 곡이 올라간 릴레이 · 곡 정보(구분선 목록) · 댓글 · 함께 들으면 좋은 곡 · 이 가수의 다른 앨범
+// 원본 노트 02: 회색 상자 3개를 없애고 곡 · 앨범 정보는 구분선만 있는 한 목록으로 합쳤다.
 
-struct SongActionBar: View {
-  let song: SongDetail
-  let onLike: () -> Void
-  let onComments: () -> Void
-  let onAddToPlaylist: () -> Void
+/// 섹션 머리 — 18 SemiBold, 누르는 섹션은 오른쪽 화살표
+struct SongSectionHeader: View {
+  let title: String
+  var subtitle: String?
+  var action: (() -> Void)?
 
   var body: some View {
-    HStack(spacing: 0) {
-      self.item(
-        systemImage: self.song.isLiked ? "heart.fill" : "heart",
-        title: SongCount.string(self.song.likeCount),
-        tint: self.song.isLiked ? WePLiColor.highlight : WePLiColor.textMuted,
-        label: "좋아요",
-        action: self.onLike
-      )
-      .accessibilityAddTraits(self.song.isLiked ? .isSelected : [])
-      Rectangle().fill(Color.white.opacity(0.08)).frame(width: 0.5, height: 32)
-      self.item(
-        systemImage: "bubble.left",
-        title: SongCount.string(self.song.commentCount),
-        tint: WePLiColor.textMuted,
-        label: "댓글",
-        action: self.onComments
-      )
-      Rectangle().fill(Color.white.opacity(0.08)).frame(width: 0.5, height: 32)
-      self.item(
-        systemImage: "text.badge.plus",
-        title: "플리에 담기",
-        tint: WePLiColor.textMuted,
-        label: "플리에 담기",
-        action: self.onAddToPlaylist
-      )
+    VStack(alignment: .leading, spacing: 2) {
+      if let action = self.action {
+        Button(action: action) { self.titleRow(showsArrow: true) }
+          .buttonStyle(.plain)
+      } else {
+        self.titleRow(showsArrow: false)
+      }
+      if let subtitle = self.subtitle {
+        Text(subtitle)
+          .wepliFont(.caption, weight: .light)
+          .foregroundStyle(WePLiColor.textTertiary)
+      }
     }
-    .frame(height: 64)
-    .background(WePLiColor.surface1, in: RoundedRectangle(cornerRadius: 18))
+    .padding(.horizontal, 20)
   }
 
-  private func item(
-    systemImage: String,
-    title: String,
-    tint: Color,
-    label: String,
-    action: @escaping () -> Void
-  ) -> some View {
-    Button(action: action) {
-      VStack(spacing: 4) {
-        Image(systemName: systemImage)
-          .font(.system(size: 19))
-          .foregroundStyle(tint)
-        Text(title)
-          .wepliFont(.caption)
-          .foregroundStyle(WePLiColor.textSecondary)
-          .monospacedDigit()
+  private func titleRow(showsArrow: Bool) -> some View {
+    HStack(spacing: 2) {
+      Text(self.title)
+        .wepliFont(.headline)
+        .foregroundStyle(WePLiColor.textPrimary)
+      if showsArrow {
+        Image(systemName: "chevron.right")
+          .font(.system(size: 14, weight: .semibold))
+          .foregroundStyle(WePLiColor.textMuted)
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .contentShape(Rectangle())
     }
-    .buttonStyle(.plain)
-    .accessibilityLabel(label == title ? label : "\(label) \(title)")
+    .contentShape(Rectangle())
+    .accessibilityAddTraits(.isHeader)
   }
 }
 
-struct SongInfoCards: View {
+/// 이 곡이 올라간 릴레이 — 지금 순위와 변동
+struct SongRelaySection: View {
+  let relays: [SongDetail.Relay]
+  let onRelay: (SongDetail.Relay.ID) -> Void
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      SongSectionHeader(title: "이 곡이 올라간 릴레이", subtitle: self.subtitle)
+      VStack(spacing: 0) {
+        ForEach(self.relays) { relay in
+          Button { self.onRelay(relay.id) } label: { self.row(relay) }
+            .buttonStyle(.plain)
+        }
+      }
+      .padding(.horizontal, 20)
+    }
+  }
+
+  private var subtitle: String? {
+    let live = self.relays.filter(\.isLive).count
+    return live > 0 ? "\(live)개 릴레이에서 투표를 받고 있어요" : nil
+  }
+
+  private func row(_ relay: SongDetail.Relay) -> some View {
+    HStack(spacing: 12) {
+      RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 52, height: 52)
+      VStack(alignment: .leading, spacing: 4) {
+        Text(relay.title)
+          .wepliFont(.body)
+          .foregroundStyle(WePLiColor.textPrimary)
+          .lineLimit(1)
+        HStack(spacing: 4) {
+          if relay.isLive {
+            Circle().fill(WePLiGradient.vsRing).frame(width: 6, height: 6)
+            Text("진행 중").foregroundStyle(WePLiColor.accent).fontWeight(.semibold)
+          } else {
+            Text("완성").foregroundStyle(WePLiColor.textQuaternary).fontWeight(.semibold)
+          }
+          Text("·").foregroundStyle(WePLiColor.textDisabled)
+          Text(relay.tags).foregroundStyle(WePLiColor.textTertiary)
+            .font(.custom(WePLiFont.Weight.light.postScriptName, size: 12))
+        }
+        .wepliFont(.caption, weight: .semibold)
+        .lineLimit(1)
+      }
+      Spacer(minLength: 8)
+      VStack(alignment: .trailing, spacing: 0) {
+        (Text("\(relay.rank)").font(.custom(WePLiFont.Weight.bold.postScriptName, size: 18))
+          + Text("위").font(.custom(WePLiFont.Weight.semibold.postScriptName, size: 12)))
+          .foregroundStyle(WePLiColor.textPrimary)
+        self.change(relay.change)
+          .font(.custom(WePLiFont.Weight.bold.postScriptName, size: 11))
+      }
+      .monospacedDigit()
+    }
+    .frame(height: 64)
+    .contentShape(Rectangle())
+    .accessibilityElement(children: .combine)
+  }
+
+  @ViewBuilder
+  private func change(_ change: SongDetail.Relay.Change) -> some View {
+    switch change {
+    case let .up(count): Text("▲\(count)").foregroundStyle(WePLiColor.positive)
+    case let .down(count): Text("▼\(count)").foregroundStyle(WePLiColor.highlight)
+    case .same: Text("–").foregroundStyle(WePLiColor.textDisabled)
+    case .final: Text("최종").foregroundStyle(WePLiColor.textQuaternary)
+    }
+  }
+}
+
+/// 곡 정보 — 작사 · 작곡 · 장르(#해시태그) · 앨범, 구분선만 있는 한 목록
+struct SongInfoList: View {
   let song: SongDetail
   let onAlbum: () -> Void
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 20) {
-      self.card(title: "곡 정보") {
-        self.row("작사", value: self.song.lyricist)
+    VStack(alignment: .leading, spacing: 8) {
+      SongSectionHeader(title: "곡 정보")
+      VStack(spacing: 0) {
+        self.row("작사") { self.value(self.song.lyricist) }
         self.divider
-        self.row("작곡", value: self.song.composer)
+        self.row("작곡") { self.value(self.song.composer) }
         self.divider
-        HStack(spacing: 6) {
-          self.label("장르")
-          ForEach(self.song.genres, id: \.self) { genre in
-            Text(genre)
-              .wepliFont(.footnote)
-              .foregroundStyle(WePLiColor.textMuted)
-              .padding(.horizontal, 10)
-              .frame(height: 26)
-              .background(WePLiColor.surface2, in: Capsule())
-          }
-          Spacer(minLength: 0)
+        self.row("장르") {
+          Text(self.song.genres.map { "#\($0)" }.joined(separator: " "))
+            .wepliFont(.body)
+            .foregroundStyle(WePLiColor.accent)
         }
-        .frame(height: 46)
-      }
-      self.card(title: "앨범 정보") {
+        self.divider
         Button(action: self.onAlbum) {
-          HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 6).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
-            VStack(alignment: .leading, spacing: 2) {
-              Text(self.song.album.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
-              Text(self.song.album.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textQuaternary)
+          self.row("앨범") {
+            HStack(spacing: 10) {
+              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 36, height: 36)
+              VStack(alignment: .leading, spacing: 1) {
+                Text(self.song.album.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
+                Text("\(self.song.album.type) · \(self.song.album.releaseDate)")
+                  .wepliFont(.caption, weight: .light)
+                  .foregroundStyle(WePLiColor.textTertiary)
+              }
+              Spacer(minLength: 0)
+              Image(systemName: "chevron.right")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(WePLiColor.textDisabled)
             }
-            Spacer()
-            Image(systemName: "chevron.right")
-              .font(.system(size: 13, weight: .semibold))
-              .foregroundStyle(WePLiColor.textDisabled)
           }
-          .frame(height: 68)
           .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        self.divider
-        self.row("발매일", value: self.song.album.releaseDate)
-        self.divider
-        self.row("유형", value: self.song.album.type)
       }
+      .padding(.horizontal, 20)
     }
   }
 
@@ -118,84 +160,97 @@ struct SongInfoCards: View {
     Rectangle().fill(Color.white.opacity(0.08)).frame(height: 0.5)
   }
 
-  private func label(_ text: String) -> some View {
-    Text(text)
-      .wepliFont(.subheadline)
-      .foregroundStyle(WePLiColor.textQuaternary)
-      .frame(width: 52, alignment: .leading)
+  private func value(_ text: String) -> some View {
+    Text(text).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
   }
 
-  private func row(_ title: String, value: String) -> some View {
-    HStack(spacing: 6) {
-      self.label(title)
-      Text(value)
-        .wepliFont(.body)
-        .foregroundStyle(WePLiColor.textPrimary)
+  private func row(_ title: String, @ViewBuilder content: () -> some View) -> some View {
+    HStack(spacing: 16) {
+      Text(title)
+        .wepliFont(.subheadline, weight: .light)
+        .foregroundStyle(WePLiColor.textTertiary)
+        .frame(width: 52, alignment: .leading)
+      content()
       Spacer(minLength: 0)
     }
-    .frame(height: 46)
+    .frame(minHeight: 48)
     .accessibilityElement(children: .combine)
-  }
-
-  private func card(title: String, @ViewBuilder content: () -> some View) -> some View {
-    VStack(alignment: .leading, spacing: 10) {
-      Text(title)
-        .wepliFont(.headline)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .accessibilityAddTraits(.isHeader)
-      VStack(spacing: 0) { content() }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 4)
-        .background(WePLiColor.surface1, in: RoundedRectangle(cornerRadius: 18))
-    }
   }
 }
 
+/// 댓글 923 — 미리보기 두 개
+struct SongCommentSection: View {
+  let count: Int
+  let comments: [SongDetail.Comment]
+  let onComments: () -> Void
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 14) {
+      SongSectionHeader(title: "댓글 \(SongCount.string(self.count))", action: self.onComments)
+      VStack(alignment: .leading, spacing: 18) {
+        ForEach(self.comments) { comment in
+          self.row(comment)
+        }
+      }
+      .padding(.horizontal, 20)
+    }
+  }
+
+  private func row(_ comment: SongDetail.Comment) -> some View {
+    HStack(alignment: .top, spacing: 10) {
+      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 32, height: 32).accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: 4) {
+        (Text(comment.author).font(.custom(WePLiFont.Weight.semibold.postScriptName, size: 13))
+          .foregroundColor(WePLiColor.textPrimary)
+          + Text(" · \(comment.time)").font(.custom(WePLiFont.Weight.light.postScriptName, size: 13))
+          .foregroundColor(WePLiColor.textQuaternary))
+        Text(comment.body)
+          .wepliFont(.subheadline, weight: .light)
+          .lineSpacing(3)
+          .foregroundStyle(WePLiColor.textMuted)
+        Text("좋아요 \(SongCount.string(comment.likeCount)) · 답글")
+          .wepliFont(.caption)
+          .foregroundStyle(WePLiColor.textQuaternary)
+      }
+    }
+    .accessibilityElement(children: .combine)
+  }
+}
+
+/// 함께 들으면 좋은 곡 · 이 가수의 다른 앨범
 struct SongRelatedSections: View {
   let song: SongDetail
   let onSong: (SongDetail.RelatedSong.ID) -> Void
+  let onPlay: (SongDetail.RelatedSong.ID) -> Void
   let onAlbum: (SongDetail.OtherAlbum.ID) -> Void
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 28) {
-      VStack(alignment: .leading, spacing: 6) {
-        self.header("함께 들으면 좋은 곡")
-        ForEach(self.song.related) { related in
-          Button {
-            self.onSong(related.id)
-          } label: {
-            HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
-              VStack(alignment: .leading, spacing: 2) {
-                Text(related.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
-                Text(related.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textQuaternary)
-              }
-              Spacer(minLength: 0)
-              Image(systemName: "ellipsis")
-                .foregroundStyle(WePLiColor.tabInactiveGlass)
-                .frame(width: 36, height: 44)
-            }
-            .frame(height: 60)
-            .contentShape(Rectangle())
+    VStack(alignment: .leading, spacing: 36) {
+      VStack(alignment: .leading, spacing: 8) {
+        SongSectionHeader(title: "함께 들으면 좋은 곡", subtitle: "이 곡과 같은 릴레이에 자주 오른 곡이에요")
+        VStack(spacing: 0) {
+          ForEach(self.song.related) { related in
+            self.relatedRow(related)
           }
-          .buttonStyle(.plain)
-          .padding(.horizontal, 20)
         }
+        .padding(.horizontal, 20)
       }
-      VStack(alignment: .leading, spacing: 12) {
-        self.header("이 가수의 다른 앨범")
+      VStack(alignment: .leading, spacing: 14) {
+        SongSectionHeader(title: "이 가수의 다른 앨범")
         ScrollView(.horizontal, showsIndicators: false) {
-          HStack(spacing: 12) {
+          HStack(alignment: .top, spacing: 12) {
             ForEach(self.song.otherAlbums) { album in
               Button {
                 self.onAlbum(album.id)
               } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                  RoundedRectangle(cornerRadius: 10).fill(WePLiColor.imagePlaceholder).frame(width: 140, height: 140)
-                  Text(album.title).wepliFont(.subheadline).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
-                  Text(album.subtitle).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
+                VStack(alignment: .leading, spacing: 8) {
+                  RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder).frame(width: 136, height: 136)
+                  VStack(alignment: .leading, spacing: 2) {
+                    Text(album.title).wepliFont(.footnote).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
+                    Text(album.subtitle).wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.textTertiary)
+                  }
                 }
-                .frame(width: 140, alignment: .leading)
+                .frame(width: 136, alignment: .leading)
               }
               .buttonStyle(.plain)
             }
@@ -206,12 +261,45 @@ struct SongRelatedSections: View {
     }
   }
 
-  private func header(_ text: String) -> some View {
-    Text(text)
-      .wepliFont(.headline)
-      .foregroundStyle(WePLiColor.textPrimary)
-      .padding(.horizontal, 20)
-      .accessibilityAddTraits(.isHeader)
+  private func relatedRow(_ related: SongDetail.RelatedSong) -> some View {
+    HStack(spacing: 12) {
+      Button {
+        self.onSong(related.id)
+      } label: {
+        HStack(spacing: 12) {
+          RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+          VStack(alignment: .leading, spacing: 2) {
+            Text(related.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
+            Text(related.artist).wepliFont(.footnote, weight: .light).foregroundStyle(Color.white.opacity(0.7))
+          }
+          Spacer(minLength: 0)
+        }
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      Button {
+        self.onPlay(related.id)
+      } label: {
+        Image(systemName: "play.fill")
+          .font(.system(size: 13))
+          .foregroundStyle(WePLiColor.textMuted)
+          .frame(width: 36, height: 44)
+          .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityLabel("\(related.title) 미리듣기")
+      Button {
+        self.onSong(related.id)
+      } label: {
+        Image(systemName: "ellipsis")
+          .foregroundStyle(WePLiColor.tabInactiveGlass)
+          .frame(width: 36, height: 44)
+          .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityLabel("\(related.title) 더보기")
+    }
+    .frame(height: 60)
   }
 }
 

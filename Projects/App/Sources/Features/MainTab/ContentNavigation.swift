@@ -122,7 +122,8 @@ struct ContentNavigation: Reducer {
     case let .library(.delegate(.continueVoting(relayID))):
       let topic = stack[id: source.id, case: \.library]?.library?.liveRelays.first { $0.id == relayID }?.title ?? ""
       return .vote(CardVoteFeature.State(relayID: relayID, topic: topic))
-    case let .library(.delegate(.showRelay(id))):
+    case let .library(.delegate(.showRelay(id))),
+         let .songDetail(.delegate(.showRelay(id))):
       return .relayDetail(RelayDetailFeature.State(relayID: id))
     case let .library(.delegate(.showPlaylist(id))):
       // 보관함 「내 플레이리스트」 → 내 플레이리스트 · 편집(UI-10d)

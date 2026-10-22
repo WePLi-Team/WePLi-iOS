@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import Foundation
 
-// REQ-023 · REQ-022 · UI-2d · DEC-004 — 곡 상세
+// REQ-023 · REQ-022 · UI-2d v2 · DEC-004 — 곡 상세
 
 @Reducer
 struct SongDetailFeature {
@@ -37,8 +37,11 @@ struct SongDetailFeature {
     case albumTapped
     case commentsTapped
     case addToPlaylistTapped
+    case recommendTapped
     case openInMusicTapped
+    case relayTapped(SongDetail.Relay.ID)
     case relatedSongTapped(SongDetail.RelatedSong.ID)
+    case relatedPlayTapped(SongDetail.RelatedSong.ID)
     case otherAlbumTapped(SongDetail.OtherAlbum.ID)
     case delegate(Delegate)
   }
@@ -53,6 +56,12 @@ struct SongDetailFeature {
     case showComments(songID: String)
     /// 곡 추가 시트 (UI-9e)
     case addToPlaylist(songID: String)
+    /// 「릴레이에 추천」(2d v2) — 원본에 다음 화면이 없어 목적지 미결정
+    case recommendToRelay(songID: String)
+    /// 이 곡이 올라간 릴레이 → 릴레이 상세(UI-3c)
+    case showRelay(SongDetail.Relay.ID)
+    /// 함께 들으면 좋은 곡의 재생 아이콘 → 미리듣기 플레이어(UI-4b)
+    case playRelated(SongDetail.RelatedSong.ID)
     /// Apple Music 앱에서 전체 곡 듣기
     case openInMusic(songID: String)
     case showSong(SongDetail.RelatedSong.ID)
@@ -149,6 +158,17 @@ struct SongDetailFeature {
 
       case .addToPlaylistTapped:
         return .send(.delegate(.addToPlaylist(songID: state.songID)))
+
+      case .recommendTapped:
+        return .send(.delegate(.recommendToRelay(songID: state.songID)))
+
+      case let .relayTapped(id):
+        return .send(.delegate(.showRelay(id)))
+
+      case let .relatedPlayTapped(id):
+        // 곡 상세 미리듣기와 겹치지 않게 멈춘다
+        state.isPlaying = false
+        return .merge(.cancel(id: CancelID.preview), .send(.delegate(.playRelated(id))))
 
       case .openInMusicTapped:
         return .send(.delegate(.openInMusic(songID: state.songID)))
