@@ -9,18 +9,22 @@ private struct SystemStatusModifier: ViewModifier {
 
   func body(content: Content) -> some View {
     WithPerceptionTracking {
+      // 시트 바인딩의 get은 body 밖에서 불리므로 값을 먼저 읽어 둔다
+      let showsRestriction = self.restriction != nil
       content
         .overlay { self.overlay() }
         .animation(.easeInOut(duration: 0.25), value: self.store.status)
         .sheet(isPresented: Binding(
-          get: { self.restriction != nil },
+          get: { showsRestriction },
           set: {
             if !$0 {
               self.store.send(.restrictionClosed)
             }
           }
         )) {
-          self.restrictionSheet()
+          WithPerceptionTracking {
+            self.restrictionSheet()
+          }
         }
         .task { self.store.send(.launched) }
     }

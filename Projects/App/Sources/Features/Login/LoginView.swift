@@ -7,7 +7,10 @@ struct LoginView: View {
   @Perception.Bindable var store: StoreOf<LoginFeature>
 
   enum Metric {
-    static let copyTop: CGFloat = 430
+    /// 원본은 문구를 위에서 430에 두지만, 버튼과 가깝게 붙여 달라는 요청에 따라 버튼 위 간격으로 둔다
+    static let copyToButtons: CGFloat = 36
+    /// Apple 54 · Google 54 · 먼저 둘러볼게요 36, 사이 12씩(LoginButtons)
+    static let buttonsHeight: CGFloat = 168
     static let buttonsBottom: CGFloat = 92
     static let termsBottom: CGFloat = 40
   }
@@ -26,8 +29,8 @@ struct LoginView: View {
           ZStack(alignment: .bottom) {
             self.copy
               .padding(.horizontal, 32)
-              .padding(.top, Metric.copyTop)
-              .frame(maxHeight: .infinity, alignment: .top)
+              .padding(.bottom, Metric.buttonsBottom + Metric.buttonsHeight + Metric.copyToButtons)
+              .frame(maxHeight: .infinity, alignment: .bottom)
 
             LoginButtons(
               onApple: { self.store.send(.appleLoginButtonTapped) },
