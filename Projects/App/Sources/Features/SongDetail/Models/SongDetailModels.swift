@@ -24,21 +24,13 @@ struct SongDetail: Equatable, Identifiable, Sendable {
 
   /// 이 곡이 올라간 릴레이 — 지금 순위와 변동(2d v2)
   struct Relay: Equatable, Identifiable, Sendable {
-    enum Change: Equatable, Sendable {
-      case up(Int)
-      case down(Int)
-      case same
-      /// 완성된 릴레이 — 「최종」
-      case final
-    }
-
     let id: String
     let title: String
     /// 「#첫사랑 #설렘」
     let tags: String
     let isLive: Bool
     let rank: Int
-    let change: Change
+    let change: SongRelayChange
   }
 
   /// 댓글 미리보기(2d v2)
@@ -87,6 +79,15 @@ struct SongDetail: Equatable, Identifiable, Sendable {
   var artistTag: String {
     "#" + self.artist.replacingOccurrences(of: " ", with: "")
   }
+}
+
+/// 곡 상세 릴레이 줄의 순위 변동(2d v2)
+enum SongRelayChange: Equatable, Sendable {
+  case up(Int)
+  case down(Int)
+  case same
+  /// 완성된 릴레이 — 「최종」
+  case final
 }
 
 /// 30초 미리듣기 (UI-2d · UI-4b)

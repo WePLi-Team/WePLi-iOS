@@ -16,7 +16,7 @@ struct PlaybackNavigation: Reducer {
     Reduce { state, action in
       guard let (source, action) = action.pathElement,
             let screen = state[stack: source.tab][id: source.id],
-            let request = self.request(action, screen) ?? self.mine(action, screen)
+            let request = self.request(action, screen) ?? self.mine(action, screen) ?? self.song(action, screen)
       else { return .none }
       return .send(.player(.play(queue: request.queue, startAt: request.startAt, source: request.source)))
     }
@@ -53,7 +53,7 @@ struct PlaybackNavigation: Reducer {
     }
   }
 
-  /// 아티스트 · 카드 투표 · 내 플리 · 곡 상세 · 게시글
+  /// 아티스트 · 카드 투표 · 내 플리 · 게시글
   private func mine(_ action: MainTabFeature.Path.Action, _ screen: MainTabFeature.Path.State) -> Request? {
     switch (action, screen) {
     case let (.artist(.delegate(.playAll)), .artist(artist)):
@@ -74,16 +74,20 @@ struct PlaybackNavigation: Reducer {
     case let (.liveTrend(.delegate(.play(song))), _):
       let track = PlayerTrack(id: song.id, title: song.title, artist: song.artist)
       return Request(queue: [track], source: "지금 위플리")
-    case let (.songDetail(.delegate(.playRelated(id))), .songDetail(detail)):
-      // 곡 상세 「함께 들으면 좋은 곡」 — 세 곡을 대기열로
-      guard let song = detail.song else { return nil }
-      let queue = song.related.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
-      return Request(queue: queue, startAt: queue.firstIndex { $0.id == id } ?? 0, source: song.title)
     case let (.postDetail(.delegate(.play)), .postDetail(detail)):
       return detail.post.flatMap { Self.attachment($0.attachment) }
     default:
       return nil
     }
+  }
+
+  /// 곡 상세 「함께 들으면 좋은 곡」 재생 아이콘 — 목록을 대기열로
+  private func song(_ action: MainTabFeature.Path.Action, _ screen: MainTabFeature.Path.State) -> Request? {
+    guard case let (.songDetail(.delegate(.playRelated(id))), .songDetail(detail)) = (action, screen),
+          let song = detail.song
+    else { return nil }
+    let queue = song.related.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
+    return Request(queue: queue, startAt: queue.firstIndex { $0.id == id } ?? 0, source: song.title)
   }
 
   private static func attachment(_ attachment: Post.Attachment) -> Request? {

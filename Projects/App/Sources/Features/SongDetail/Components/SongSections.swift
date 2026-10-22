@@ -103,7 +103,7 @@ struct SongRelaySection: View {
   }
 
   @ViewBuilder
-  private func change(_ change: SongDetail.Relay.Change) -> some View {
+  private func change(_ change: SongRelayChange) -> some View {
     switch change {
     case let .up(count): Text("▲\(count)").foregroundStyle(WePLiColor.positive)
     case let .down(count): Text("▼\(count)").foregroundStyle(WePLiColor.highlight)
@@ -200,10 +200,10 @@ struct SongCommentSection: View {
     HStack(alignment: .top, spacing: 10) {
       Circle().fill(WePLiColor.imagePlaceholder).frame(width: 32, height: 32).accessibilityHidden(true)
       VStack(alignment: .leading, spacing: 4) {
-        (Text(comment.author).font(.custom(WePLiFont.Weight.semibold.postScriptName, size: 13))
+        Text(comment.author).font(.custom(WePLiFont.Weight.semibold.postScriptName, size: 13))
           .foregroundColor(WePLiColor.textPrimary)
           + Text(" · \(comment.time)").font(.custom(WePLiFont.Weight.light.postScriptName, size: 13))
-          .foregroundColor(WePLiColor.textQuaternary))
+          .foregroundColor(WePLiColor.textQuaternary)
         Text(comment.body)
           .wepliFont(.subheadline, weight: .light)
           .lineSpacing(3)

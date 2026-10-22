@@ -175,7 +175,12 @@ struct SongControls: View {
         .accessibilityLabel("좋아요 \(SongCount.string(self.song.likeCount))")
         .accessibilityAddTraits(self.song.isLiked ? .isSelected : [])
         self.pill(systemImage: "star", title: "릴레이에 추천", tint: WePLiColor.textPrimary, action: self.onRecommend)
-        self.pill(systemImage: "text.badge.plus", title: "플리에 담기", tint: WePLiColor.textPrimary, action: self.onAddToPlaylist)
+        self.pill(
+          systemImage: "text.badge.plus",
+          title: "플리에 담기",
+          tint: WePLiColor.textPrimary,
+          action: self.onAddToPlaylist
+        )
       }
       if !self.song.friendListeners.isEmpty {
         self.friends
