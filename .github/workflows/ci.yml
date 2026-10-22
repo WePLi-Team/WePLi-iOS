@@ -171,24 +171,25 @@ jobs:
           echo "SIM_ID=$SIM_ID" >> $GITHUB_OUTPUT
           nohup xcrun simctl bootstatus "$SIM_ID" -b > simulator-boot.log 2>&1 &
 
+      # 빌드에는 tuist만 쓴다(ruby · swiftformat · swiftlint는 설치하지 않는다).
+      # macos-26 러너는 캐시 조회만 2–3분 걸려, tuist 하나는 캐시 없이 바로 받는다
       - name: Setup mise (Tuist via mise)
         uses: jdx/mise-action@v4
+        with:
+          install_args: tuist
+          cache: false
 
-      - name: Install tools via mise
-        run: |
-          mise install
-          tuist version
+      - name: Tuist version
+        run: tuist version
 
+      # SwiftGen 생성물은 커밋돼 있어 CI에서 설치하지 않는다(brew 설치만 약 2분)
       - name: Setup utilities
         env:
           HOMEBREW_NO_AUTO_UPDATE: '1'
           HOMEBREW_NO_INSTALL_CLEANUP: '1'
         run: |
-          for tool in swiftgen xcbeautify; do
-            command -v "$tool" >/dev/null 2>&1 || brew install "$tool"
-          done
+          command -v xcbeautify >/dev/null 2>&1 || brew install xcbeautify
           defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
-          swiftgen --version
 
       - name: Tuist Install (resolve deps)
         run: tuist install
@@ -211,16 +212,20 @@ jobs:
             -skipMacroValidation \
             -skipPackagePluginValidation \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            test | tee xcodebuild.log | xcbeautify
+            test 2>&1 \
+            | tee >(perl -MPOSIX -pe 'BEGIN { $| = 1 } print strftime("%H:%M:%S ", localtime)' > xcodebuild.log) \
+            | xcbeautify
 
       - name: Trim DerivedData before cache save
         if: ${{ always() }}
         run: rm -rf DerivedData/Logs DerivedData/Index.noindex
 
-      - name: Upload Xcode Build Log on Failure
-        if: ${{ failure() }}
+      # 원본 로그(줄마다 시각)를 남긴다 — xcbeautify 출력에 보이지 않는 대기 구간을 확인할 때 쓴다
+      - name: Upload Xcode Build Log
+        if: ${{ always() }}
         uses: actions/upload-artifact@v7
         with:
           name: xcodebuild-log
           path: xcodebuild.log
+          retention-days: 7
           if-no-files-found: ignore
