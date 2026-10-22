@@ -171,11 +171,13 @@ jobs:
           echo "SIM_ID=$SIM_ID" >> $GITHUB_OUTPUT
           nohup xcrun simctl bootstatus "$SIM_ID" -b > simulator-boot.log 2>&1 &
 
-      # 빌드에는 tuist만 쓴다(ruby · swiftformat · swiftlint는 설치하지 않는다)
+      # 빌드에는 tuist만 쓴다(ruby · swiftformat · swiftlint는 설치하지 않는다).
+      # macos-26 러너는 캐시 조회만 2–3분 걸려, tuist 하나는 캐시 없이 바로 받는다
       - name: Setup mise (Tuist via mise)
         uses: jdx/mise-action@v4
         with:
           install_args: tuist
+          cache: false
 
       - name: Tuist version
         run: tuist version
