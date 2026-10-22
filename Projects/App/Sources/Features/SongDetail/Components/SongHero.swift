@@ -21,6 +21,8 @@ struct SongHero: View {
       let size = Metric.artSize + (proxy.size.width - Metric.artSize) * self.progress
       ZStack(alignment: .top) {
         self.blurredBackground
+          .frame(width: proxy.size.width)
+          .clipped()
           .opacity(1 - self.progress)
         self.art(size: size)
           .padding(.top, Metric.artTop)
@@ -31,6 +33,7 @@ struct SongHero: View {
         self.leadingTitle
           .padding(.top, 398)
           .opacity(min(1, max(0, (self.progress - 0.45) / 0.55)))
+          .frame(width: proxy.size.width)
       }
       .frame(width: proxy.size.width)
     }
