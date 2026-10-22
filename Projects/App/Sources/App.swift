@@ -14,8 +14,11 @@ struct WePLiApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ContentView()
-        .wepliSystemStatus(self.systemStatus)
+      // 단위 테스트의 호스트 앱으로 뜰 때는 화면을 띄우지 않는다 — 시스템 상태가 테스트용 의존성을 불러 다른 테스트를 실패시킨다
+      if !isTesting {
+        ContentView()
+          .wepliSystemStatus(self.systemStatus)
+      }
     }
   }
 }
