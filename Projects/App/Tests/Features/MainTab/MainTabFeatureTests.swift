@@ -296,10 +296,9 @@ final class SongNavigationTests: XCTestCase {
     XCTAssertEqual(store.state.searchPath.last?.relayDetail?.relayID, "first-love")
 
     await store.send(.searchPath(.element(id: id, action: .songDetail(.relatedPlayTapped("관객이 될게 (I stan U)")))))
-    await store.finish()
-    await store.skipReceivedActions()
-    XCTAssertEqual(store.state.player.queue.map(\.title), song.related.map(\.title))
-    XCTAssertEqual(store.state.player.current?.title, "관객이 될게 (I stan U)")
+    // 누른 곡부터 「함께 들으면 좋은 곡」 목록을 대기열로 재생한다
+    let queue = song.related.map { PlayerTrack(id: $0.id, title: $0.title, artist: $0.artist) }
+    await store.receive(.player(.play(queue: queue, startAt: 1, source: song.title)))
   }
 
   func testSongMenu_opensFromMoreAndSyncsLikeWithDetail() async {
