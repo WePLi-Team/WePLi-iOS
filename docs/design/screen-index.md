@@ -13,7 +13,7 @@
 | UI-2a | 곡 검색 · 선택 | 7 |  | WePLi 2 Flows.dc.html |
 | UI-2b | 게시글 작성 | 3 |  | WePLi 2 Flows.dc.html |
 | UI-2c | 게시글 상세 · 댓글 | 4 |  | WePLi 2 Flows.dc.html |
-| UI-2d | 곡 상세 | 2 |  | WePLi 2 Flows.dc.html |
+| UI-2d | 곡 상세 — **v2(`2d2`, 2026-10-22)가 기준**: 아트 300 → 스크롤 104pt 동안 화면 폭 · 이 곡이 올라간 릴레이 · 들은 친구 · 댓글 | 2 |  | WePLi 2 Flows.dc.html |
 | UI-2e | 명함 만들기 | 7 |  | WePLi 2 Flows.dc.html |
 | UI-3a | 차트 (TOP 100) | 4 |  | WePLi 3 Figma Screens.dc.html |
 | UI-3b | 노래 투표하기 | 3 |  | WePLi 3 Figma Screens.dc.html |
@@ -104,8 +104,17 @@
 | UI-17c | 내 가려진 글 | 1 |  | WePLi 17 Ops Detail.dc.html |
 | UI-17d | 신고 · 기타 사유 · 이미 신고함 | 3 |  | WePLi 17 Ops Detail.dc.html |
 | UI-17e | 탈퇴 유예 · 계정 되살리기 · 재가입 제한 | 3 |  | WePLi 17 Ops Detail.dc.html |
+| UI-18a | 명함 만들기 안 · 단계형(취향 유형 → Best Pick → 한 줄 소개 → Instagram) | 5 |  | WePLi 18 Card Maker.dc.html |
+| UI-18b | 명함 만들기 안 · 카드 위에서 바로 고치기(테마 4종) | 2 |  | WePLi 18 Card Maker.dc.html |
+| UI-18c | 명함 만들기 안 · 듣기 기록으로 먼저 만들기(자동 초안) | 1 |  | WePLi 18 Card Maker.dc.html |
+| UI-18d | 명함 만들기 안 · 세 곡 고르면 취향 유형(취향 테스트) | 2 |  | WePLi 18 Card Maker.dc.html |
+| UI-18e | 명함이 없을 때 마이 시작점 · 받은 명함 줄 | 1 |  | WePLi 18 Card Maker.dc.html |
+| UI-18f | Best Pick 고르기 시트(많이 들은 곡 · 좋아요한 곡) — 18a · 18b · 11e 공용 | 1 |  | WePLi 18 Card Maker.dc.html |
+| UI-18g | 명함 완성 순간(뒤집기 · 디스크 회전) | 1 |  | WePLi 18 Card Maker.dc.html |
+| UI-18h | 명함 공유(9:16 미리보기 · 배경 · 카카오톡) | 1 |  | WePLi 18 Card Maker.dc.html |
+| UI-18i | 링크로 받은 명함(취향 궁합 · 팔로우 · 나도 만들기) | 1 |  | WePLi 18 Card Maker.dc.html |
 
-합계 99개 = 89개 + 16a–16e 5개 + 17a–17e 5개(2026-10-21 목차와 대조: 누락 0 · 중복 0). 이전 합계 89개 = 67개(목차 66개 + 5f 「홈 화면 위젯」 분리) + 13a–13f 6개 + 13g 1개(v2에만 있고 목차 카드에는 없음) + 14a–14o 15개. 2026-10-15 목차와 대조: 누락 0 · 중복 0, 없어진 ID 0. `HomeFeed.dc.html`은 화면이 아니라 12a–12c가 불러 쓰는 홈 콘텐츠 컴포넌트(속성: os 26/16 · topY · heroH · padB).
+합계 108개 = 99개 + 18a–18i 9개(2026-10-22 목차와 대조: 누락 0 · 중복 0, 2d v2는 같은 ID의 새 판). 이전 99개 = 89개 + 16a–16e 5개 + 17a–17e 5개(2026-10-21). 이전 합계 89개 = 67개(목차 66개 + 5f 「홈 화면 위젯」 분리) + 13a–13f 6개 + 13g 1개(v2에만 있고 목차 카드에는 없음) + 14a–14o 15개. 2026-10-15 목차와 대조: 누락 0 · 중복 0, 없어진 ID 0. `HomeFeed.dc.html`은 화면이 아니라 12a–12c가 불러 쓰는 홈 콘텐츠 컴포넌트(속성: os 26/16 · topY · heroH · padB).
 
 ## 대안 · 대체 관계
 
@@ -123,3 +132,5 @@
 | UI-13c · UI-13g → UI-5a | 친구 프로필 A안 · B안 → **13g B안 채택, 5a를 대신함(DEC-010)** |
 | UI-13 · UI-4b | 13은 소셜 「지금 듣는 음악」 상태, 4b는 앱 안 전체 화면 플레이어 — 서로 다른 화면(대체 관계 없음) |
 | UI-10a | 1–4차의 「차트」 탭을 「릴레이」 탭으로 대체 |
+| UI-2d → UI-2d v2 | 같은 파일에 옛 2d와 「2d v2 곡 상세 · 개선」이 함께 있다. 사용자가 v2로 개선했다고 알림(2026-10-22) → v2 기준. 파일 안 흐름 목록은 아직 옛 `#2d`로 링크 |
+| UI-2e · UI-11e → UI-18a–18i | 18차는 「명함 만들기, 네 가지 방법과 그 앞뒤」. 2e를 이전 입력 화면이라 부르고 18b는 11e와 합칠 수 있다고 함. **어느 안을 채택할지 원본에 없음** → 결정 필요 |
