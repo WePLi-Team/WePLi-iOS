@@ -24,7 +24,7 @@ jobs:
       labels: ${{ steps.filter.outputs.labels }}
       automation: ${{ steps.filter.outputs.automation }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: dorny/paths-filter@v4
         id: filter
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Verify automation scripts
         run: sh .claude/skills/finish-feature/scripts/verify.sh claude
 
@@ -70,7 +70,7 @@ jobs:
       contents: read
       issues: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Apply labels from config
         uses: crazy-max/ghaction-github-labeler@v6
         with:
@@ -87,7 +87,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Detect Swift files
         id: has_swift
@@ -136,7 +136,7 @@ jobs:
       XCODE_VERSION: '26.5'
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
