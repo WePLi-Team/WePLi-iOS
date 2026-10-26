@@ -144,7 +144,7 @@ jobs:
           xcode-version: ${{ env.XCODE_VERSION }}
 
       - name: Cache Tuist Dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: Tuist/.build
           key: ${{ runner.os }}-tuist-build-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift') }}
@@ -153,7 +153,7 @@ jobs:
 
       # 의존성(swift-syntax · TCA 등) 빌드 결과를 재사용한다. 앱 소스는 checkout마다 새로 컴파일된다
       - name: Cache DerivedData
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: DerivedData
           key: ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift', 'Tuist/ProjectDescriptionHelpers/**', 'Projects/**/Project.swift') }}
