@@ -1,5 +1,5 @@
 {
-  "originHash" : "cf978b3b542ebc6aa6c9ba9f9da18c717e51967e5934b0ac406e9dec72d976b5",
+  "originHash" : "9b5da63be0cbb6fbbb05cbe0638700c744a3621c649e78419f9f481632f8f267",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/openid/AppAuth-iOS.git",
       "state" : {
-        "revision" : "a7caeda164dc5108bf4649472b28a5af65dc6f33",
-        "version" : "2.1.0"
+        "revision" : "a972daac82d449d58ab119e91c68153e29ddac33",
+        "version" : "3.0.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS.git",
       "state" : {
-        "revision" : "08d8dcecafb575f98879ffdbb8302c1b9ad65d19",
-        "version" : "9.2.0"
+        "revision" : "7823e518f5d4db765ccac3e140dd3265ef0a1cf1",
+        "version" : "10.0.0"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GTMAppAuth.git",
       "state" : {
-        "revision" : "56e0ccf09a6dd29dc7e68bdf729598240ca8aa16",
-        "version" : "5.0.0"
+        "revision" : "57094cd46bc8700d3a887e2a429f42b6e8ea3f0b",
+        "version" : "6.0.0"
       }
     },
     {
@@ -141,8 +141,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/supabase-community/supabase-swift.git",
       "state" : {
-        "revision" : "fecbbc8071a2416e215703d108b5020159217f2d",
-        "version" : "2.31.2"
+        "revision" : "fee4bd78997f8b4e919c1c9711e0cfb346fd7a55",
+        "version" : "2.55.4"
       }
     },
     {
