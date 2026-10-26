@@ -195,7 +195,7 @@ struct CommentRow: View {
 }
 
 struct CommentInputBar: View {
-  let store: StoreOf<PostDetailFeature>
+  @Perception.Bindable var store: StoreOf<PostDetailFeature>
 
   var body: some View {
     WithPerceptionTracking {
@@ -232,7 +232,7 @@ struct CommentInputBar: View {
           TextField(
             // 일반 타입은 「노래로 답해보세요」(UI-9d)
             self.store.allowsSongReply ? "노래로 답해보세요" : "댓글을 남겨주세요",
-            text: Binding(get: { self.store.draft }, set: { self.store.send(.draftChanged($0)) })
+            text: self.$store.draft.sending(\.draftChanged)
           )
           .wepliFont(.subheadline)
           .foregroundStyle(WePLiColor.textPrimary)

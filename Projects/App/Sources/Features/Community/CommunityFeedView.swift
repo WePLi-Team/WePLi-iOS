@@ -20,11 +20,7 @@ struct CommunityFeedView: View {
       }
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(Binding(get: { self.store.friends.toast }, set: {
-        if $0 == nil {
-          self.store.send(.friends(.toastDismissed))
-        }
-      }))
+      .wepliToast(self.store.friends.toast) { self.store.send(.friends(.toastDismissed)) }
       .sheet(item: self.$store.scope(state: \.appeal, action: \.appeal)) { appealStore in
         AppealView(store: appealStore).wepliSheetStyle(detents: [.large])
       }

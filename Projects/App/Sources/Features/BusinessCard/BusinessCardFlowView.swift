@@ -27,17 +27,13 @@ struct BusinessCardFlowView: View {
       }
       .ignoresSafeArea()
       .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.6), value: self.store.step)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .sheet(item: self.$store.scope(state: \.picker, action: \.picker)) { pickerStore in
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])
       }
       .sheet(isPresented: Binding(
-        get: { self.store.isShareSheetPresented },
+        get: { [isPresented = self.store.isShareSheetPresented] in isPresented },
         set: {
           if !$0 {
             self.store.send(.shareSheetDismissed)
@@ -51,7 +47,7 @@ struct BusinessCardFlowView: View {
         .wepliSheetStyle(detents: [.height(BusinessCardShareSheet.height)])
       }
       .sheet(item: Binding(
-        get: { self.store.systemShare },
+        get: { [systemShare = self.store.systemShare] in systemShare },
         set: {
           if $0 == nil {
             self.store.send(.systemShareDismissed)

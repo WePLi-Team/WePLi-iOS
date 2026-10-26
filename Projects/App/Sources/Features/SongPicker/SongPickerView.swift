@@ -4,7 +4,7 @@ import SwiftUI
 // REQ-062 · UI-2a — 곡 검색 · 선택
 
 struct SongPickerView: View {
-  let store: StoreOf<SongPickerFeature>
+  @Perception.Bindable var store: StoreOf<SongPickerFeature>
 
   var body: some View {
     WithPerceptionTracking {
@@ -28,11 +28,7 @@ struct SongPickerView: View {
         }
       }
       .background(WePLiColor.surface1)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
     }
   }
@@ -60,7 +56,7 @@ struct SongPickerView: View {
         .foregroundStyle(WePLiColor.textQuaternary)
       TextField(
         "곡 이름이나 가수를 입력하세요",
-        text: Binding(get: { self.store.query }, set: { self.store.send(.queryChanged($0)) })
+        text: self.$store.query.sending(\.queryChanged)
       )
       .wepliFont(.callout)
       .foregroundStyle(WePLiColor.textPrimary)

@@ -23,11 +23,7 @@ struct InquiryDetailView: View {
       .background(WePLiColor.background.ignoresSafeArea())
       .toolbar(.hidden, for: .navigationBar)
       .confirmationDialog(self.$store.scope(state: \.cancelDialog, action: \.cancelDialog))
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
     }
   }
 

@@ -4,7 +4,7 @@ import SwiftUI
 // REQ-012 · UI-3e — 내 정보 수정
 
 struct EditProfileView: View {
-  let store: StoreOf<EditProfileFeature>
+  @Perception.Bindable var store: StoreOf<EditProfileFeature>
 
   var body: some View {
     WithPerceptionTracking {
@@ -35,16 +35,7 @@ struct EditProfileView: View {
       .safeAreaInset(edge: .top, spacing: 0) { self.navigationBar }
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(
-        Binding(
-          get: { self.store.toast },
-          set: {
-            if $0 == nil {
-              self.store.send(.toastDismissed)
-            }
-          }
-        )
-      )
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
     }
   }
 
@@ -108,7 +99,7 @@ struct EditProfileView: View {
       )
       TextField(
         "변경할 닉네임을 입력해주세요.",
-        text: Binding(get: { self.store.nickname }, set: { self.store.send(.nicknameChanged($0)) })
+        text: self.$store.nickname.sending(\.nicknameChanged)
       )
       .wepliFont(.callout)
       .foregroundStyle(WePLiColor.textPrimary)
@@ -135,7 +126,7 @@ struct EditProfileView: View {
             .padding(.vertical, 14)
             .accessibilityHidden(true)
         }
-        TextEditor(text: Binding(get: { self.store.bio }, set: { self.store.send(.bioChanged($0)) }))
+        TextEditor(text: self.$store.bio.sending(\.bioChanged))
           .wepliFont(.body)
           .foregroundStyle(WePLiColor.textMuted)
           .scrollContentBackground(.hidden)

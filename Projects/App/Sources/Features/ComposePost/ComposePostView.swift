@@ -45,11 +45,7 @@ struct ComposePostView: View {
         .environment(\.editMode, .constant(.active))
       }
       .background(WePLiColor.surface1)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .confirmationDialog(self.$store.scope(state: \.addSongDialog, action: \.addSongDialog))
       .sheet(item: self.$store.scope(state: \.picker, action: \.picker)) { pickerStore in
         SongPickerView(store: pickerStore)
@@ -89,7 +85,7 @@ struct ComposePostView: View {
 
   private var inputCard: some View {
     VStack(spacing: 0) {
-      TextField("제목을 입력해주세요", text: Binding(get: { self.store.title }, set: { self.store.send(.titleChanged($0)) }))
+      TextField("제목을 입력해주세요", text: self.$store.title.sending(\.titleChanged))
         .wepliFont(.button)
         .foregroundStyle(WePLiColor.textPrimary)
         .padding(.horizontal, 16)
@@ -104,7 +100,7 @@ struct ComposePostView: View {
             .padding(.top, 14)
             .accessibilityHidden(true)
         }
-        TextEditor(text: Binding(get: { self.store.body }, set: { self.store.send(.bodyChanged($0)) }))
+        TextEditor(text: self.$store.body.sending(\.bodyChanged))
           .wepliFont(.body)
           .foregroundStyle(WePLiColor.textPrimary)
           .scrollContentBackground(.hidden)

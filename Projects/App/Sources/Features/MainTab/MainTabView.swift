@@ -13,12 +13,15 @@ struct MainTabView: View {
   var body: some View {
     WithPerceptionTracking {
       ZStack {
+        // ForEach 내용은 SwiftUI가 body 밖에서 다시 부른다 — 탭 화면 전체가 여기서 그려진다
         ForEach(MainTabFeature.Tab.allCases, id: \.self) { tab in
-          let isSelected = self.store.selectedTab == tab
-          self.stack(for: tab)
-            .opacity(isSelected ? 1 : 0)
-            .allowsHitTesting(isSelected)
-            .accessibilityHidden(!isSelected)
+          WithPerceptionTracking {
+            let isSelected = self.store.selectedTab == tab
+            self.stack(for: tab)
+              .opacity(isSelected ? 1 : 0)
+              .allowsHitTesting(isSelected)
+              .accessibilityHidden(!isSelected)
+          }
         }
       }
       // 스크롤 콘텐츠는 탭 바 아래까지 그려지고, 마지막 줄은 탭 바에 가리지 않는다.
@@ -61,7 +64,9 @@ extension MainTabView {
     action: CaseKeyPath<MainTabFeature.Action, StackActionOf<MainTabFeature.Path>>
   ) -> some View {
     NavigationStack(path: self.$store.scope(state: state, action: action)) {
-      self.root(for: tab)
+      WithPerceptionTracking {
+        self.root(for: tab)
+      }
     } destination: { store in
       Self.destination(store)
     }
@@ -192,7 +197,7 @@ private struct MainTabSheets: ViewModifier {
             .wepliSheetStyle(detents: [.height(SongMenuView.height)])
         }
         .sheet(item: Binding(
-          get: { self.store.loginPrompt },
+          get: { [loginPrompt = self.store.loginPrompt] in loginPrompt },
           set: {
             if $0 == nil {
               self.store.send(.loginPromptDismissed)
@@ -229,10 +234,7 @@ private struct MainTabCovers: ViewModifier {
         .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
           SongShareView(store: shareStore)
         }
-        .fullScreenCover(isPresented: Binding(
-          get: { self.store.player.isExpanded },
-          set: { self.store.send(.player(.expandedChanged($0))) }
-        )) {
+        .fullScreenCover(isPresented: self.$store.player.isExpanded.sending(\.player.expandedChanged)) {
           NowPlayingView(store: self.store.scope(state: \.player, action: \.player))
         }
     }
