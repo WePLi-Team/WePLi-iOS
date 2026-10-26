@@ -42,11 +42,7 @@ struct AppealView: View {
       }
       .background(WePLiColor.background.ignoresSafeArea())
       .animation(.easeOut(duration: 0.25), value: self.store.isSent)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
     }
   }
 

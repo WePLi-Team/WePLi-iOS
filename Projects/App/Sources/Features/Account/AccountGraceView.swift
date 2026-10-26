@@ -11,11 +11,7 @@ struct AccountGraceView: View {
       self.content
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(WePLiColor.background.ignoresSafeArea())
-        .wepliToast(Binding(get: { self.store.toast }, set: {
-          if $0 == nil {
-            self.store.send(.toastDismissed)
-          }
-        }))
+        .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
         .animation(.easeInOut(duration: 0.25), value: self.store.isRestored)
         .sheet(item: self.$store.scope(state: \.helpCenter, action: \.helpCenter)) { helpStore in
           NavigationStack { HelpCenterView(store: helpStore) }

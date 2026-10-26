@@ -128,6 +128,7 @@ struct FriendProfileFeature {
 }
 
 /// ··· 메뉴 · 차단 · 신고
+@CasePathable
 enum FriendProfileMenuAction: Equatable {
   case moreTapped
   /// 메뉴 · 신고 시트를 닫았다 — 차단 확인 창으로 넘어가는 중이면 그대로 둔다

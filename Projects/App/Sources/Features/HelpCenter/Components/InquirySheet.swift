@@ -6,7 +6,7 @@ import SwiftUI
 // 원본의 흰 선택 칩은 DEC-009(흰 바탕 버튼 금지)에 따라 라벤더 칩(WePLiChip)으로
 
 struct InquirySheet: View {
-  let store: StoreOf<HelpCenterFeature>
+  @Perception.Bindable var store: StoreOf<HelpCenterFeature>
 
   @State private var pickerItems: [PhotosPickerItem] = []
 
@@ -53,7 +53,7 @@ struct InquirySheet: View {
       }
       .frame(height: 50)
       Divider().overlay(Color.white.opacity(0.08))
-      Toggle(isOn: Binding(get: { self.store.draft.wantsEmail }, set: { self.store.send(.emailToggled($0)) })) {
+      Toggle(isOn: self.$store.draft.wantsEmail.sending(\.emailToggled)) {
         Text("이메일로도 받기").foregroundStyle(WePLiColor.textPrimary)
       }
       .tint(WePLiColor.accent)
@@ -62,7 +62,7 @@ struct InquirySheet: View {
         Divider().overlay(Color.white.opacity(0.08))
         TextField(
           "",
-          text: Binding(get: { self.store.draft.email }, set: { self.store.send(.emailChanged($0)) }),
+          text: self.$store.draft.email.sending(\.emailChanged),
           prompt: Text("받을 이메일 주소").foregroundColor(WePLiColor.textDisabled)
         )
         .foregroundStyle(WePLiColor.textPrimary)
@@ -108,7 +108,7 @@ struct InquirySheet: View {
             .padding(.top, 14)
             .accessibilityHidden(true)
         }
-        TextEditor(text: Binding(get: { self.store.draft.text }, set: { self.store.send(.textChanged($0)) }))
+        TextEditor(text: self.$store.draft.text.sending(\.textChanged))
           .wepliFont(.body)
           .foregroundStyle(WePLiColor.textPrimary)
           .scrollContentBackground(.hidden)

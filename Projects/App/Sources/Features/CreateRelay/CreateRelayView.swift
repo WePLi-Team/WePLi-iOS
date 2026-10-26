@@ -38,11 +38,7 @@ struct CreateRelayView: View {
         .scrollDismissesKeyboard(.interactively)
       }
       .background(WePLiColor.surface1)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .sheet(item: self.$store.scope(state: \.picker, action: \.picker)) { pickerStore in
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])
@@ -86,7 +82,7 @@ struct CreateRelayView: View {
       HStack {
         TextField(
           "주제 (예: 비 오는 날 생각나는 노래)",
-          text: Binding(get: { self.store.relay.topic }, set: { self.store.send(.topicChanged($0)) })
+          text: self.$store.relay.topic.sending(\.topicChanged)
         )
         .wepliFont(.callout, weight: .semibold)
         .foregroundStyle(WePLiColor.textPrimary)
@@ -102,7 +98,7 @@ struct CreateRelayView: View {
       Rectangle().fill(Color.white.opacity(0.08)).frame(height: 0.5).padding(.leading, 16)
       TextField(
         "한 줄 설명 (선택)",
-        text: Binding(get: { self.store.relay.description }, set: { self.store.send(.descriptionChanged($0)) })
+        text: self.$store.relay.description.sending(\.descriptionChanged)
       )
       .wepliFont(.body)
       .foregroundStyle(WePLiColor.textMuted)

@@ -47,11 +47,7 @@ struct NotificationSettingsView: View {
       .safeAreaInset(edge: .top, spacing: 0) { self.navigationBar }
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
     }
   }

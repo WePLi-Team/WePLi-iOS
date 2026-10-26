@@ -21,13 +21,9 @@ struct SongShareView: View {
       }
       .ignoresSafeArea(edges: .bottom)
       .onAppear { self.store.send(.onAppear) }
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .sheet(item: Binding(
-        get: { self.store.systemShare },
+        get: { [systemShare = self.store.systemShare] in systemShare },
         set: {
           if $0 == nil {
             self.store.send(.systemShareDismissed)

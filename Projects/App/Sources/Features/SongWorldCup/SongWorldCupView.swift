@@ -31,11 +31,7 @@ struct SongWorldCupView: View {
         self.topBar
       }
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
     }
   }

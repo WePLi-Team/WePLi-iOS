@@ -81,7 +81,7 @@ struct ExportServiceStep: View {
 }
 
 struct ExportSettingsStep: View {
-  let store: StoreOf<ExportFlowFeature>
+  @Perception.Bindable var store: StoreOf<ExportFlowFeature>
 
   var body: some View {
     WithPerceptionTracking {
@@ -116,15 +116,12 @@ struct ExportSettingsStep: View {
           ExportServiceIcon(service: self.store.service, size: 18)
           Text(self.serviceLine).wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.textTertiary)
         }
-        TextField("플레이리스트 이름", text: Binding(
-          get: { self.store.name },
-          set: { self.store.send(.nameChanged($0)) }
-        ))
-        .wepliFont(.button)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .tint(WePLiColor.accent)
-        .frame(height: 34)
-        .overlay(alignment: .bottom) { Rectangle().fill(Color.white.opacity(0.25)).frame(height: 0.5) }
+        TextField("플레이리스트 이름", text: self.$store.name.sending(\.nameChanged))
+          .wepliFont(.button)
+          .foregroundStyle(WePLiColor.textPrimary)
+          .tint(WePLiColor.accent)
+          .frame(height: 34)
+          .overlay(alignment: .bottom) { Rectangle().fill(Color.white.opacity(0.25)).frame(height: 0.5) }
       }
     }
   }

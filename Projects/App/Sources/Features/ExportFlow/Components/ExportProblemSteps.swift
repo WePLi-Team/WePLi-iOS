@@ -35,10 +35,7 @@ struct ExportSubscriptionStep: View {
       .padding(.top, 30)
       .padding(.bottom, 24)
       // iOS의 Apple Music 구독 제안 시트
-      .musicSubscriptionOffer(isPresented: Binding(
-        get: { self.store.showsSubscriptionOffer },
-        set: { self.store.send(.subscriptionOfferChanged($0)) }
-      ))
+      .musicSubscriptionOffer(isPresented: self.$store.showsSubscriptionOffer.sending(\.subscriptionOfferChanged))
     }
   }
 }

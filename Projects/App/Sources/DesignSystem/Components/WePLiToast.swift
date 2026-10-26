@@ -53,6 +53,16 @@ extension View {
   func wepliToast(_ message: Binding<String?>) -> some View {
     self.modifier(WePLiToastModifier(message: message))
   }
+
+  /// store 상태로 띄우는 토스트 — 값은 body(WithPerceptionTracking 안)에서 읽고, 3초 뒤 `onDismiss`를 부른다.
+  /// 바인딩 get에서 store를 읽으면 SwiftUI가 추적 밖에서 불러 Perception 경고가 나고 iOS 16에서 갱신되지 않는다.
+  func wepliToast(_ message: String?, onDismiss: @escaping () -> Void) -> some View {
+    self.wepliToast(Binding(get: { message }, set: {
+      if $0 == nil {
+        onDismiss()
+      }
+    }))
+  }
 }
 
 #Preview {

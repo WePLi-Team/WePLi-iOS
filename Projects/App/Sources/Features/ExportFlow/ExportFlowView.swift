@@ -13,13 +13,9 @@ struct ExportFlowView: View {
       self.content
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeInOut(duration: 0.25), value: self.store.step)
-        .wepliToast(Binding(get: { self.store.toast }, set: {
-          if $0 == nil {
-            self.store.send(.toastDismissed)
-          }
-        }))
+        .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
         .sheet(isPresented: Binding(
-          get: { self.store.picking != nil },
+          get: { [isPicking = self.store.picking != nil] in isPicking },
           set: {
             if !$0 {
               self.store.send(.alternativesClosed)

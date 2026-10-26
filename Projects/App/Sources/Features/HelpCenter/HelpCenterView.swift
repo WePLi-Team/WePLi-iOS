@@ -39,12 +39,8 @@ struct HelpCenterView: View {
       }
       .background(WePLiColor.background.ignoresSafeArea())
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
-      .sheet(isPresented: Binding(get: { self.store.isComposing }, set: {
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
+      .sheet(isPresented: Binding(get: { [isComposing = self.store.isComposing] in isComposing }, set: {
         if !$0 {
           self.store.send(.composeDismissed)
         }

@@ -98,11 +98,13 @@ struct RelayListView: View {
         .padding(.top, 12)
         .padding(.bottom, 4)
       }
+      // 행은 SwiftUI가 body 밖에서 그리므로 store 값은 미리 읽어 둔다
+      let now = self.store.now
       ForEach(sections.list) { relay in
         Button {
           self.store.send(.relayTapped(relay.id))
         } label: {
-          RelayRow(relay: relay, now: self.store.now)
+          RelayRow(relay: relay, now: now)
         }
         .buttonStyle(.plain)
       }

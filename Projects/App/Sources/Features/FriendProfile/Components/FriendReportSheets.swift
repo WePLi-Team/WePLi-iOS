@@ -6,7 +6,7 @@ import SwiftUI
 
 /// 신고 — 고른 줄만 라벤더 + 체크, 「기타」 밑에 사유 입력칸
 struct FriendReportSheet: View {
-  let store: StoreOf<FriendProfileFeature>
+  @Perception.Bindable var store: StoreOf<FriendProfileFeature>
   let name: String
 
   var body: some View {
@@ -67,7 +67,7 @@ struct FriendReportSheet: View {
     VStack(alignment: .trailing, spacing: 4) {
       TextField(
         FriendProfileText.reportDetailPlaceholder,
-        text: Binding(get: { self.store.reportDetail }, set: { self.store.send(.menu(.reportDetailChanged($0))) }),
+        text: self.$store.reportDetail.sending(\.menu.reportDetailChanged),
         axis: .vertical
       )
       .wepliFont(.body)

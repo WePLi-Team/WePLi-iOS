@@ -40,11 +40,7 @@ struct HiddenPostView: View {
       .sheet(item: self.$store.scope(state: \.appeal, action: \.appeal)) { appealStore in
         AppealView(store: appealStore).wepliSheetStyle(detents: [.large])
       }
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
     }
   }
 

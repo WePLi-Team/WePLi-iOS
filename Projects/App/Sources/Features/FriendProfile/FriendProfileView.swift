@@ -26,11 +26,7 @@ struct FriendProfileView: View {
       .animation(.easeOut(duration: 0.2), value: self.store.isBlocked)
       .toolbar(.hidden, for: .navigationBar)
       .modifier(FriendProfileSheets(store: self.store))
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
     }
   }
@@ -97,24 +93,29 @@ private struct FriendProfileSheets: ViewModifier {
   let store: StoreOf<FriendProfileFeature>
 
   func body(content: Content) -> some View {
-    content.sheet(item: Binding(
-      get: { self.store.overlay == .blockConfirm ? nil : self.store.overlay },
-      set: {
-        if $0 == nil {
-          self.store.send(.menu(.dismissed))
-        }
-      }
-    )) { overlay in
-      if let profile = self.store.profile {
-        switch overlay {
-        case .menu: FriendProfileMenuSheet(store: self.store, profile: profile)
-        case .report: FriendReportSheet(store: self.store, name: profile.name)
-        case .reportDone: FriendReportDoneSheet(store: self.store, name: profile.name)
-        case .reportExisting:
-          if let report = profile.myReport {
-            FriendReportExistingSheet(store: self.store, name: profile.name, report: report)
+    WithPerceptionTracking {
+      content.sheet(item: Binding(
+        get: { [overlay = self.store.overlay == .blockConfirm ? nil : self.store.overlay] in overlay },
+        set: {
+          if $0 == nil {
+            self.store.send(.menu(.dismissed))
           }
-        case .blockConfirm: EmptyView()
+        }
+      )) { overlay in
+        // 시트 내용은 body 밖에서 그려진다
+        WithPerceptionTracking {
+          if let profile = self.store.profile {
+            switch overlay {
+            case .menu: FriendProfileMenuSheet(store: self.store, profile: profile)
+            case .report: FriendReportSheet(store: self.store, name: profile.name)
+            case .reportDone: FriendReportDoneSheet(store: self.store, name: profile.name)
+            case .reportExisting:
+              if let report = profile.myReport {
+                FriendReportExistingSheet(store: self.store, name: profile.name, report: report)
+              }
+            case .blockConfirm: EmptyView()
+            }
+          }
         }
       }
     }

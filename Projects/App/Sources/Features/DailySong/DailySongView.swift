@@ -37,11 +37,7 @@ struct DailySongView: View {
       }
       .background(WePLiColor.background.ignoresSafeArea())
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .sheet(item: self.$store.scope(state: \.picker, action: \.picker)) { pickerStore in
         SongPickerView(store: pickerStore)
           .wepliSheetStyle(detents: [.large])

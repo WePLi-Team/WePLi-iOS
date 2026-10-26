@@ -4,7 +4,7 @@ import SwiftUI
 // REQ-074 · UI-10c — 팔로워 · 팔로잉
 
 struct FollowListView: View {
-  let store: StoreOf<FollowListFeature>
+  @Perception.Bindable var store: StoreOf<FollowListFeature>
 
   var body: some View {
     WithPerceptionTracking {
@@ -15,7 +15,7 @@ struct FollowListView: View {
           .padding(.top, 8)
         HStack(spacing: 8) {
           Image(systemName: "magnifyingglass").font(.system(size: 14)).foregroundStyle(WePLiColor.textQuaternary)
-          TextField("이름으로 찾기", text: Binding(get: { self.store.query }, set: { self.store.send(.queryChanged($0)) }))
+          TextField("이름으로 찾기", text: self.$store.query.sending(\.queryChanged))
             .wepliFont(.body)
             .foregroundStyle(WePLiColor.textPrimary)
         }

@@ -60,11 +60,7 @@ struct MyPlaylistView: View {
       .toolbar(.hidden, for: .navigationBar)
       .animation(.easeInOut(duration: 0.2), value: self.store.isEditing)
       .confirmationDialog(self.$store.scope(state: \.deleteDialog, action: \.deleteDialog))
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
     }
   }

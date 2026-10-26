@@ -35,11 +35,7 @@ struct ListeningShareView: View {
       }
       .background(WePLiColor.background.ignoresSafeArea())
       .animation(.easeInOut(duration: 0.2), value: self.store.step)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
     }
   }

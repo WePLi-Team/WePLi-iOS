@@ -10,7 +10,7 @@ struct ServiceGuideView: View {
     WithPerceptionTracking {
       VStack(spacing: 0) {
         self.topBar
-        TabView(selection: Binding(get: { self.store.page }, set: { self.store.send(.pageChanged($0)) })) {
+        TabView(selection: self.$store.page.sending(\.pageChanged)) {
           ForEach(Array(ServiceGuidePage.all.enumerated()), id: \.element.id) { index, page in
             ServiceGuideCard(page: page).tag(index)
           }

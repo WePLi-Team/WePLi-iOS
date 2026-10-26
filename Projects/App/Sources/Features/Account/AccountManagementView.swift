@@ -14,11 +14,7 @@ struct AccountManagementView: View {
       }
       .background(WePLiColor.background.ignoresSafeArea())
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .animation(.easeInOut(duration: 0.2), value: self.store.step)
       .onAppear { self.store.send(.onAppear) }
     }

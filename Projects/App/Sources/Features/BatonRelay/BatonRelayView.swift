@@ -32,11 +32,7 @@ struct BatonRelayView: View {
       .background(WePLiColor.background.ignoresSafeArea())
       .toolbar(.hidden, for: .navigationBar)
       .animation(.easeInOut(duration: 0.25), value: self.store.showsInvite)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
       .onDisappear { self.store.send(.onDisappear) }
     }

@@ -15,7 +15,7 @@ struct HomeView: View {
             HomeHeroPager(
               heroes: feed.heroes,
               now: self.store.now,
-              page: Binding(get: { self.store.heroPage }, set: { self.store.send(.heroPageChanged($0)) }),
+              page: self.$store.heroPage.sending(\.heroPageChanged),
               onTap: { self.store.send(.heroTapped($0)) },
               onPlayAll: { self.store.send(.completedPlayAllTapped($0)) }
             )
@@ -56,11 +56,7 @@ struct HomeView: View {
       .ignoresSafeArea(edges: .top)
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
-      .wepliToast(Binding(get: { self.store.toast }, set: {
-        if $0 == nil {
-          self.store.send(.toastDismissed)
-        }
-      }))
+      .wepliToast(self.store.toast) { self.store.send(.toastDismissed) }
       .onAppear { self.store.send(.onAppear) }
       .onDisappear { self.store.send(.onDisappear) }
     }
