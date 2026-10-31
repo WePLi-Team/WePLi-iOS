@@ -48,11 +48,11 @@
 | 라이브러리            | 상태 | 비고                          |
 | --------------------- | ---- | ----------------------------- |
 | ComposableArchitecture| ✅   | TCA 상태 관리                 |
-| Moya                  | ✅   | 네트워크 추상화               |
-| Kingfisher            | ✅   | 이미지 캐싱/로딩              |
-| Supabase              | ✅   | 백엔드 서비스                 |
-| GoogleSignIn          | ✅   | 구글 로그인                   |
-| KeychainAccess        | ✅   | 토큰 저장                     |
+| Moya                  | ⬜   | 네트워크 추상화               |
+| Kingfisher            | ⬜   | 이미지 캐싱/로딩              |
+| Supabase              | ⬜   | 백엔드 서비스                 |
+| GoogleSignIn          | ⬜   | 구글 로그인                   |
+| KeychainAccess        | ⬜   | 토큰 저장                     |
 
 ### 1.4 TCA Dependencies
 

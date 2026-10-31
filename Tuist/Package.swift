@@ -40,12 +40,9 @@ import PackageDescription
 
 let package = Package(
   name: "WePLiPackages",
+  // Moya · Kingfisher · Supabase · GoogleSignIn · KeychainAccess는 계획된 스택(AGENTS.md)이지만 아직 쓰는 코드가 없어 뺐다.
+  // 실제 API · 로그인 · 이미지를 붙이는 기능에서 그때 넣는다(#225).
   dependencies: [
-    .package(url: "https://github.com/Moya/Moya.git", from: "15.0.0"),
-    .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", .upToNextMinor(from: "1.23.3")),
-    .package(url: "https://github.com/google/GoogleSignIn-iOS.git", from: "10.0.0"),
-    .package(url: "https://github.com/supabase-community/supabase-swift.git", from: "2.0.0"),
-    .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.0"),
   ]
 )

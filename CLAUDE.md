@@ -52,11 +52,8 @@ Use State, Action, and Reducer for all feature logic. Inject dependencies via `@
 ### Key Dependencies
 
 - **TCA** (ComposableArchitecture) - State management
-- **Moya** - Networking
-- **Kingfisher** - Image loading
-- **Supabase** - Backend
-- **GoogleSignIn** - Authentication
-- **KeychainAccess** - Secure storage
+
+계획된 스택(아직 쓰는 코드가 없어 설치하지 않음 — 쓰는 기능에서 `Tuist/Package.swift`에 추가, #225): Moya(네트워크) · Kingfisher(이미지) · Supabase(백엔드) · GoogleSignIn(로그인) · KeychainAccess(토큰 저장)
 
 ## Code Style
 

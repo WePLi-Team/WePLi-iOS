@@ -17,9 +17,9 @@ WePLi는 테마별 릴레이리스트에 곡을 추천하고 투표해 플레이
 |---|---|---|
 | 앱 | SwiftUI · TCA(ComposableArchitecture) · iOS 16.0+ · iPhone | `Projects/App/` |
 | 의존성 · 프로젝트 | Tuist 4.71.0(mise) · SPM | `Tuist/Package.swift` · `Projects/App/Project.swift` |
-| 네트워크 · 백엔드 | Moya · Supabase (실제 API 미연결, 목업 Client) | 기능별 `Client/` |
-| 인증 · 저장 | Sign in with Apple · GoogleSignIn · KeychainAccess | `Features/Login` |
-| 이미지 | Kingfisher | |
+| 네트워크 · 백엔드 | Moya · Supabase (계획 · 미설치, 지금은 목업 Client) | 기능별 `Client/` |
+| 인증 · 저장 | Sign in with Apple · GoogleSignIn · KeychainAccess (GoogleSignIn · KeychainAccess는 계획 · 미설치) | `Features/Login` |
+| 이미지 | Kingfisher (계획 · 미설치) | |
 | 품질 | SwiftLint · SwiftFormat · XCTest(TestStore) · CI(GitHub Actions macOS) | `.swiftlint.yml` · `.github/workflows/ci.yml` |
 
 아키텍처(계층 · 폴더 · Router · 에이전트 역할): `docs/conventions/architecture.md`. 폴더 · 이름 규칙: `docs/conventions/code.md`.

@@ -65,13 +65,7 @@ let project = Project(
         swiftLintScript,
       ],
       dependencies: [
-        .external(name: "Moya"),
-        .external(name: "Kingfisher"),
         .external(name: "ComposableArchitecture"),
-        .external(name: "GoogleSignIn"),
-        .external(name: "GoogleSignInSwift"),
-        .external(name: "Supabase"),
-        .external(name: "KeychainAccess"),
         .target(name: "WePLiWidget"),
       ]
     ),
