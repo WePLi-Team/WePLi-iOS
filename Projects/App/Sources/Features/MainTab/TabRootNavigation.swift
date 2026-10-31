@@ -163,14 +163,14 @@ struct TabRootNavigation: Reducer {
     }
   }
 
-  /// 검색의 플리 · 릴레이 · 게시글 결과 — 부제의 종류(「릴레이리스트 · …」 · 「게시글 · …」)로 나눈다
+  /// 검색의 플리 · 릴레이 · 게시글 결과 — 결과의 종류(`kind`)로 나눈다
   private func openSearchList(_ id: SearchList.ID, _ state: inout State) {
-    let subtitle = state.search.results.lists.first { $0.id == id }?.subtitle ?? ""
-    if subtitle.hasPrefix("릴레이리스트") {
+    switch state.search.results.lists.first(where: { $0.id == id })?.kind {
+    case .relay:
       state.searchPath.append(.relayDetail(RelayDetailFeature.State(relayID: id)))
-    } else if subtitle.hasPrefix("게시글") {
+    case .post:
       state.searchPath.append(.postDetail(PostDetailFeature.State(postID: id)))
-    } else {
+    case .playlist, nil:
       state.searchPath.append(.playlistDetail(PlaylistDetailFeature.State(playlistID: id)))
     }
   }
