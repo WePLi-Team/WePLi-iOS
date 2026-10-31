@@ -14,7 +14,6 @@ struct HomeView: View {
           VStack(spacing: 0) {
             HomeHeroPager(
               heroes: feed.heroes,
-              now: self.store.now,
               page: self.$store.heroPage.sending(\.heroPageChanged),
               onTap: { self.store.send(.heroTapped($0)) },
               onPlayAll: { self.store.send(.completedPlayAllTapped($0)) }
@@ -73,8 +72,11 @@ struct HomeView: View {
       )
     }
     if !feed.timeOfDayColumns.isEmpty {
-      HomeTimeOfDaySection(columns: feed.timeOfDayColumns, hour: HomeTimeOfDay.hour(of: self.store.now)) {
-        self.store.send(.timeOfDaySongTapped($0))
+      // 시간대는 1분마다 다시 본다
+      WePLiTicking(interval: 60) { now in
+        HomeTimeOfDaySection(columns: feed.timeOfDayColumns, hour: HomeTimeOfDay.hour(of: now)) {
+          self.store.send(.timeOfDaySongTapped($0))
+        }
       }
     }
     HomeFavoriteArtistSection(
@@ -125,7 +127,7 @@ struct HomeView: View {
       )
     }
     if !feed.votingRelays.isEmpty {
-      HomeVotingRelaysSection(relays: feed.votingRelays, now: self.store.now) {
+      HomeVotingRelaysSection(relays: feed.votingRelays) {
         self.store.send(.votingRelayTapped($0))
       }
     }

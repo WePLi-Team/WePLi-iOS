@@ -19,7 +19,6 @@ struct RelayListView: View {
       .background(WePLiColor.background)
       .toolbar(.hidden, for: .navigationBar)
       .onAppear { self.store.send(.onAppear) }
-      .onDisappear { self.store.send(.onDisappear) }
     }
   }
 
@@ -91,20 +90,18 @@ struct RelayListView: View {
         Button {
           self.store.send(.relayTapped(featured.id))
         } label: {
-          RelayFeaturedCard(relay: featured, now: self.store.now)
+          RelayFeaturedCard(relay: featured)
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 16)
         .padding(.top, 12)
         .padding(.bottom, 4)
       }
-      // 행은 SwiftUI가 body 밖에서 그리므로 store 값은 미리 읽어 둔다
-      let now = self.store.now
       ForEach(sections.list) { relay in
         Button {
           self.store.send(.relayTapped(relay.id))
         } label: {
-          RelayRow(relay: relay, now: now)
+          RelayRow(relay: relay)
         }
         .buttonStyle(.plain)
       }

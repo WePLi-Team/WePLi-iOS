@@ -89,7 +89,7 @@ struct TabRootNavigation: Reducer {
     }
     switch delegate {
     case let .switchTab(tab):
-      state.selectedTab = tab
+      return MainTabFeature.select(tab, &state)
     case let .songMenu(song):
       state.songMenuSource = nil
       state.songMenu = SongMenuFeature.State(

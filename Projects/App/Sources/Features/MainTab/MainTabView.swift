@@ -17,10 +17,13 @@ struct MainTabView: View {
         ForEach(MainTabFeature.Tab.allCases, id: \.self) { tab in
           WithPerceptionTracking {
             let isSelected = self.store.selectedTab == tab
-            self.stack(for: tab)
-              .opacity(isSelected ? 1 : 0)
-              .allowsHitTesting(isSelected)
-              .accessibilityHidden(!isSelected)
+            // 고른 적 없는 탭은 그리지 않는다 — 한 번 그린 탭은 상태를 지키려고 숨기기만 한다
+            if isSelected || self.store.visitedTabs.contains(tab) {
+              self.stack(for: tab)
+                .opacity(isSelected ? 1 : 0)
+                .allowsHitTesting(isSelected)
+                .accessibilityHidden(!isSelected)
+            }
           }
         }
       }

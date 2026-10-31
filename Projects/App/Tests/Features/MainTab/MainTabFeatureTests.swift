@@ -17,9 +17,54 @@ final class MainTabFeatureTests: XCTestCase {
 
     await store.send(.tabSelected(.relay)) {
       $0.selectedTab = .relay
+      $0.visitedTabs = [.home]
     }
+    await store.receive(\.home.onDisappear)
     await store.send(.tabSelected(.search)) {
       $0.selectedTab = .search
+      $0.visitedTabs = [.home, .relay]
+    }
+  }
+
+  /// 탭은 겹쳐 두고 숨기기만 해서 숨긴 탭은 onDisappear가 불리지 않는다 — 홈을 떠나면 멈추고, 돌아오면 다시 켠다
+  func testTabSelected_pausesAndResumesHome() async {
+    var initial = MainTabFeature.State()
+    initial.home.feed = .mock(now: Date(timeIntervalSince1970: 1800000000))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    } withDependencies: {
+      $0.continuousClock = TestClock()
+    }
+
+    await store.send(.tabSelected(.relay)) {
+      $0.selectedTab = .relay
+      $0.visitedTabs = [.home]
+    }
+    await store.receive(\.home.onDisappear)
+    await store.send(.tabSelected(.home)) {
+      $0.selectedTab = .home
+      $0.visitedTabs = [.home, .relay]
+    }
+    await store.receive(\.home.onAppear)
+    await store.send(.tabSelected(.my)) {
+      $0.selectedTab = .my
+    }
+    await store.receive(\.home.onDisappear)
+  }
+
+  /// 홈 위에 push된 화면이 있으면 돌아와도 홈 타이머를 켜지 않는다 — 그 화면이 보이고 있다
+  func testTabSelected_returningHomeWithPushedScreen_doesNotResume() async {
+    var initial = MainTabFeature.State()
+    initial.selectedTab = .relay
+    initial.visitedTabs = [.home]
+    initial.homePath.append(.notifications(NotificationsFeature.State()))
+    let store = TestStore(initialState: initial) {
+      MainTabFeature()
+    }
+
+    await store.send(.tabSelected(.home)) {
+      $0.selectedTab = .home
+      $0.visitedTabs = [.home, .relay]
     }
   }
 

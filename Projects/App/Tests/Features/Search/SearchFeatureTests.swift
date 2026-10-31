@@ -119,6 +119,7 @@ final class SearchFeatureTests: XCTestCase {
     await store.send(.search(.homeButtonTapped))
     await store.receive(.search(.delegate(.showHome))) {
       $0.selectedTab = .home
+      $0.visitedTabs = [.search]
     }
   }
 }

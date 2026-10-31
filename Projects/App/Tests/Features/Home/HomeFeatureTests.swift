@@ -14,7 +14,8 @@ final class HomeFeatureTests: XCTestCase {
     XCTAssertEqual(HomeCountdown.clock(from: self.now, to: self.now.addingTimeInterval(-5)), "00:00:00")
   }
 
-  func testOnAppear_loadsAndTicks() async {
+  /// 남은 시간은 화면이 스스로 다시 그린다 — 리듀서는 1초마다 액션을 보내지 않는다
+  func testOnAppear_loadsWithoutSecondTicks() async {
     let clock = TestClock()
     let feed = HomeFeed.mock(now: self.now)
     let store = TestStore(initialState: HomeFeature.State()) {
@@ -25,10 +26,9 @@ final class HomeFeatureTests: XCTestCase {
       $0.homeClient.fetch = { feed }
     }
 
-    await store.send(.onAppear) { $0.now = self.now }
+    await store.send(.onAppear)
     await store.receive(.loaded(feed)) { $0.feed = feed }
     await clock.advance(by: .seconds(1))
-    await store.receive(.timerTicked)
     await store.send(.onDisappear)
   }
 

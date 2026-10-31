@@ -67,7 +67,8 @@ final class RelayListFeatureTests: XCTestCase {
 
   // MARK: 리듀서
 
-  func testOnAppear_loadsRelaysAndTicksEverySecond() async {
+  /// 남은 시간은 행이 스스로 다시 그린다 — 리듀서는 1초마다 액션을 보내지 않는다
+  func testOnAppear_loadsRelaysWithoutTicking() async {
     let clock = TestClock()
     let relays = RelayMockData.relays(now: self.now)
     let store = TestStore(initialState: RelayListFeature.State()) {
@@ -79,7 +80,6 @@ final class RelayListFeatureTests: XCTestCase {
     }
 
     await store.send(.onAppear) {
-      $0.now = self.now
       $0.isLoading = true
     }
     await store.receive(.relaysLoaded(relays)) {
@@ -87,8 +87,6 @@ final class RelayListFeatureTests: XCTestCase {
       $0.relays = relays
     }
     await clock.advance(by: .seconds(1))
-    await store.receive(.timerTicked)
-    await store.send(.onDisappear)
   }
 
   func testLoadFailure_thenRetrySucceeds() async {
@@ -123,7 +121,6 @@ final class RelayListFeatureTests: XCTestCase {
       $0.relays = relays
       $0.isLoading = false
     }
-    await store.send(.onDisappear)
   }
 
   func testFilterAndTaps_sendDelegates() async {
