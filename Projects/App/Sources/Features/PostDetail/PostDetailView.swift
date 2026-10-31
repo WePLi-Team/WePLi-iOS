@@ -90,10 +90,12 @@ struct PostDetailView: View {
       .padding(.horizontal, 20)
       .padding(.top, 18)
       .padding(.bottom, 6)
+      // Lazy 목록의 행은 body 밖에서 그려지므로 store 값은 미리 읽어 둔다
+      let expandedIDs = self.store.expandedCommentIDs
       ForEach(self.store.comments) { comment in
         CommentThreadView(
           comment: comment,
-          isExpanded: self.store.expandedCommentIDs.contains(comment.id),
+          isExpanded: expandedIDs.contains(comment.id),
           onLike: { self.store.send(.commentLikeTapped($0)) },
           onDelete: { self.store.send(.deleteCommentTapped(comment.id)) },
           onToggleReplies: { self.store.send(.repliesToggled(comment.id)) }

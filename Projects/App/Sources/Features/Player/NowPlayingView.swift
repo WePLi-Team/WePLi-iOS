@@ -108,13 +108,15 @@ struct NowPlayingView: View {
   }
 
   private var progress: some View {
-    VStack(spacing: 8) {
+    // GeometryReader 내용은 body 밖에서 그려지므로 진행률은 미리 읽어 둔다
+    let progress = PlayerText.progress(self.store.position)
+    return VStack(spacing: 8) {
       GeometryReader { proxy in
         Capsule().fill(Color.white.opacity(0.2))
           .overlay(alignment: .leading) {
             Capsule()
               .fill(Color.white.opacity(0.9))
-              .frame(width: proxy.size.width * PlayerText.progress(self.store.position))
+              .frame(width: proxy.size.width * progress)
               .animation(.linear(duration: 1), value: self.store.position)
           }
       }

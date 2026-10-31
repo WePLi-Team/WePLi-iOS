@@ -83,11 +83,13 @@ struct SongWorldCupView: View {
       .allowsHitTesting(false)
       .frame(maxHeight: .infinity, alignment: .top)
       .padding(.top, 54)
+      // GeometryReader 내용은 body 밖에서 그려지므로 진행률은 미리 읽어 둔다
+      let progress = self.store.bracket.progress
       VStack(alignment: .leading, spacing: 8) {
         GeometryReader { proxy in
           ZStack(alignment: .leading) {
             Capsule().fill(Color.white.opacity(0.18))
-            Capsule().fill(WePLiColor.accent).frame(width: proxy.size.width * self.store.bracket.progress)
+            Capsule().fill(WePLiColor.accent).frame(width: proxy.size.width * progress)
           }
         }
         .frame(height: 3)
