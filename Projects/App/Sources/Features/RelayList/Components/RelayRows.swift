@@ -29,7 +29,6 @@ struct RelayCover: View {
 
 struct RelayFeaturedCard: View {
   let relay: Relay
-  let now: Date
 
   enum Metric {
     static let height: CGFloat = 200
@@ -49,10 +48,12 @@ struct RelayFeaturedCard: View {
       VStack(alignment: .leading, spacing: 6) {
         if let endsAt = self.relay.endsAt {
           // 분홍은 좋아요 · 급상승에만(디자인 원칙 · DEC-009)
-          Text("곧 마감 · \(RemainingTimeFormatter.string(from: self.now, to: endsAt)) 남음")
-            .wepliFont(.caption, weight: .semibold)
-            .foregroundStyle(WePLiColor.accent)
-            .monospacedDigit()
+          WePLiTicking { now in
+            Text("곧 마감 · \(RemainingTimeFormatter.string(from: now, to: endsAt)) 남음")
+              .wepliFont(.caption, weight: .semibold)
+              .foregroundStyle(WePLiColor.accent)
+              .monospacedDigit()
+          }
         }
         Text(self.relay.title)
           .wepliFont(.title3, weight: .bold)
@@ -73,7 +74,6 @@ struct RelayFeaturedCard: View {
 
 struct RelayRow: View {
   let relay: Relay
-  let now: Date
 
   enum Metric {
     static let coverSize: CGFloat = 72
@@ -96,10 +96,12 @@ struct RelayRow: View {
             .padding(.horizontal, 6)
             .frame(height: 20)
             .background(WePLiColor.surface2, in: RoundedRectangle(cornerRadius: 4))
-          Text(self.meta)
-            .wepliFont(.caption)
-            .foregroundStyle(WePLiColor.textTertiary)
-            .monospacedDigit()
+          WePLiTicking { now in
+            Text(self.meta(now: now))
+              .wepliFont(.caption)
+              .foregroundStyle(WePLiColor.textTertiary)
+              .monospacedDigit()
+          }
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -112,11 +114,11 @@ struct RelayRow: View {
   }
 
   /// 「2:17:59 남음 · 3,012명」 · 완성은 「완성 · 1,284명 참여」
-  private var meta: String {
+  private func meta(now: Date) -> String {
     guard let endsAt = self.relay.endsAt else {
       return "완성 · \(self.relay.participantText)명 참여"
     }
-    return "\(RemainingTimeFormatter.string(from: self.now, to: endsAt)) 남음 · \(self.relay.participantText)명"
+    return "\(RemainingTimeFormatter.string(from: now, to: endsAt)) 남음 · \(self.relay.participantText)명"
   }
 }
 

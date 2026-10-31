@@ -40,6 +40,8 @@ struct MainTabFeature {
   @ObservableState
   struct State: Equatable {
     var selectedTab: Tab = .home
+    /// 한 번이라도 고른 탭 — 고른 적 없는 탭은 그리지 않아 앱 시작 때 모든 탭이 불러오지 않는다
+    var visitedTabs: Set<Tab> = []
     var home = HomeFeature.State()
     var relay = RelayListFeature.State()
     var my = MyFeature.State()
@@ -216,15 +218,13 @@ struct MainTabFeature {
         Reduce { state, action in
           switch action {
           case let .tabSelected(tab):
-            state.selectedTab = tab
-            return .none
+            Self.select(tab, &state)
 
           case .search(.delegate(.showHome)):
-            state.selectedTab = .home
-            return .none
+            Self.select(.home, &state)
 
           default:
-            return .none
+            .none
           }
         }
       }
@@ -257,6 +257,25 @@ struct MainTabFeature {
         PlayerFeature()
       }
     }
+  }
+}
+
+extension MainTabFeature {
+  /// 탭 바꾸기 — 탭은 겹쳐 두고 숨기기만 해서 숨긴 탭은 onDisappear가 불리지 않는다.
+  /// 홈의 실시간 타이머는 여기서 멈추고, 돌아오면(위에 push된 화면이 없을 때) 다시 켠다.
+  static func select(_ tab: Tab, _ state: inout State) -> Effect<Action> {
+    let previous = state.selectedTab
+    guard tab != previous else { return .none }
+    state.visitedTabs.insert(previous)
+    let isReturning = state.visitedTabs.contains(tab)
+    state.selectedTab = tab
+    if previous == .home {
+      return .send(.home(.onDisappear))
+    }
+    if tab == .home, isReturning, state.homePath.isEmpty {
+      return .send(.home(.onAppear))
+    }
+    return .none
   }
 }
 

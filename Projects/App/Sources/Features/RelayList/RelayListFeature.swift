@@ -9,7 +9,6 @@ struct RelayListFeature {
   struct State: Equatable {
     var filter: RelayFilter = .live
     var relays: [Relay] = []
-    var now = Date()
     var isLoading = false
     var loadFailed = false
 
@@ -20,10 +19,8 @@ struct RelayListFeature {
 
   enum Action: Equatable {
     case onAppear
-    case onDisappear
     case relaysLoaded([Relay])
     case relaysFailed
-    case timerTicked
     case filterSelected(RelayFilter)
     case relayTapped(Relay.ID)
     case openRelayButtonTapped
@@ -38,35 +35,15 @@ struct RelayListFeature {
     case showCreateRelay
   }
 
-  private enum CancelID {
-    case timer
-  }
-
   @Dependency(\.relayClient)
   var relayClient
-
-  @Dependency(\.continuousClock)
-  var clock
-
-  @Dependency(\.date.now)
-  var now
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        state.now = self.now
-        let load: Effect<Action> = state.relays.isEmpty ? self.load(&state) : .none
-        let timer: Effect<Action> = .run { send in
-          for await _ in self.clock.timer(interval: .seconds(1)) {
-            await send(.timerTicked)
-          }
-        }
-        .cancellable(id: CancelID.timer, cancelInFlight: true)
-        return .merge(load, timer)
-
-      case .onDisappear:
-        return .cancel(id: CancelID.timer)
+        // 남은 시간은 행이 스스로 1초마다 다시 그린다(WePLiTicking)
+        return state.relays.isEmpty ? self.load(&state) : .none
 
       case let .relaysLoaded(relays):
         state.isLoading = false
@@ -76,10 +53,6 @@ struct RelayListFeature {
       case .relaysFailed:
         state.isLoading = false
         state.loadFailed = true
-        return .none
-
-      case .timerTicked:
-        state.now = self.now
         return .none
 
       case let .filterSelected(filter):

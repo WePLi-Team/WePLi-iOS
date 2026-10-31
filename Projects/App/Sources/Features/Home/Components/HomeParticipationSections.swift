@@ -61,7 +61,6 @@ struct HomeMyRecommendationsSection: View {
 /// 지금 투표 중인 릴레이 — 커버 68(모서리 12) · 제목 16 · 태그 · 「● 5시간 12분 남음 · 1,284명」
 struct HomeVotingRelaysSection: View {
   let relays: [HomeVotingRelay]
-  let now: Date
   let onTap: (HomeVotingRelay.ID) -> Void
 
   var body: some View {
@@ -82,9 +81,11 @@ struct HomeVotingRelaysSection: View {
                 .foregroundStyle(WePLiColor.textTertiary)
               HStack(spacing: 6) {
                 Circle().fill(WePLiColor.accent).frame(width: 6, height: 6)
-                Text(
-                  "\(HomeText.shortRemaining(from: self.now, to: relay.endsAt)) 남음 · \(HomeText.count(relay.participantCount))명"
-                )
+                WePLiTicking { now in
+                  Text(
+                    "\(HomeText.shortRemaining(from: now, to: relay.endsAt)) 남음 · \(HomeText.count(relay.participantCount))명"
+                  )
+                }
               }
               .wepliFont(.caption)
               .monospacedDigit()

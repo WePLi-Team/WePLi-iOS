@@ -7,7 +7,6 @@ struct HomeHeroPager: View {
   static let height: CGFloat = 510
 
   let heroes: [HomeHero]
-  let now: Date
   @Binding var page: Int
   let onTap: (HomeHero.ID) -> Void
   let onPlayAll: (HomeHero.ID) -> Void
@@ -16,7 +15,7 @@ struct HomeHeroPager: View {
     ZStack(alignment: .bottom) {
       TabView(selection: self.$page) {
         ForEach(Array(self.heroes.enumerated()), id: \.element.id) { index, hero in
-          HomeHeroPage(hero: hero, now: self.now, onPlayAll: { self.onPlayAll(hero.id) })
+          HomeHeroPage(hero: hero, onPlayAll: { self.onPlayAll(hero.id) })
             .contentShape(Rectangle())
             .onTapGesture { self.onTap(hero.id) }
             .tag(index)
@@ -41,7 +40,6 @@ struct HomeHeroPager: View {
 
 private struct HomeHeroPage: View {
   let hero: HomeHero
-  let now: Date
   let onPlayAll: () -> Void
 
   var body: some View {
@@ -125,10 +123,12 @@ private struct HomeHeroPage: View {
     HStack(spacing: 8) {
       if case let .live(endsAt) = self.hero.status {
         Circle().fill(WePLiGradient.vsRing).frame(width: 7, height: 7)
-        Text("\(HomeCountdown.clock(from: self.now, to: endsAt)) 남음")
-          .wepliFont(.subheadline, weight: .semibold)
-          .foregroundStyle(WePLiColor.accent)
-          .monospacedDigit()
+        WePLiTicking { now in
+          Text("\(HomeCountdown.clock(from: now, to: endsAt)) 남음")
+            .wepliFont(.subheadline, weight: .semibold)
+            .foregroundStyle(WePLiColor.accent)
+            .monospacedDigit()
+        }
         Text("·").foregroundStyle(WePLiColor.textQuaternary)
       }
       Text(self.hero.people)

@@ -66,7 +66,9 @@ final class GuestGateTests: XCTestCase {
     let store = TestStore(initialState: self.guest()) { MainTabFeature() }
     await store.send(.tabSelected(.relay)) {
       $0.selectedTab = .relay
+      $0.visitedTabs = [.home]
     }
+    await store.receive(\.home.onDisappear)
   }
 
   func testDefaultIsMember_likeNeedsLogin() {

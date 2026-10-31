@@ -10,7 +10,6 @@ struct HomeFeature {
   struct State: Equatable {
     var feed: HomeFeed?
     var heroPage = 0
-    var now = Date()
     var loadFailed = false
     var toast: String?
     /// 내 최애 가수 PLAY — 재생 중이면 일시정지 모양
@@ -23,7 +22,6 @@ struct HomeFeature {
     case loaded(HomeFeed)
     case loadFailed
     case retryButtonTapped
-    case timerTicked
     case heroPageChanged(Int)
     case heroTapped(HomeHero.ID)
     case notificationsTapped
@@ -66,7 +64,6 @@ struct HomeFeature {
   static let liveInterval: Duration = .seconds(5)
 
   private enum CancelID {
-    case timer
     case live
   }
 
@@ -76,31 +73,22 @@ struct HomeFeature {
   @Dependency(\.continuousClock)
   var clock
 
-  @Dependency(\.date.now)
-  var date
-
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        state.now = self.date
-        let timer = Effect<Action>.run { send in
-          for await _ in self.clock.timer(interval: .seconds(1)) {
-            await send(.timerTicked)
-          }
-        }
-        .cancellable(id: CancelID.timer, cancelInFlight: true)
+        // 남은 시간 · 시간대는 화면이 스스로 다시 그린다(WePLiTicking) — 리듀서는 실시간 수만 5초마다 읽는다
         let live = Effect<Action>.run { send in
           for await _ in self.clock.timer(interval: Self.liveInterval) {
             await send(.liveTicked)
           }
         }
         .cancellable(id: CancelID.live, cancelInFlight: true)
-        guard state.feed == nil else { return .merge(timer, live) }
-        return .merge(self.load(&state), timer, live)
+        guard state.feed == nil else { return live }
+        return .merge(self.load(&state), live)
 
       case .onDisappear:
-        return .merge(.cancel(id: CancelID.timer), .cancel(id: CancelID.live))
+        return .cancel(id: CancelID.live)
 
       case let .loaded(feed):
         state.feed = feed
@@ -112,10 +100,6 @@ struct HomeFeature {
 
       case .retryButtonTapped:
         return self.load(&state)
-
-      case .timerTicked:
-        state.now = self.date
-        return .none
 
       case let .heroPageChanged(page):
         state.heroPage = page
