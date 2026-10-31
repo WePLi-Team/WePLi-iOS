@@ -25,12 +25,14 @@ struct FollowListView: View {
         .padding(.horizontal, 16)
         .padding(.top, 12)
         .padding(.bottom, 6)
+        // Lazy 목록의 행은 body 밖에서 그려지므로 store 값은 미리 읽어 둔다
+        let tab = self.store.tab
         ScrollView {
           LazyVStack(spacing: 0) {
             ForEach(self.store.visibleUsers) { user in
               FollowUserRow(
                 user: user,
-                tab: self.store.tab,
+                tab: tab,
                 onTap: { self.store.send(.userTapped(user.id)) },
                 onFollow: { self.store.send(.followButtonTapped(user.id)) }
               )

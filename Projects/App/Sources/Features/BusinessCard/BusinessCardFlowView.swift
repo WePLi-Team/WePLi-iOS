@@ -179,10 +179,12 @@ struct BusinessCardFlowView: View {
         .font(.custom(WePLiFont.Weight.bold.postScriptName, size: 36, relativeTo: .largeTitle))
         .monospacedDigit()
         .foregroundStyle(WePLiColor.textPrimary)
+      // GeometryReader 내용은 body 밖에서 그려지므로 진행률은 미리 읽어 둔다
+      let fraction = CGFloat(self.store.percent) / 100
       GeometryReader { proxy in
         ZStack(alignment: .leading) {
           Capsule().fill(Color.white.opacity(0.1))
-          Capsule().fill(WePLiColor.accent).frame(width: proxy.size.width * CGFloat(self.store.percent) / 100)
+          Capsule().fill(WePLiColor.accent).frame(width: proxy.size.width * fraction)
         }
       }
       .frame(height: 6)

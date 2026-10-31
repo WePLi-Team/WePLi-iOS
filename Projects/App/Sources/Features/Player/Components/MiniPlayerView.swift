@@ -38,10 +38,12 @@ struct MiniPlayerView: View {
         .padding(.trailing, 6)
         .frame(height: Self.height)
         .overlay(alignment: .bottomLeading) {
+          // GeometryReader 내용은 body 밖에서 그려지므로 진행률은 미리 읽어 둔다
+          let progress = PlayerText.progress(self.store.position)
           GeometryReader { proxy in
             Rectangle()
               .fill(WePLiColor.accent)
-              .frame(width: proxy.size.width * PlayerText.progress(self.store.position), height: 2)
+              .frame(width: proxy.size.width * progress, height: 2)
               .frame(maxHeight: .infinity, alignment: .bottom)
               .animation(.linear(duration: 1), value: self.store.position)
           }

@@ -32,9 +32,11 @@ struct ExportMatchingStep: View {
           .padding(.top, 18)
           .padding(.bottom, 14)
           ScrollView {
+            // Lazy 목록의 행은 body 밖에서 그려지므로 store 값은 미리 읽어 둔다
+            let matches = self.store.matches
             LazyVStack(spacing: 0) {
               ForEach(Array(self.store.selectedSongs.enumerated()), id: \.element.id) { index, song in
-                self.row(song, isCurrent: index == count)
+                self.row(song, match: matches[song.id], isCurrent: index == count)
               }
             }
             .padding(.bottom, 150)
@@ -45,9 +47,8 @@ struct ExportMatchingStep: View {
     }
   }
 
-  private func row(_ song: ExportSong, isCurrent: Bool) -> some View {
-    let match = self.store.matches[song.id]
-    return HStack(spacing: 12) {
+  private func row(_ song: ExportSong, match: ExportMatch?, isCurrent: Bool) -> some View {
+    HStack(spacing: 12) {
       ExportArtwork()
       VStack(alignment: .leading, spacing: 0) {
         Text(song.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
