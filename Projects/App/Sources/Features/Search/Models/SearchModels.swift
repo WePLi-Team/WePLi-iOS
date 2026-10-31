@@ -34,7 +34,15 @@ struct SearchList: Equatable, Identifiable, Sendable {
     self.title
   }
 
+  /// 누르면 열 화면의 종류 — 부제 문구로 나누지 않는다
+  enum Kind: Equatable, Sendable {
+    case playlist
+    case relay
+    case post
+  }
+
   let title: String
+  let kind: Kind
   /// 「릴레이리스트 · 3,012명 참여」 · 「플레이리스트 · WePLi」 · 「게시글 · 김동」
   let subtitle: String
   var tags: [String] = []

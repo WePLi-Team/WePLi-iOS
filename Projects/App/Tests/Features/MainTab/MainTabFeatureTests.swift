@@ -392,7 +392,7 @@ final class SharedPathNavigationTests: XCTestCase {
   func testSearchPlaylist_opensDetailThenTrackAndArtist() async {
     var initial = MainTabFeature.State()
     initial.selectedTab = .search
-    initial.search.results.lists = [SearchList(title: "비 오는 날", subtitle: "플레이리스트 · WePLi")]
+    initial.search.results.lists = [SearchList(title: "비 오는 날", kind: .playlist, subtitle: "플레이리스트 · WePLi")]
     let store = TestStore(initialState: initial) {
       MainTabFeature()
     }
@@ -413,8 +413,8 @@ final class SharedPathNavigationTests: XCTestCase {
   func testSearchRelayAndPost_openMatchingScreens() async {
     var initial = MainTabFeature.State()
     initial.search.results.lists = [
-      SearchList(title: "카페 BGM", subtitle: "릴레이리스트 · 3,012명 참여"),
-      SearchList(title: "새벽 감성", subtitle: "게시글 · 김동"),
+      SearchList(title: "카페 BGM", kind: .relay, subtitle: "릴레이리스트 · 3,012명 참여"),
+      SearchList(title: "새벽 감성", kind: .post, subtitle: "게시글 · 김동"),
     ]
     let store = TestStore(initialState: initial) {
       MainTabFeature()
