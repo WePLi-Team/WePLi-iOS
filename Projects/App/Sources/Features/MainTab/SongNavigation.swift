@@ -10,9 +10,6 @@ struct SongNavigation: Reducer {
   @Dependency(\.date.now)
   var now
 
-  @Dependency(\.continuousClock)
-  var clock
-
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       if case let (source, .songDetail(.delegate(.share)))? = action.pathElement {
@@ -29,14 +26,16 @@ struct SongNavigation: Reducer {
         // 게시글로 공유하기 → 이 곡을 담은 게시글 작성
         guard let card = state.songShare?.card else { return .none }
         state.songShare = nil
-        return self.presentAfterSheet(.compose(ComposeTrack(id: card.songID, title: card.title, artist: card.artist)))
-
-      case let .presentAfterSheet(.share(card)):
-        state.songShare = SongShareFeature.State(card: card)
+        state.followUpAfterSheet = .compose(ComposeTrack(id: card.songID, title: card.title, artist: card.artist))
         return .none
 
-      case let .presentAfterSheet(.compose(track)):
-        state.compose = ComposePostFeature.State(tracks: [track])
+      case .sheetDismissed:
+        guard let followUp = state.followUpAfterSheet else { return .none }
+        state.followUpAfterSheet = nil
+        switch followUp {
+        case let .share(card): state.songShare = SongShareFeature.State(card: card)
+        case let .compose(track): state.compose = ComposePostFeature.State(tracks: [track])
+        }
         return .none
 
       default:
@@ -59,13 +58,6 @@ struct SongNavigation: Reducer {
       sharerPersona: state.my.profile?.persona?.name,
       today: self.now
     )
-  }
-
-  func presentAfterSheet(_ followUp: SongFollowUp) -> Effect<Action> {
-    .run { send in
-      try await self.clock.sleep(for: .milliseconds(450))
-      await send(.presentAfterSheet(followUp))
-    }
   }
 }
 
