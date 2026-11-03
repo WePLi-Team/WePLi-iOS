@@ -10,12 +10,14 @@ struct TasteMatchClient {
 }
 
 extension TasteMatchClient: DependencyKey {
-  static let liveValue = TasteMatchClient(
+  static let mockValue = TasteMatchClient(
     fetch: { userID in .mock(userID: userID) },
     recommend: { _, _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = TasteMatchClient(
     fetch: unimplemented("TasteMatchClient.fetch", placeholder: .mock(userID: "")),

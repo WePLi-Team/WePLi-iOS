@@ -14,7 +14,7 @@ struct MusicServicesClient {
 }
 
 extension MusicServicesClient: DependencyKey {
-  static let liveValue = MusicServicesClient(
+  static let mockValue = MusicServicesClient(
     fetch: { .mock },
     connect: { _ in },
     disconnect: { _ in },
@@ -22,7 +22,9 @@ extension MusicServicesClient: DependencyKey {
     setAutoExport: { _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = MusicServicesClient(
     fetch: unimplemented("MusicServicesClient.fetch", placeholder: .mock),

@@ -10,13 +10,15 @@ struct CommunityClient {
 }
 
 extension CommunityClient: DependencyKey {
-  static let liveValue = CommunityClient(
+  static let mockValue = CommunityClient(
     fetchFeed: { .mock },
     setLiked: { _, _ in },
     setSaved: { _, _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = CommunityClient(
     fetchFeed: unimplemented("CommunityClient.fetchFeed", placeholder: .mock),

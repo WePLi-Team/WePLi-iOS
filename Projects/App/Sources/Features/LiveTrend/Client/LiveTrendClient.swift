@@ -11,13 +11,15 @@ struct LiveTrendClient {
 }
 
 extension LiveTrendClient: DependencyKey {
-  static let liveValue = LiveTrendClient(
+  static let mockValue = LiveTrendClient(
     fetch: { .mock },
     // 원본 목업은 127에서 시작해 112–148 사이를 오르내린다
     listeners: { Int.random(in: 112 ... 148) }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = LiveTrendClient(
     fetch: unimplemented("LiveTrendClient.fetch", placeholder: .mock),

@@ -15,7 +15,7 @@ struct BatonRelayClient {
 }
 
 extension BatonRelayClient: DependencyKey {
-  static let liveValue = BatonRelayClient(
+  static let mockValue = BatonRelayClient(
     fetch: { .mock(id: $0) },
     accept: { _ in
       @Dependency(\.date.now)
@@ -26,7 +26,9 @@ extension BatonRelayClient: DependencyKey {
     pass: { relayID, pickID, keyword in .mock(id: relayID).passed(pickID: pickID, keyword: keyword) }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = BatonRelayClient(
     fetch: unimplemented("BatonRelayClient.fetch", placeholder: .mock(id: "")),

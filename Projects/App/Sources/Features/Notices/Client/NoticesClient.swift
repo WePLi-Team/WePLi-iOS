@@ -9,8 +9,10 @@ struct NoticesClient {
 }
 
 extension NoticesClient: DependencyKey {
-  static let liveValue = NoticesClient(fetch: { Notice.mock }, markRead: { _ in })
-  static let previewValue = liveValue
+  static let mockValue = NoticesClient(fetch: { Notice.mock }, markRead: { _ in })
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
   static let testValue = NoticesClient(
     fetch: unimplemented("NoticesClient.fetch", placeholder: []),
     markRead: unimplemented("NoticesClient.markRead")

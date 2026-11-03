@@ -36,7 +36,7 @@ struct ExportMatchEvent: Equatable, Sendable {
 }
 
 extension ExportClient: DependencyKey {
-  static let liveValue = ExportClient(
+  static let mockValue = ExportClient(
     isConnected: { $0 == .appleMusic },
     connect: { _ in true },
     match: { _, songs in
@@ -92,7 +92,9 @@ extension ExportClient: DependencyKey {
     copy: { text in await MainActor.run { UIPasteboard.general.string = text } }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = ExportClient(
     isConnected: unimplemented("ExportClient.isConnected", placeholder: false),

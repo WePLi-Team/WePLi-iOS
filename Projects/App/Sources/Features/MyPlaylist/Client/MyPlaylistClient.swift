@@ -11,13 +11,15 @@ struct MyPlaylistClient {
 }
 
 extension MyPlaylistClient: DependencyKey {
-  static let liveValue = MyPlaylistClient(
+  static let mockValue = MyPlaylistClient(
     fetch: { id in .mock(id: id) },
     save: { $0 },
     delete: { _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = MyPlaylistClient(
     fetch: unimplemented("MyPlaylistClient.fetch", placeholder: .mock(id: "")),

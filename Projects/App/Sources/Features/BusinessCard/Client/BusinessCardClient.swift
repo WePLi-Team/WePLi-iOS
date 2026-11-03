@@ -13,7 +13,7 @@ extension BusinessCardClient: DependencyKey {
   /// 미결정 — 공유 링크 웹 미리보기(11차 남은 후보). 정해지기 전까지 예약 도메인을 쓴다.
   static let linkBase = URL(string: "https://wepli.example/cards")
 
-  static let liveValue = BusinessCardClient(
+  static let mockValue = BusinessCardClient(
     create: { _ in "me" },
     link: { cardID in
       guard let url = linkBase?.appendingPathComponent(cardID) else { throw URLError(.badURL) }
@@ -21,7 +21,9 @@ extension BusinessCardClient: DependencyKey {
     }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = BusinessCardClient(
     create: unimplemented("BusinessCardClient.create", placeholder: ""),

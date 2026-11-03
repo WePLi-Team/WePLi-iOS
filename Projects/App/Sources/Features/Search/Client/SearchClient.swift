@@ -9,12 +9,14 @@ struct SearchClient {
 }
 
 extension SearchClient: DependencyKey {
-  static let liveValue = SearchClient(
+  static let mockValue = SearchClient(
     search: { query, scope in SearchEngine.search(query, scope: scope, in: .mock) },
     recentQueries: { ["로이킴", "비 오는 날", "아이유"] }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = SearchClient(
     search: unimplemented("SearchClient.search", placeholder: SearchResults()),

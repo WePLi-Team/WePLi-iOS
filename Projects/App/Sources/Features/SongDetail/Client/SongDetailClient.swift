@@ -9,12 +9,14 @@ struct SongDetailClient {
 }
 
 extension SongDetailClient: DependencyKey {
-  static let liveValue = SongDetailClient(
+  static let mockValue = SongDetailClient(
     fetch: { id in .mock(id: id) },
     setLiked: { _, _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = SongDetailClient(
     fetch: unimplemented("SongDetailClient.fetch", placeholder: .mock(id: "")),
