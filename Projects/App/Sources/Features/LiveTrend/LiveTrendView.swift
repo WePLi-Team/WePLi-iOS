@@ -26,16 +26,9 @@ struct LiveTrendView: View {
           }
           .padding(.bottom, 60)
         } else if self.store.loadFailed {
-          VStack(spacing: 12) {
-            // 원본에 없는 문구 — 디자인 확인 필요
-            Text("지금 위플리를 불러오지 못했어요").wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
-            Button("다시 시도") { self.store.send(.retryButtonTapped) }
-              .wepliFont(.subheadline, weight: .semibold)
-              .foregroundStyle(WePLiColor.accent)
-          }
-          .frame(maxWidth: .infinity, minHeight: 400)
+          WePLiLoadFailedView(message: "지금 위플리를 불러오지 못했어요", minHeight: 400) { self.store.send(.retryButtonTapped) }
         } else {
-          ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 400)
+          WePLiLoadingView(minHeight: 400)
         }
       }
       .ignoresSafeArea(edges: .top)

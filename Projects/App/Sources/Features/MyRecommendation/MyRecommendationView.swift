@@ -43,7 +43,7 @@ struct MyRecommendationView: View {
               .foregroundStyle(WePLiColor.textPrimary)
               .frame(maxWidth: .infinity, minHeight: 500)
           } else {
-            ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 500)
+            WePLiLoadingView(minHeight: 500)
           }
         }
         .ignoresSafeArea(edges: .top)

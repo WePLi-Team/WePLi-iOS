@@ -29,7 +29,7 @@ struct DailySongView: View {
             } else if self.store.loadFailed {
               self.failed
             } else {
-              ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 300)
+              WePLiLoadingView(minHeight: 300)
             }
           }
           .padding(.bottom, 60)
@@ -48,14 +48,7 @@ struct DailySongView: View {
   }
 
   private var failed: some View {
-    VStack(spacing: 12) {
-      // 원본에 없는 문구 — 디자인 확인 필요
-      Text("오늘의 질문을 불러오지 못했어요").wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
-      Button("다시 시도") { self.store.send(.retryButtonTapped) }
-        .wepliFont(.subheadline, weight: .semibold)
-        .foregroundStyle(WePLiColor.accent)
-    }
-    .frame(maxWidth: .infinity, minHeight: 300)
+    WePLiLoadFailedView(message: "오늘의 질문을 불러오지 못했어요", minHeight: 300) { self.store.send(.retryButtonTapped) }
   }
 
   private func content(_ question: DailyQuestion) -> some View {

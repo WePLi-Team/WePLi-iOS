@@ -23,20 +23,9 @@ struct ArtistView: View {
                 .padding(.bottom, 60)
             }
           } else if self.store.loadFailed {
-            // 원본에 오류 화면이 없어 임시 문구 — 디자인 확인 필요
-            VStack(spacing: 12) {
-              Text("아티스트 정보를 불러오지 못했어요")
-                .wepliFont(.callout, weight: .semibold)
-                .foregroundStyle(WePLiColor.textPrimary)
-              Button("다시 시도") { self.store.send(.retryButtonTapped) }
-                .wepliFont(.body, weight: .semibold)
-                .foregroundStyle(WePLiColor.accent)
-            }
-            .frame(maxWidth: .infinity, minHeight: 500)
+            WePLiLoadFailedView(message: "아티스트 정보를 불러오지 못했어요", minHeight: 500) { self.store.send(.retryButtonTapped) }
           } else {
-            ProgressView()
-              .tint(WePLiColor.textTertiary)
-              .frame(maxWidth: .infinity, minHeight: 500)
+            WePLiLoadingView(minHeight: 500)
           }
         }
         .ignoresSafeArea(edges: .top)

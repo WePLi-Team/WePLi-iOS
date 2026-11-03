@@ -32,20 +32,9 @@ struct PlaylistDetailView: View {
             }
             .padding(.bottom, 40)
           } else if self.store.loadFailed {
-            // 원본에 오류 화면이 없어 임시 문구 — 디자인 확인 필요
-            VStack(spacing: 12) {
-              Text("플레이리스트를 불러오지 못했어요")
-                .wepliFont(.callout, weight: .semibold)
-                .foregroundStyle(WePLiColor.textPrimary)
-              Button("다시 시도") { self.store.send(.retryButtonTapped) }
-                .wepliFont(.body, weight: .semibold)
-                .foregroundStyle(WePLiColor.accent)
-            }
-            .frame(maxWidth: .infinity, minHeight: 500)
+            WePLiLoadFailedView(message: "플레이리스트를 불러오지 못했어요", minHeight: 500) { self.store.send(.retryButtonTapped) }
           } else {
-            ProgressView()
-              .tint(WePLiColor.textTertiary)
-              .frame(maxWidth: .infinity, minHeight: 500)
+            WePLiLoadingView(minHeight: 500)
           }
         }
         .ignoresSafeArea(edges: .top)

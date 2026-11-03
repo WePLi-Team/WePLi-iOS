@@ -36,7 +36,7 @@ struct MusicServicesView: View {
         } else if self.store.loadFailed {
           self.failed
         } else {
-          ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 300)
+          WePLiLoadingView(minHeight: 300)
         }
       }
       .safeAreaInset(edge: .top, spacing: 0) { self.navigationBar }
@@ -61,16 +61,7 @@ struct MusicServicesView: View {
   }
 
   private var failed: some View {
-    VStack(spacing: 12) {
-      // 원본에 오류 화면이 없어 임시 문구 — 디자인 확인 필요
-      Text("음악 서비스 설정을 불러오지 못했어요")
-        .wepliFont(.callout, weight: .semibold)
-        .foregroundStyle(WePLiColor.textPrimary)
-      Button("다시 시도") { self.store.send(.retryButtonTapped) }
-        .wepliFont(.subheadline, weight: .semibold)
-        .foregroundStyle(WePLiColor.accent)
-    }
-    .frame(maxWidth: .infinity, minHeight: 300)
+    WePLiLoadFailedView(message: "음악 서비스 설정을 불러오지 못했어요", minHeight: 300) { self.store.send(.retryButtonTapped) }
   }
 
   private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
