@@ -38,6 +38,9 @@ struct TasteMatchFeature {
   @Dependency(\.tasteMatchClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -53,7 +56,7 @@ struct TasteMatchFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .recommendTapped(id):
         return self.recommend(id, &state)
       case let .recommendFailed(id):
@@ -101,7 +104,6 @@ struct TasteMatchFeature {
 }
 
 enum TasteMatchDelegate: Equatable {
-  case dismiss
   case showArtist(String)
   /// 「둘이서 플레이리스트 만들기」 → 릴레이 만들기(UI-6a)
   case createRelay

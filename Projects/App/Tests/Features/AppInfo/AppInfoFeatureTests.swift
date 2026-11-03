@@ -58,8 +58,11 @@ final class AppInfoFeatureTests: XCTestCase {
     let store = TestStore(initialState: AppInfoFeature.State()) { AppInfoFeature() }
     await store.send(.documentTapped("terms")) { $0.document = AppDocument.all[0] }
     await store.send(.backButtonTapped) { $0.document = nil }
+    let dismissed = LockIsolated(false)
+    store.dependencies.dismiss = DismissEffect { dismissed.setValue(true) }
     await store.send(.backButtonTapped)
-    await store.receive(.delegate(.dismiss))
+    await store.finish()
+    XCTAssertTrue(dismissed.value)
   }
 
   func testPolicyDocument_opensCommunityPolicyScreen() async {

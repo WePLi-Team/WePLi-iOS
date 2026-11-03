@@ -51,6 +51,9 @@ struct MyPlaylistFeature {
   @Dependency(\.myPlaylistClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -70,7 +73,7 @@ struct MyPlaylistFeature {
         return self.load(&state)
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .editButtonTapped:
         return self.toggleEditing(&state)
@@ -206,7 +209,6 @@ enum MyPlaylistDeleteDialog: Equatable {
 }
 
 enum MyPlaylistDelegate: Equatable {
-  case dismiss
   case deleted(MyPlaylist.ID)
   /// 게시글로 공유 → 이 플리의 곡을 담은 게시글 작성(UI-2b)
   case shareAsPost([ComposeTrack])

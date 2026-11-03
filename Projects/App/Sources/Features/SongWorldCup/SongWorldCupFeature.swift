@@ -46,7 +46,6 @@ struct SongWorldCupFeature {
     case shareTapped
     case closeTapped
     case toastDismissed
-    case delegate(SongWorldCupDelegate)
   }
 
   /// 고른 뒤 다음 대결까지(원본 setTimeout 260ms)
@@ -57,6 +56,9 @@ struct SongWorldCupFeature {
 
   @Dependency(\.continuousClock)
   var clock
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -115,14 +117,14 @@ struct SongWorldCupFeature {
         return .none
 
       case .closeTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .toastDismissed:
         state.toast = nil
         return .none
 
       // 원본에 동작이 없다(결과 공유하기) — 공유 카드 방식이 정해지면 잇는다
-      case .shareTapped, .delegate:
+      case .shareTapped:
         return .none
       }
     }
@@ -139,8 +141,4 @@ struct SongWorldCupFeature {
       }
     }
   }
-}
-
-enum SongWorldCupDelegate: Equatable {
-  case dismiss
 }

@@ -101,7 +101,7 @@ final class SongWorldCupNavigationTests: XCTestCase {
     XCTAssertEqual(store.state.relayPath[id: last, case: \.worldCup]?.topic, "첫 사랑이 생각나는 노래 모음")
 
     await store.send(.relayPath(.element(id: last, action: .worldCup(.closeTapped))))
-    await store.receive(.relayPath(.element(id: last, action: .worldCup(.delegate(.dismiss)))))
+    await store.receive(\.relayPath.popFrom) { $0.relayPath.pop(from: last) }
     XCTAssertEqual(store.state.relayPath.count, 1)
   }
 }

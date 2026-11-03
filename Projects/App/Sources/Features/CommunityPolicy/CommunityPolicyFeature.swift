@@ -22,11 +22,13 @@ struct CommunityPolicyFeature {
     case backButtonTapped
     case appealTapped
     case appeal(PresentationAction<AppealFeature.Action>)
-    case delegate(CommunityPolicyDelegate)
   }
 
   @Dependency(\.communityPolicyClient)
   var client
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -42,7 +44,7 @@ struct CommunityPolicyFeature {
         state.standing = standing
         return .none
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .appealTapped:
         guard let target = state.standing?.appealTarget else { return .none }
         state.appeal = AppealFeature.State(target: target)
@@ -50,14 +52,10 @@ struct CommunityPolicyFeature {
       case .appeal(.presented(.delegate(.dismiss))):
         state.appeal = nil
         return .none
-      case .appeal, .delegate:
+      case .appeal:
         return .none
       }
     }
     .ifLet(\.$appeal, action: \.appeal) { AppealFeature() }
   }
-}
-
-enum CommunityPolicyDelegate: Equatable {
-  case dismiss
 }

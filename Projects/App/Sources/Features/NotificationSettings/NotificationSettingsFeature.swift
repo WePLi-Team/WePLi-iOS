@@ -27,7 +27,6 @@ struct NotificationSettingsFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     /// 알림 받지 않는 시간 고르기
     case editQuietHours
   }
@@ -38,6 +37,9 @@ struct NotificationSettingsFeature {
 
   @Dependency(\.notificationSettingsClient)
   var client
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -96,7 +98,7 @@ struct NotificationSettingsFeature {
         return .none
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .delegate:
         return .none

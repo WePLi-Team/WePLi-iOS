@@ -40,11 +40,14 @@ struct InquiryDetailFeature {
   @Dependency(\.helpCenterClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .helpfulTapped(isHelpful):
         guard state.inquiry.isHelpful != isHelpful else { return .none }
         let previous = state.inquiry.isHelpful
@@ -122,7 +125,6 @@ enum InquiryCancelDialog: Equatable {
 }
 
 enum InquiryDetailDelegate: Equatable {
-  case dismiss
   /// 추가로 문의하기 — 같은 유형으로 7b 문의 시트를 연다
   case followUp(InquiryCategory)
   /// 이의 신청이 받아들여져 다시 보이는 내 게시글

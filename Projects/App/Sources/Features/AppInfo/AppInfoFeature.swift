@@ -48,6 +48,9 @@ struct AppInfoFeature {
   @Dependency(\.continuousClock)
   var clock
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -64,7 +67,7 @@ struct AppInfoFeature {
           state.document = nil
           return .none
         }
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .versionTapped:
         return self.countTap(&state)
       case let .documentTapped(id):
@@ -99,7 +102,6 @@ struct AppInfoFeature {
 }
 
 enum AppInfoDelegate: Equatable {
-  case dismiss
   /// 마이 「기타」에 개발자 모드 행을 보인다
   case developerModeEnabled
   /// 커뮤니티 운영정책(UI-17b)

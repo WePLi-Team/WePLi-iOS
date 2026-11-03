@@ -36,7 +36,6 @@ struct NotificationsFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     /// 알림이 가리키는 화면으로 — 각 화면이 연결되면 상위에서 처리
     case open(AppNotification.ID)
   }
@@ -45,6 +44,9 @@ struct NotificationsFeature {
   var client
 
   private static let logger = Logger(subsystem: "com.wepli", category: "Notifications")
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -101,7 +103,7 @@ struct NotificationsFeature {
         return self.markRead(ids)
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .delegate:
         return .none

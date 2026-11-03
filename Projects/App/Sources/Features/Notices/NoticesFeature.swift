@@ -31,11 +31,13 @@ struct NoticesFeature {
     case noticeTapped(Notice.ID)
     case backButtonTapped
     case backToListTapped
-    case delegate(NoticesDelegate)
   }
 
   @Dependency(\.noticesClient)
   var client
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -67,11 +69,9 @@ struct NoticesFeature {
           state.selectedID = nil
           return .none
         }
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .backToListTapped:
         state.selectedID = nil
-        return .none
-      case .delegate:
         return .none
       }
     }
@@ -87,8 +87,4 @@ struct NoticesFeature {
       }
     }
   }
-}
-
-enum NoticesDelegate: Equatable {
-  case dismiss
 }

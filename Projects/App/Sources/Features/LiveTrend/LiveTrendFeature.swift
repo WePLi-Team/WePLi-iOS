@@ -44,6 +44,9 @@ struct LiveTrendFeature {
   @Dependency(\.continuousClock)
   var clock
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -77,7 +80,7 @@ struct LiveTrendFeature {
         state.trend?.listeners = count
         return .none
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .slotSelected(slot):
         state.slot = slot
         return .none
@@ -105,7 +108,6 @@ struct LiveTrendFeature {
 }
 
 enum LiveTrendDelegate: Equatable {
-  case dismiss
   case showSong(LiveTrendSong.ID)
   /// 히어로 「듣기」 → 미리듣기 플레이어(UI-4b)
   case play(LiveTrendSong)

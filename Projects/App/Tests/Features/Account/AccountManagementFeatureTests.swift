@@ -67,8 +67,11 @@ final class AccountManagementFeatureTests: XCTestCase {
     await store.send(.reasonToggled(.rarelyUsed)) { $0.reasons = [.rarelyUsed] }
     await store.send(.nextTapped) { $0.step = .confirm }
     await store.send(.backButtonTapped) { $0.step = .reason }
+    let dismissed = LockIsolated(false)
+    store.dependencies.dismiss = DismissEffect { dismissed.setValue(true) }
     await store.send(.backButtonTapped)
-    await store.receive(.delegate(.dismiss))
+    await store.finish()
+    XCTAssertTrue(dismissed.value)
   }
 
   func testUnblock_removesRowAndRestoresOnFailure() async {

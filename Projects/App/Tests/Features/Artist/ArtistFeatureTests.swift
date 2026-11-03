@@ -61,7 +61,10 @@ final class ArtistFeatureTests: XCTestCase {
     await store.receive(.delegate(.showPost("post-1")))
     await store.send(.songTapped("밤편지"))
     await store.receive(.delegate(.showSong("밤편지")))
+    let dismissed = LockIsolated(false)
+    store.dependencies.dismiss = DismissEffect { dismissed.setValue(true) }
     await store.send(.backButtonTapped)
-    await store.receive(.delegate(.dismiss))
+    await store.finish()
+    XCTAssertTrue(dismissed.value)
   }
 }

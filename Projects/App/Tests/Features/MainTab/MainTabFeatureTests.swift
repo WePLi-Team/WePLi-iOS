@@ -109,11 +109,11 @@ final class RelayNavigationTests: XCTestCase {
 
     guard let voteID = store.state.relayPath.ids.last else { return XCTFail("투표가 열리지 않음") }
     await store.send(.relayPath(.element(id: voteID, action: .vote(.returnToRelayButtonTapped))))
-    await store.receive(.relayPath(.element(id: voteID, action: .vote(.delegate(.dismiss)))))
+    await store.receive(\.relayPath.popFrom) { $0.relayPath.pop(from: voteID) }
     XCTAssertEqual(store.state.relayPath.count, 1)
 
     await store.send(.relayPath(.element(id: detailID, action: .relayDetail(.backButtonTapped))))
-    await store.receive(.relayPath(.element(id: detailID, action: .relayDetail(.delegate(.dismiss)))))
+    await store.receive(\.relayPath.popFrom) { $0.relayPath.pop(from: detailID) }
     XCTAssertTrue(store.state.relayPath.isEmpty)
     XCTAssertFalse(store.state.hidesTabBar)
   }
@@ -136,7 +136,7 @@ final class CommunityNavigationTests: XCTestCase {
 
     guard let id = store.state.communityPath.ids.first else { return XCTFail("알림이 열리지 않음") }
     await store.send(.communityPath(.element(id: id, action: .notifications(.backButtonTapped))))
-    await store.receive(.communityPath(.element(id: id, action: .notifications(.delegate(.dismiss)))))
+    await store.receive(\.communityPath.popFrom) { $0.communityPath.pop(from: id) }
     XCTAssertTrue(store.state.communityPath.isEmpty)
   }
 }
@@ -167,7 +167,7 @@ final class MyNavigationTests: XCTestCase {
     XCTAssertEqual(store.state.my.profile?.nickname, "새 이름")
 
     await store.send(.myPath(.element(id: id, action: .editProfile(.backButtonTapped))))
-    await store.receive(.myPath(.element(id: id, action: .editProfile(.delegate(.dismiss)))))
+    await store.receive(\.myPath.popFrom) { $0.myPath.pop(from: id) }
     XCTAssertTrue(store.state.myPath.isEmpty)
   }
 
@@ -185,7 +185,7 @@ final class MyNavigationTests: XCTestCase {
     XCTAssertTrue(store.state.hidesTabBar)
 
     await store.send(.myPath(.element(id: id, action: .notificationSettings(.backButtonTapped))))
-    await store.receive(.myPath(.element(id: id, action: .notificationSettings(.delegate(.dismiss)))))
+    await store.receive(\.myPath.popFrom) { $0.myPath.pop(from: id) }
     XCTAssertTrue(store.state.myPath.isEmpty)
   }
 }
@@ -389,7 +389,7 @@ final class SongNavigationTests: XCTestCase {
     XCTAssertEqual(store.state.searchPath.count, 4)
 
     await store.send(.searchPath(.element(id: artistID, action: .artist(.backButtonTapped))))
-    await store.receive(.searchPath(.element(id: artistID, action: .artist(.delegate(.dismiss)))))
+    await store.receive(\.searchPath.popFrom) { $0.searchPath.pop(from: artistID) }
     XCTAssertEqual(store.state.searchPath.count, 1)
   }
 
@@ -403,7 +403,7 @@ final class SongNavigationTests: XCTestCase {
     guard let id = store.state.searchPath.ids.first else { return XCTFail("경로 없음") }
 
     await store.send(.searchPath(.element(id: id, action: .songDetail(.backButtonTapped))))
-    await store.receive(.searchPath(.element(id: id, action: .songDetail(.delegate(.dismiss)))))
+    await store.receive(\.searchPath.popFrom) { $0.searchPath.pop(from: id) }
     XCTAssertTrue(store.state.searchPath.isEmpty)
   }
 }
@@ -493,7 +493,8 @@ final class SharedPathNavigationTests: XCTestCase {
     XCTAssertEqual(store.state.myPath[id: ids[3], case: \.postDetail]?.postID, "p1")
 
     // 뒤로는 어느 탭 · 어느 화면이든 그 탭 스택에서 뺀다
-    await store.send(.myPath(.element(id: ids[3], action: .postDetail(.delegate(.dismiss)))))
+    await store.send(.myPath(.element(id: ids[3], action: .postDetail(.backButtonTapped))))
+    await store.receive(\.myPath.popFrom) { $0.myPath.pop(from: ids[3]) }
     XCTAssertEqual(store.state.myPath.count, 3)
   }
 

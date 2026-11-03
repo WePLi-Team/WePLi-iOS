@@ -56,7 +56,6 @@ struct BatonRelayFeature {
     case requestFailed
     case timerTicked
     case toastDismissed
-    case delegate(BatonRelayDelegate)
   }
 
   enum CancelID {
@@ -71,6 +70,9 @@ struct BatonRelayFeature {
 
   @Dependency(\.date.now)
   var date
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -90,7 +92,7 @@ struct BatonRelayFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .closeTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .timerTicked:
         state.now = self.date
         return .none
@@ -101,8 +103,6 @@ struct BatonRelayFeature {
         return self.invite(&state, action)
       case .pickTapped, .keywordTapped, .passTapped, .passed, .requestFailed:
         return self.myTurn(&state, action)
-      case .delegate:
-        return .none
       }
     }
   }
@@ -201,8 +201,4 @@ struct BatonRelayFeature {
     }
     return .none
   }
-}
-
-enum BatonRelayDelegate: Equatable {
-  case dismiss
 }

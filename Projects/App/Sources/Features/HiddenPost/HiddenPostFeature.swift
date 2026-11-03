@@ -35,11 +35,14 @@ struct HiddenPostFeature {
   @Dependency(\.hiddenPostClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .appealTapped:
         state.appeal = AppealFeature.State(target: state.post.appealTarget)
         return .none
@@ -96,7 +99,6 @@ enum HiddenPostDeleteDialog: Equatable {
 }
 
 enum HiddenPostDelegate: Equatable {
-  case dismiss
   /// 운영정책(UI-17b)
   case showPolicy
   /// 삭제한 글 — 커뮤니티 안내 카드를 지우고 돌아간다
