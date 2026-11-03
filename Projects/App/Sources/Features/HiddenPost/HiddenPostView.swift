@@ -45,15 +45,7 @@ struct HiddenPostView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("내 게시글").wepliFont(.button).foregroundStyle(WePLiColor.textPrimary).accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") { self.store.send(.backButtonTapped) }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
+    WePLiNavigationBar(title: "내 게시글") { self.store.send(.backButtonTapped) }
   }
 
   private var actions: some View {

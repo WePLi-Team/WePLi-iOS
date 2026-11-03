@@ -45,15 +45,7 @@ struct CommunityPolicyView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("커뮤니티 운영정책").wepliFont(.button).foregroundStyle(WePLiColor.textPrimary).accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") { self.store.send(.backButtonTapped) }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
+    WePLiNavigationBar(title: "커뮤니티 운영정책") { self.store.send(.backButtonTapped) }
   }
 
   private func section(_ title: String, subtitle: String? = nil, @ViewBuilder content: () -> some View) -> some View {

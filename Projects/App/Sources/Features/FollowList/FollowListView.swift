@@ -48,16 +48,7 @@ struct FollowListView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text(self.store.userName).wepliFont(.button).foregroundStyle(WePLiColor.textPrimary)
-        .accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") { self.store.send(.backButtonTapped) }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
+    WePLiNavigationBar(title: self.store.userName) { self.store.send(.backButtonTapped) }
   }
 
   /// 세그먼트 → 밑줄 탭(디자인 원칙 · DEC-009)

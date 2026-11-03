@@ -47,16 +47,8 @@ struct AppealView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("이의 신청").wepliFont(.button).foregroundStyle(WePLiColor.textPrimary).accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") { self.store.send(.closeTapped) }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
-    .padding(.top, 8)
+    WePLiNavigationBar(title: "이의 신청") { self.store.send(.closeTapped) }
+      .padding(.top, 8)
   }
 
   private var form: some View {

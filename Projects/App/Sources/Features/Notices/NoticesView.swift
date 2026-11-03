@@ -29,18 +29,7 @@ struct NoticesView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text(self.store.selected.map(\.kind.title) ?? "공지사항")
-        .wepliFont(.button)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") { self.store.send(.backButtonTapped) }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
+    WePLiNavigationBar(title: self.store.selected.map(\.kind.title) ?? "공지사항") { self.store.send(.backButtonTapped) }
   }
 
   private var failed: some View {

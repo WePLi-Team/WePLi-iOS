@@ -63,20 +63,7 @@ struct CardVoteView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("노래 투표하기")
-        .wepliFont(.button)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") {
-          self.store.send(.backButtonTapped)
-        }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
+    WePLiNavigationBar(title: "노래 투표하기") { self.store.send(.backButtonTapped) }
   }
 
   // MARK: 진행 화면

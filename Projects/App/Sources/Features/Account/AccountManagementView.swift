@@ -21,20 +21,7 @@ struct AccountManagementView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text(self.store.step.title)
-        .wepliFont(.button)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") {
-          self.store.send(.backButtonTapped)
-        }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
+    WePLiNavigationBar(title: self.store.step.title) { self.store.send(.backButtonTapped) }
   }
 
   @ViewBuilder private var content: some View {
