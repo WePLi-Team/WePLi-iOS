@@ -33,7 +33,7 @@ struct FriendNowPlayingMenu: View {
   var body: some View {
     VStack(spacing: 0) {
       HStack(spacing: 12) {
-        RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 52, height: 52)
+        WePLiArtwork(size: 52, style: .rounded(4))
         VStack(alignment: .leading, spacing: 2) {
           HStack(spacing: 6) {
             ListeningEqualizer()

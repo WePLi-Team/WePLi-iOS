@@ -29,7 +29,7 @@ struct HomePopularPostsSection: View {
             }
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)
-            RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 56, height: 56)
+            WePLiArtwork(size: 56, style: .rounded(4))
           }
           .padding(.horizontal, 20)
           .padding(.vertical, 10)
@@ -56,7 +56,7 @@ struct HomePopularArtistsSection: View {
               self.onTap(name)
             } label: {
               VStack(spacing: 8) {
-                Circle().fill(WePLiColor.imagePlaceholder).frame(width: 80, height: 80)
+                WePLiArtwork(size: 80, style: .circle)
                 Text(name)
                   .wepliFont(.caption, weight: .light)
                   .foregroundStyle(WePLiColor.textSecondary)
@@ -92,7 +92,7 @@ struct HomeRecommendedPlaylistsSection: View {
                   Circle()
                     .fill(WePLiColor.surface1)
                     .frame(width: 130, height: 130)
-                    .overlay(Circle().fill(WePLiColor.imagePlaceholder).frame(width: 94, height: 94))
+                    .overlay(WePLiArtwork(size: 94, style: .circle))
                     .offset(x: 28)
                   RoundedRectangle(cornerRadius: 8)
                     .fill(WePLiColor.imagePlaceholder)
@@ -133,7 +133,7 @@ struct HomeThemePlaylistsSection: View {
               self.onTap(playlist.id)
             } label: {
               VStack(alignment: .leading, spacing: 10) {
-                RoundedRectangle(cornerRadius: 12).fill(WePLiColor.imagePlaceholder).frame(width: 136, height: 136)
+                WePLiArtwork(size: 136, style: .rounded(12))
                 Text(playlist.title)
                   .wepliFont(.footnote)
                   .foregroundStyle(.white)

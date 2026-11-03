@@ -45,7 +45,7 @@ struct FriendFeedRow: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
       HStack(spacing: 12) {
-        RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 52, height: 52)
+        WePLiArtwork(size: 52, style: .rounded(4))
           .overlay(alignment: .bottomTrailing) {
             Circle().fill(WePLiColor.surface4).frame(width: 24, height: 24)
               .overlay(Circle().stroke(Color.black, lineWidth: 2))

@@ -24,7 +24,7 @@ struct HiddenPostCard: View {
         .fixedSize(horizontal: false, vertical: true)
       if let song = self.post.song {
         HStack(spacing: 12) {
-          RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+          WePLiArtwork(size: 48, style: .rounded(4))
           VStack(alignment: .leading, spacing: 2) {
             Text(song.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
             Text(song.artist).wepliFont(.footnote, weight: .light).foregroundStyle(WePLiColor.textPrimary.opacity(0.7))

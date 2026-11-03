@@ -89,7 +89,7 @@ struct HomeChartSection: View {
               self.onSong(song.id)
             } label: {
               HStack(spacing: 12) {
-                RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+                WePLiArtwork(size: 48, style: .rounded(4))
                 Text("\(index + 1)")
                   .wepliFont(.body, weight: .semibold)
                   .monospacedDigit()

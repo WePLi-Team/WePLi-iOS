@@ -142,7 +142,7 @@ struct CompletedPlaylistMyResult: View {
 
   var body: some View {
     HStack(spacing: 12) {
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 36, height: 36)
+      WePLiArtwork(size: 36, style: .circle)
       VStack(alignment: .leading, spacing: 2) {
         (Text("내 추천곡 ")
           + Text(self.song.title).font(.custom(
@@ -184,7 +184,7 @@ struct CompletedPlaylistRanking: View {
             self.onSong(song.id)
           } label: {
             HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+              WePLiArtwork(size: 48, style: .rounded(4))
               Text("\(index + 1)")
                 .wepliFont(.body, weight: .semibold)
                 .monospacedDigit()

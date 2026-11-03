@@ -34,7 +34,7 @@ struct ListeningConnectStep: View {
   /// 친구에게 이렇게 보여요 — 미결정: 내가 듣는 곡 대신 원본 예시(밤편지 · 아이유)
   private var preview: some View {
     HStack(spacing: 12) {
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 52, height: 52)
+      WePLiArtwork(size: 52, style: .circle)
         .overlay(alignment: .bottomTrailing) {
           RoundedRectangle(cornerRadius: 6).fill(WePLiColor.surface4).frame(width: 26, height: 26)
             .overlay(RoundedRectangle(cornerRadius: 6).stroke(WePLiColor.surface1, lineWidth: 2))

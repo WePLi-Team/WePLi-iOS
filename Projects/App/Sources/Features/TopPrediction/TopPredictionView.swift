@@ -119,7 +119,7 @@ private struct TopPredictionRow: View {
   var body: some View {
     Button(action: self.action) {
       HStack(spacing: 12) {
-        RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+        WePLiArtwork(size: 48, style: .rounded(4))
         VStack(alignment: .leading, spacing: 8) {
           HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(self.option.title)
@@ -169,7 +169,7 @@ private struct TopPredictionLockedCard: View {
 
   var body: some View {
     HStack(spacing: 12) {
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+      WePLiArtwork(size: 44, style: .circle)
       VStack(alignment: .leading, spacing: 1) {
         Text("내 예측 · 변경 불가")
           .font(.custom(WePLiFont.Weight.semibold.postScriptName, size: 11, relativeTo: .caption2))

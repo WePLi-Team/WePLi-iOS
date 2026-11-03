@@ -132,7 +132,7 @@ struct PlaylistArtistSection: View {
               self.onArtist(artist.id)
             } label: {
               VStack(spacing: 8) {
-                Circle().fill(WePLiColor.imagePlaceholder).frame(width: 72, height: 72)
+                WePLiArtwork(size: 72, style: .circle)
                   .overlay {
                     Image(systemName: "person.fill")
                       .font(.system(size: 26))
@@ -178,7 +178,7 @@ struct PlaylistTrackSection: View {
             self.onTrack(track.id)
           } label: {
             HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+              WePLiArtwork(size: 48, style: .rounded(4))
               VStack(alignment: .leading, spacing: 2) {
                 Text(track.title)
                   .wepliFont(.body)

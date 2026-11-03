@@ -118,7 +118,7 @@ struct LiveTrendView: View {
         } label: {
           HStack(spacing: 12) {
             Text("\(index + 1)").wepliFont(.body, weight: .semibold).monospacedDigit().frame(width: 16)
-            RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+            WePLiArtwork(size: 48, style: .rounded(4))
             VStack(alignment: .leading, spacing: 2) {
               Text(song.title).wepliFont(.body).lineLimit(1)
               Text(song.artist).wepliFont(.footnote, weight: .light)

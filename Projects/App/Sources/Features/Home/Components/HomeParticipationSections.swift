@@ -28,7 +28,7 @@ struct HomeMyRecommendationsSection: View {
             self.onTap(item.id)
           } label: {
             HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+              WePLiArtwork(size: 48, style: .rounded(4))
               HomeSongText(title: item.title, artist: item.relayLine)
               VStack(alignment: .trailing, spacing: 1) {
                 (Text("\(item.rank)").font(.custom(WePLiFont.Weight.bold.postScriptName, size: 20, relativeTo: .title3))
@@ -71,7 +71,7 @@ struct HomeVotingRelaysSection: View {
           self.onTap(relay.id)
         } label: {
           HStack(spacing: 14) {
-            RoundedRectangle(cornerRadius: 12).fill(WePLiColor.imagePlaceholder).frame(width: 68, height: 68)
+            WePLiArtwork(size: 68, style: .rounded(12))
             VStack(alignment: .leading, spacing: 4) {
               Text(relay.title)
                 .wepliFont(.callout, weight: .semibold)
@@ -158,7 +158,7 @@ struct HomePredictionSection: View {
       self.onPick(option.id)
     } label: {
       HStack(spacing: 12) {
-        RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+        WePLiArtwork(size: 44, style: .rounded(4))
         VStack(alignment: .leading, spacing: 7) {
           HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(option.title)
@@ -309,7 +309,7 @@ struct HomeLiveListeningSection: View {
             self.onTap(song.id)
           } label: {
             HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+              WePLiArtwork(size: 48, style: .rounded(4))
               HomeSongText(title: song.title, artist: song.artist)
               Text("\(song.listeners)명")
                 .wepliFont(.footnote, weight: .semibold)

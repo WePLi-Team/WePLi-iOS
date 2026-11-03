@@ -261,7 +261,7 @@ private struct AvatarCircle: View {
   let name: String
 
   var body: some View {
-    Circle().fill(WePLiColor.imagePlaceholder).frame(width: 40, height: 40)
+    WePLiArtwork(size: 40, style: .circle)
       .overlay {
         Text(self.name.prefix(1).uppercased()).wepliFont(.subheadline, weight: .semibold)
           .foregroundStyle(WePLiColor.textPrimary.opacity(0.85))

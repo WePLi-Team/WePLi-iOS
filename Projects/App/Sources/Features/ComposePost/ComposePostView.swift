@@ -127,7 +127,7 @@ struct ComposeTrackRow: View {
 
   var body: some View {
     HStack(spacing: 12) {
-      RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+      WePLiArtwork(size: 44, style: .rounded(4))
         .accessibilityHidden(true)
       VStack(alignment: .leading, spacing: 2) {
         Text(self.track.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)

@@ -84,7 +84,7 @@ struct TasteMatchDetails: View {
               self.store.send(.artistTapped(artist))
             } label: {
               VStack(spacing: 6) {
-                Circle().fill(WePLiColor.imagePlaceholder).frame(width: 64, height: 64)
+                WePLiArtwork(size: 64, style: .circle)
                 Text(artist).wepliFont(.caption).foregroundStyle(WePLiColor.textSecondary).lineLimit(1)
               }
             }
@@ -105,7 +105,7 @@ struct TasteMatchDetails: View {
       Text("내가 좋아하지만 상대는 아직 안 들어본 곡이에요").wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
       ForEach(self.match.recommendations) { song in
         HStack(spacing: 12) {
-          RoundedRectangle(cornerRadius: 6).fill(WePLiColor.imagePlaceholder).frame(width: 46, height: 46)
+          WePLiArtwork(size: 46, style: .rounded(6))
           VStack(alignment: .leading, spacing: 2) {
             Text(song.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
             Text(song.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textQuaternary)

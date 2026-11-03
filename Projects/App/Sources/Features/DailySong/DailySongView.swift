@@ -89,7 +89,7 @@ struct DailySongView: View {
 
   private func topRow(_ song: DailyQuestion.TopSong, percent: Int) -> some View {
     HStack(spacing: 10) {
-      RoundedRectangle(cornerRadius: 6).fill(WePLiColor.imagePlaceholder).frame(width: 36, height: 36)
+      WePLiArtwork(size: 36, style: .rounded(6))
       Text("\(song.title) · \(song.artist)").wepliFont(.subheadline).foregroundStyle(WePLiColor.textPrimary)
         .lineLimit(1)
       Spacer(minLength: 8)
@@ -113,7 +113,7 @@ struct DailySongView: View {
     return VStack(spacing: 0) {
       ForEach(question.answers) { answer in
         HStack(alignment: .top, spacing: 10) {
-          Circle().fill(WePLiColor.imagePlaceholder).frame(width: 34, height: 34)
+          WePLiArtwork(size: 34, style: .circle)
           VStack(alignment: .leading, spacing: 6) {
             Text(answer.user).wepliFont(.footnote, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
             HStack(spacing: 8) {
@@ -174,7 +174,7 @@ private struct DailyQuestionCard: View {
         .foregroundStyle(WePLiColor.textSecondary)
       if let pick = self.question.myAnswer {
         HStack(spacing: 10) {
-          RoundedRectangle(cornerRadius: 6).fill(WePLiColor.imagePlaceholder).frame(width: 40, height: 40)
+          WePLiArtwork(size: 40, style: .rounded(6))
           VStack(alignment: .leading, spacing: 2) {
             Text("내 답변").wepliFont(.caption, weight: .semibold).foregroundStyle(WePLiColor.positive)
             Text("\(pick.title) · \(pick.artist)").wepliFont(.subheadline, weight: .semibold)

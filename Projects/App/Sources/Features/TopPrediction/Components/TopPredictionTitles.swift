@@ -48,7 +48,7 @@ struct TopPredictionTitles: View {
   /// 대표 칭호가 붙은 모습 — 아바타 · 이름 · 칭호 칩
   private var preview: some View {
     HStack(spacing: 10) {
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 36, height: 36).accessibilityHidden(true)
+      WePLiArtwork(size: 36, style: .circle).accessibilityHidden(true)
       Text(self.board.nickname).wepliFont(.body, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
       if let title = self.board.representative {
         Text(title.name)

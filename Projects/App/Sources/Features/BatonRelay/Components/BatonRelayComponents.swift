@@ -11,14 +11,14 @@ struct BatonRunnerRow: View {
       ForEach(self.relay.runners) { runner in
         switch runner.state {
         case .done:
-          Circle().fill(WePLiColor.imagePlaceholder).frame(width: 32, height: 32)
+          WePLiArtwork(size: 32, style: .circle)
             .overlay(Circle().stroke(WePLiColor.positive, lineWidth: 2))
         case .now:
-          Circle().fill(WePLiColor.imagePlaceholder).frame(width: 32, height: 32)
+          WePLiArtwork(size: 32, style: .circle)
             .padding(2)
             .background(Circle().fill(WePLiColor.accent))
         case .waiting:
-          Circle().fill(WePLiColor.imagePlaceholder).frame(width: 32, height: 32).opacity(0.3)
+          WePLiArtwork(size: 32, style: .circle).opacity(0.3)
         }
       }
       Spacer(minLength: 0)
@@ -43,12 +43,12 @@ struct BatonLinkRow: View {
       .frame(width: 20)
       VStack(alignment: .leading, spacing: 8) {
         HStack(spacing: 8) {
-          Circle().fill(WePLiColor.imagePlaceholder).frame(width: 22, height: 22)
+          WePLiArtwork(size: 22, style: .circle)
           Text(self.link.runner).wepliFont(.footnote, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
           Text(self.link.keywordFrom).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)
         }
         HStack(spacing: 12) {
-          RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+          WePLiArtwork(size: 48, style: .rounded(4))
           VStack(alignment: .leading, spacing: 2) {
             Text(self.link.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
             Text(self.link.artist).wepliFont(.footnote, weight: .light)
@@ -111,7 +111,7 @@ struct BatonMyTurn: View {
       self.onPick(pick.id)
     } label: {
       HStack(spacing: 12) {
-        RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+        WePLiArtwork(size: 44, style: .rounded(4))
         VStack(alignment: .leading, spacing: 2) {
           Text(pick.title).wepliFont(.body).foregroundStyle(isSelected ? WePLiColor.accent : WePLiColor.textPrimary)
             .lineLimit(1)

@@ -59,7 +59,7 @@ struct FriendProfileTabContent: View {
           self.store.send(.relayTapped(relay.id))
         } label: {
           HStack(spacing: 14) {
-            RoundedRectangle(cornerRadius: 12).fill(WePLiColor.imagePlaceholder).frame(width: 68, height: 68)
+            WePLiArtwork(size: 68, style: .rounded(12))
             VStack(alignment: .leading, spacing: 3) {
               Text(relay.title).wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
               Text("추천한 곡 · \(relay.recommended)")
@@ -101,7 +101,7 @@ private struct FriendPostRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
           if let song = self.post.song {
             HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+              WePLiArtwork(size: 44, style: .rounded(4))
               VStack(alignment: .leading, spacing: 2) {
                 Text(song.title).wepliFont(.subheadline).foregroundStyle(WePLiColor.textPrimary)
                 Text("#\(song.artist)").wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.accent)
@@ -158,7 +158,7 @@ private struct FriendListenedTab: View {
             self.store.send(.recentTapped(track.id))
           } label: {
             HStack(spacing: 12) {
-              RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+              WePLiArtwork(size: 48, style: .rounded(4))
               VStack(alignment: .leading, spacing: 2) {
                 Text(track.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
                 Text("\(track.artist) · \(track.timeText)")
@@ -200,7 +200,7 @@ private struct FriendListenedTab: View {
               self.store.send(.artistTapped(name))
             } label: {
               VStack(spacing: 8) {
-                Circle().fill(WePLiColor.imagePlaceholder).frame(width: 80, height: 80)
+                WePLiArtwork(size: 80, style: .circle)
                 Text(name).wepliFont(.caption, weight: .light).foregroundStyle(WePLiColor.textSecondary).lineLimit(1)
               }
               .frame(width: 84)

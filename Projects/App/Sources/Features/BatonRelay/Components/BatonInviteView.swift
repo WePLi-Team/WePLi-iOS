@@ -42,7 +42,7 @@ struct BatonInviteView: View {
         .accessibilityAddTraits(.isHeader)
       HStack(spacing: 8) {
         ForEach(self.relay.chain) { _ in
-          RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder).frame(width: 46, height: 46)
+          WePLiArtwork(size: 46, style: .rounded(8))
         }
         RoundedRectangle(cornerRadius: 8)
           .strokeBorder(WePLiColor.accent.opacity(0.6), style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
@@ -66,7 +66,7 @@ struct BatonInviteView: View {
 
   private func passerRow(_ passer: String) -> some View {
     HStack(spacing: 10) {
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+      WePLiArtwork(size: 44, style: .circle)
       (Text(passer).font(WePLiFont.font(.body, weight: .bold))
         .foregroundColor(WePLiColor.textPrimary) + Text("님이\n바통을 넘겼어요"))
         .wepliFont(.body)
