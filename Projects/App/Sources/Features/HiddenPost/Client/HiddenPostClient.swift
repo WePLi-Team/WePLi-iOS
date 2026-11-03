@@ -8,8 +8,10 @@ struct HiddenPostClient {
 }
 
 extension HiddenPostClient: DependencyKey {
-  static let liveValue = HiddenPostClient(delete: { _ in })
-  static let previewValue = liveValue
+  static let mockValue = HiddenPostClient(delete: { _ in })
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
   static let testValue = HiddenPostClient(delete: unimplemented("HiddenPostClient.delete"))
 }
 

@@ -17,7 +17,7 @@ struct SystemStatusClient {
 }
 
 extension SystemStatusClient: DependencyKey {
-  static let liveValue = SystemStatusClient(
+  static let mockValue = SystemStatusClient(
     // 목업은 막는 상태 없이 이벤트 팝업만 둔다
     config: {
       SystemConfig(event: .init(
@@ -40,7 +40,9 @@ extension SystemStatusClient: DependencyKey {
     openAppStore: {}
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = SystemStatusClient(
     config: unimplemented("SystemStatusClient.config", placeholder: SystemConfig()),

@@ -12,7 +12,7 @@ struct ComposeClient {
 }
 
 extension ComposeClient: DependencyKey {
-  static let liveValue = ComposeClient(
+  static let mockValue = ComposeClient(
     searchTracks: { query in
       let needle = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
       guard !needle.isEmpty else { return [] }
@@ -25,7 +25,9 @@ extension ComposeClient: DependencyKey {
     publish: { _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = ComposeClient(
     searchTracks: unimplemented("ComposeClient.searchTracks", placeholder: []),

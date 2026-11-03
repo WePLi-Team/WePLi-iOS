@@ -29,8 +29,10 @@ struct FollowListClient {
 }
 
 extension FollowListClient: DependencyKey {
-  static let liveValue = FollowListClient(fetch: { _ in .mock }, setFollowing: { _, _ in })
-  static let previewValue = liveValue
+  static let mockValue = FollowListClient(fetch: { _ in .mock }, setFollowing: { _, _ in })
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
   static let testValue = FollowListClient(
     fetch: unimplemented("FollowListClient.fetch", placeholder: .mock),
     setFollowing: unimplemented("FollowListClient.setFollowing")

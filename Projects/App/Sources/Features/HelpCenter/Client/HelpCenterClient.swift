@@ -18,7 +18,7 @@ struct HelpCenterClient {
 }
 
 extension HelpCenterClient: DependencyKey {
-  static let liveValue = HelpCenterClient(
+  static let mockValue = HelpCenterClient(
     inquiries: { MockInquiries.shared.value },
     deviceInfo: {
       let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
@@ -54,7 +54,9 @@ extension HelpCenterClient: DependencyKey {
     cancel: { id in MockInquiries.shared.withValue { $0.removeAll { $0.id == id } } }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = HelpCenterClient(
     inquiries: unimplemented("HelpCenterClient.inquiries", placeholder: []),

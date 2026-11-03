@@ -1,6 +1,12 @@
 import ComposableArchitecture
 import SwiftUI
 
+#if !DEBUG
+  // 출시 빌드를 만들 때 알린다 — 백엔드가 정해지지 않아 Client의 liveValue가 목업(mockValue)이고,
+  // 로그인(AuthClient)은 1초 뒤 무조건 성공한다(#14). 실제 연결 뒤 이 경고를 지운다.
+  #warning("목업 Client · 가짜 로그인으로 Release 빌드 중 — 출시 전 실제 API · 로그인 연결(#14)")
+#endif
+
 @main
 struct WePLiApp: App {
   /// 시스템 상태(UI-7d) — 앱 시작 때 서버 설정을 받는다(DEC-014)

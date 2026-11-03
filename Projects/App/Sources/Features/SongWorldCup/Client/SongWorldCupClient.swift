@@ -11,7 +11,7 @@ struct SongWorldCupClient {
 }
 
 extension SongWorldCupClient: DependencyKey {
-  static let liveValue = SongWorldCupClient(
+  static let mockValue = SongWorldCupClient(
     fetchSongs: { _ in WorldCupSong.mock },
     submit: { _, championID in
       WorldCupCrowd(
@@ -23,7 +23,9 @@ extension SongWorldCupClient: DependencyKey {
     }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = SongWorldCupClient(
     fetchSongs: unimplemented("SongWorldCupClient.fetchSongs", placeholder: []),

@@ -13,14 +13,16 @@ struct ListeningShareClient {
 }
 
 extension ListeningShareClient: DependencyKey {
-  static let liveValue = ListeningShareClient(
+  static let mockValue = ListeningShareClient(
     groups: { ["우리 넷", "밴드부", "점심 메이트"] },
     connect: { _ in true },
     disconnect: { _ in },
     save: { _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = ListeningShareClient(
     groups: unimplemented("ListeningShareClient.groups", placeholder: []),

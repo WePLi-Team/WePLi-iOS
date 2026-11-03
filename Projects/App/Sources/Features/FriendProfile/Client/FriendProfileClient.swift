@@ -21,7 +21,7 @@ struct FriendProfileClient {
 }
 
 extension FriendProfileClient: DependencyKey {
-  static let liveValue = FriendProfileClient(
+  static let mockValue = FriendProfileClient(
     fetch: { userID in .mock(id: userID) },
     setFollowing: { _, _ in },
     setBlocked: { _, _ in },
@@ -32,7 +32,9 @@ extension FriendProfileClient: DependencyKey {
     copyLink: { url in await MainActor.run { UIPasteboard.general.url = url } }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = FriendProfileClient(
     fetch: unimplemented("FriendProfileClient.fetch", placeholder: .mock(id: "jisoo")),

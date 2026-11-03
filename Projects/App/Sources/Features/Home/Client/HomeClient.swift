@@ -12,7 +12,7 @@ struct HomeClient {
 }
 
 extension HomeClient: DependencyKey {
-  static let liveValue = HomeClient(
+  static let mockValue = HomeClient(
     fetch: {
       @Dependency(\.date.now)
       var now
@@ -26,7 +26,9 @@ extension HomeClient: DependencyKey {
     }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = HomeClient(
     fetch: unimplemented("HomeClient.fetch", placeholder: .mock(now: Date(timeIntervalSince1970: 0))),

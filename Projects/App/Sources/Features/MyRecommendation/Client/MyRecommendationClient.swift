@@ -11,7 +11,7 @@ extension MyRecommendationClient: DependencyKey {
   /// 원본: 3.2초마다 EASY가 45점씩 올라 2,470점에서 멈춘다(9단계)
   private static let step = LockIsolated(0)
 
-  static let liveValue = MyRecommendationClient(
+  static let mockValue = MyRecommendationClient(
     fetchStanding: { relayID in
       @Dependency(\.date.now)
       var now
@@ -23,7 +23,9 @@ extension MyRecommendationClient: DependencyKey {
     }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = MyRecommendationClient(
     fetchStanding: unimplemented(

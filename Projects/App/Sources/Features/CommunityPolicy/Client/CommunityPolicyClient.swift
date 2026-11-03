@@ -8,8 +8,10 @@ struct CommunityPolicyClient {
 }
 
 extension CommunityPolicyClient: DependencyKey {
-  static let liveValue = CommunityPolicyClient(standing: { .mock })
-  static let previewValue = liveValue
+  static let mockValue = CommunityPolicyClient(standing: { .mock })
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
   static let testValue = CommunityPolicyClient(standing: unimplemented(
     "CommunityPolicyClient.standing",
     placeholder: .clean

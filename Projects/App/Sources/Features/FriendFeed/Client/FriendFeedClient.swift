@@ -14,14 +14,16 @@ struct FriendFeedClient {
 }
 
 extension FriendFeedClient: DependencyKey {
-  static let liveValue = FriendFeedClient(
+  static let mockValue = FriendFeedClient(
     fetch: { .mock },
     react: { _, _ in },
     sendHeadphones: { _ in },
     openInMusicApp: { _, _ in }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = FriendFeedClient(
     fetch: unimplemented("FriendFeedClient.fetch", placeholder: .mock),

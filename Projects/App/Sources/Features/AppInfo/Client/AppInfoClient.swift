@@ -9,11 +9,13 @@ struct AppInfoClient {
 }
 
 extension AppInfoClient: DependencyKey {
-  static let liveValue = AppInfoClient(
+  static let mockValue = AppInfoClient(
     currentVersion: { Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0" },
     latestVersion: { "1.2.0" }
   )
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
   static let testValue = AppInfoClient(
     currentVersion: { "1.0.0" },
     latestVersion: unimplemented("AppInfoClient.latestVersion", placeholder: nil)

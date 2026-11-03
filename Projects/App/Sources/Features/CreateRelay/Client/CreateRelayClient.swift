@@ -8,7 +8,7 @@ struct CreateRelayClient {
 }
 
 extension CreateRelayClient: DependencyKey {
-  static let liveValue = CreateRelayClient(
+  static let mockValue = CreateRelayClient(
     create: { relay in
       @Dependency(\.date.now)
       var now
@@ -25,7 +25,9 @@ extension CreateRelayClient: DependencyKey {
     }
   )
 
-  static let previewValue = liveValue
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  static let liveValue = mockValue
+  static let previewValue = mockValue
 
   static let testValue = CreateRelayClient(
     create: unimplemented("CreateRelayClient.create", placeholder: Relay(
