@@ -25,18 +25,9 @@ struct PostDetailView: View {
           }
           .padding(.bottom, 24)
         } else if self.store.loadFailed {
-          // 원본에 오류 화면이 없어 임시 문구 — 디자인 확인 필요
-          VStack(spacing: 12) {
-            Text("게시글을 불러오지 못했어요")
-              .wepliFont(.callout, weight: .semibold)
-              .foregroundStyle(WePLiColor.textPrimary)
-            Button("다시 시도") { self.store.send(.retryButtonTapped) }
-              .wepliFont(.body, weight: .semibold)
-              .foregroundStyle(WePLiColor.accent)
-          }
-          .frame(maxWidth: .infinity, minHeight: 400)
+          WePLiLoadFailedView(message: "게시글을 불러오지 못했어요", minHeight: 400) { self.store.send(.retryButtonTapped) }
         } else {
-          ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 400)
+          WePLiLoadingView(minHeight: 400)
         }
       }
       .scrollDismissesKeyboard(.interactively)

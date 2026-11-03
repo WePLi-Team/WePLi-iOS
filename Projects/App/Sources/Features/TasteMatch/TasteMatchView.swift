@@ -25,7 +25,7 @@ struct TasteMatchView: View {
           }
           .frame(maxWidth: .infinity, minHeight: 300)
         } else {
-          ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 300)
+          WePLiLoadingView(minHeight: 300)
         }
       }
       .safeAreaInset(edge: .top, spacing: 0) { self.navigationBar }

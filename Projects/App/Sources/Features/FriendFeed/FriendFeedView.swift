@@ -39,7 +39,7 @@ struct FriendFeedView: View {
           )
           .padding(.vertical, 60)
         } else {
-          ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 240)
+          WePLiLoadingView(minHeight: 240)
         }
       }
       .onAppear { self.store.send(.onAppear) }

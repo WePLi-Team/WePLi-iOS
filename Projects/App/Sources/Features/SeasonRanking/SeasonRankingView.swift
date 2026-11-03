@@ -50,16 +50,9 @@ struct SeasonRankingView: View {
         SeasonHostList(hosts: ranking.hosts) { self.store.send(.followTapped($0)) }
       }
     } else if self.store.loadFailed {
-      VStack(spacing: 12) {
-        // 원본에 없는 문구 — 디자인 확인 필요
-        Text("랭킹을 불러오지 못했어요").wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
-        Button("다시 시도") { self.store.send(.retryButtonTapped) }
-          .wepliFont(.subheadline, weight: .semibold)
-          .foregroundStyle(WePLiColor.accent)
-      }
-      .frame(maxWidth: .infinity, minHeight: 300)
+      WePLiLoadFailedView(message: "랭킹을 불러오지 못했어요", minHeight: 300) { self.store.send(.retryButtonTapped) }
     } else {
-      ProgressView().tint(WePLiColor.textTertiary).frame(maxWidth: .infinity, minHeight: 300)
+      WePLiLoadingView(minHeight: 300)
     }
   }
 }
