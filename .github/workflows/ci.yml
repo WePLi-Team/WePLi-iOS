@@ -151,14 +151,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-tuist-build-
 
-      # 의존성(swift-syntax · TCA 등) 빌드 결과를 재사용한다. 앱 소스는 checkout마다 새로 컴파일된다
+      # 의존성(swift-syntax · TCA 등) 빌드 결과를 재사용한다. 앱 소스는 checkout마다 새로 컴파일된다.
+      # 부분 복원은 의존성이 같을 때만 — 다른 버전으로 빌드된 매크로 플러그인이 섞이면
+      # 매크로 확장이 어긋나 컴파일이 깨진다(TCA 1.23 캐시 + 1.26 소스 → Path CaseReducer 오류, #244)
       - name: Cache DerivedData
         uses: actions/cache@v6
         with:
           path: DerivedData
-          key: ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift', 'Tuist/ProjectDescriptionHelpers/**', 'Projects/**/Project.swift') }}
+          key: ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift') }}-${{ hashFiles('Tuist/ProjectDescriptionHelpers/**', 'Projects/**/Project.swift') }}
           restore-keys: |
-            ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-
+            ${{ runner.os }}-dd-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('Tuist/Package.resolved', 'Tuist/Package.swift') }}-
 
       # 새 러너는 시뮬레이터 첫 부팅이 오래 걸려, Tuist 설치 · 생성과 겹치도록 먼저 백그라운드로 부팅한다
       - name: Pick & Boot Simulator
