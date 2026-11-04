@@ -43,6 +43,6 @@ let package = Package(
   // Moya · Kingfisher · Supabase · GoogleSignIn · KeychainAccess는 계획된 스택(AGENTS.md)이지만 아직 쓰는 코드가 없어 뺐다.
   // 실제 API · 로그인 · 이미지를 붙이는 기능에서 그때 넣는다(#225).
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", .upToNextMinor(from: "1.23.3")),
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", .upToNextMinor(from: "1.26.2")),
   ]
 )
