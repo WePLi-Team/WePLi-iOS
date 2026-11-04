@@ -23,8 +23,7 @@ xcodebuild -workspace WePLi.xcworkspace -scheme WePLi -destination 'platform=iOS
 mise exec -- swiftlint --strict --config .swiftlint.yml
 mise exec -- swiftformat --lint . --config .swiftformat
 
-# Run SwiftGen for asset code generation
-swiftgen config run --config swiftgen.yml
+# 에셋 · 폰트 접근자(WePLiAsset · WePLiFontFamily)는 tuist generate가 Projects/App/Derived에 만든다
 ```
 
 ### Fastlane Commands

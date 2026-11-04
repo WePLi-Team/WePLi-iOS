@@ -96,7 +96,12 @@ private struct Column {
   /// 줄마다 커버 순서를 밀어 옆 줄과 같은 커버가 나란히 서지 않게 한다
   let offset: Int
 
-  private static let covers = [Asset.Assets.album1, Asset.Assets.album2, Asset.Assets.album3, Asset.Assets.album4]
+  private static let covers = [
+    WePLiAsset.Assets.album1,
+    WePLiAsset.Assets.album2,
+    WePLiAsset.Assets.album3,
+    WePLiAsset.Assets.album4,
+  ]
 
   func view(at time: TimeInterval) -> some View {
     let progress = CGFloat(time.truncatingRemainder(dividingBy: self.duration) / self.duration)

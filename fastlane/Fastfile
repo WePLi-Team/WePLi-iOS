@@ -9,7 +9,6 @@ WEPLI_SCHEME    = "WePLi"                                      # 스킴 이름
 WEPLI_BUNDLE_ID = "com.example.wepli"                            # 실제 번들 아이디
 APPLE_TEAM_ID   = "AMNS6W2AA9"                                   # 10자리 팀 ID
 DERIVED_DIR     = File.join(REPO_ROOT, "fastlane/DerivedData")
-SWIFTGEN_CONFIG = File.join(REPO_ROOT, "swiftgen.yml")         # 루트의 swiftgen.yml
 
 # 공통 빌드 옵션
 def shared_build_settings
@@ -27,8 +26,6 @@ platform :ios do
     Dir.chdir(REPO_ROOT) do
       sh("tuist install")
       sh("tuist generate --no-open")
-      sh("swiftgen config lint --config #{SWIFTGEN_CONFIG}")
-      sh("swiftgen config run  --config #{SWIFTGEN_CONFIG}")
     end
   end
 

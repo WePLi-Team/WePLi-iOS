@@ -56,4 +56,4 @@ develop 기준 PR(DEC-003). 브랜치 `<type>/<issue>-<slug>`, 커밋 `[Feat]: �
   - 신고 · 차단 콘텐츠 정책(UI-5a · 7e · 11d), 이용 제한 단계, 탈퇴 유예 · 재가입 제한
   - 점수식: 취향 궁합(6d) · 시즌 랭킹 보상(8f) · 칭호 조건(8d)
   - 10e 게시글 삭제 후 「되돌리기」 유효 시간(「삭제 직후」가 몇 초인지)
-- 디자인 토큰 생성 방식(Colors.xcassets · SwiftGen · 코드 상수)과 Core 모듈(DesignSystem · Network · Utils) 사용 시점
+- Core 모듈(DesignSystem · Network · Utils) 사용 시점 (디자인 토큰은 코드 상수 `WePLiColor` · 에셋 접근자는 Tuist 생성물로 결정, #240)
