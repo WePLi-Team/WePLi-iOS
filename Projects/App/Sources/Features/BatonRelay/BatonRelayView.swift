@@ -82,7 +82,7 @@ struct BatonRelayView: View {
       )
     case let .passed(keyword):
       HStack(spacing: 12) {
-        Circle().fill(WePLiColor.imagePlaceholder).frame(width: 40, height: 40)
+        WePLiArtwork(size: 40, style: .circle)
         VStack(alignment: .leading, spacing: 2) {
           Text("\(relay.nextRunner)님에게 바통을 넘겼어요").wepliFont(.body, weight: .semibold)
             .foregroundStyle(WePLiColor.textPrimary)

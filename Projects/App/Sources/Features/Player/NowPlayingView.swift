@@ -201,7 +201,7 @@ struct NowPlayingView: View {
           self.store.send(.upcomingTapped(track.id))
         } label: {
           HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 6).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+            WePLiArtwork(size: 44, style: .rounded(6))
             VStack(alignment: .leading, spacing: 0) {
               Text(track.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
               Text(track.artist).wepliFont(.footnote).foregroundStyle(WePLiColor.textPrimary.opacity(0.6))

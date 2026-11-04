@@ -47,7 +47,7 @@ struct HomeTodayPicksSection: View {
               self.onTap(pick.id)
             } label: {
               HStack(alignment: .top, spacing: 20) {
-                RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 92, height: 92)
+                WePLiArtwork(size: 92, style: .rounded(4))
                 VStack(alignment: .leading, spacing: 6) {
                   Text(pick.artistTag)
                     .wepliFont(.footnote)
@@ -97,7 +97,7 @@ struct HomeTimeOfDaySection: View {
                   self.onTap(song.id)
                 } label: {
                   HStack(spacing: 12) {
-                    RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44)
+                    WePLiArtwork(size: 44, style: .rounded(4))
                     HomeSongText(title: song.title, artist: song.artist)
                     Image(systemName: "play")
                       .font(.system(size: 12))
@@ -132,7 +132,7 @@ struct HomeFavoriteArtistSection: View {
       HomeSectionHeader(title: "내 최애 가수", subtitle: "가장 많이 담고 추천한 가수예요", showsChevron: false)
       if let artist = self.artist {
         HStack(spacing: 16) {
-          RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder).frame(width: 114, height: 114)
+          WePLiArtwork(size: 114, style: .rounded(8))
           VStack(alignment: .leading, spacing: 4) {
             Text("#\(artist.rank)번째 최애 가수")
               .wepliFont(.footnote)
@@ -219,7 +219,7 @@ struct HomeFavoritesSection: View {
               self.onSong(song.id)
             } label: {
               HStack(spacing: 12) {
-                RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+                WePLiArtwork(size: 48, style: .rounded(4))
                 HomeSongText(title: song.title, artist: song.artist)
                 Image(systemName: "play")
                   .font(.system(size: 12))

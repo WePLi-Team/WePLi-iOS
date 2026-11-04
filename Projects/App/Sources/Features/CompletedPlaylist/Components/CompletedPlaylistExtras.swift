@@ -24,7 +24,7 @@ struct CompletedPlaylistComments: View {
       .accessibilityAddTraits(.isHeader)
       ForEach(self.comments) { comment in
         HStack(alignment: .top, spacing: 12) {
-          Circle().fill(WePLiColor.imagePlaceholder).frame(width: 34, height: 34)
+          WePLiArtwork(size: 34, style: .circle)
           VStack(alignment: .leading, spacing: 3) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
               Text(comment.author).wepliFont(.footnote, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
@@ -80,7 +80,7 @@ struct CompletedPlaylistNextRelay: View {
           .foregroundStyle(WePLiColor.textTertiary)
       }
       HStack(spacing: 12) {
-        RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 52, height: 52)
+        WePLiArtwork(size: 52, style: .rounded(4))
         VStack(alignment: .leading, spacing: 2) {
           Text(self.relay.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary)
           Text(self.relay.meta)
@@ -119,7 +119,7 @@ struct CompletedPlaylistSimilar: View {
               self.onTap(playlist.id)
             } label: {
               VStack(alignment: .leading, spacing: 12) {
-                RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 136, height: 136)
+                WePLiArtwork(size: 136, style: .rounded(4))
                 Text(playlist.title)
                   .wepliFont(.footnote, weight: .light)
                   .foregroundStyle(WePLiColor.textPrimary)

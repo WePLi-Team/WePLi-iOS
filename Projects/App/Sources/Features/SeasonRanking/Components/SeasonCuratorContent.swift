@@ -54,7 +54,7 @@ private struct SeasonStandingCapsule: View {
 
   var body: some View {
     HStack(spacing: 12) {
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 44, height: 44).accessibilityHidden(true)
+      WePLiArtwork(size: 44, style: .circle).accessibilityHidden(true)
       VStack(alignment: .leading, spacing: 1) {
         HStack(spacing: 4) {
           Text("\(self.standing.rank)위").wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
@@ -144,7 +144,7 @@ private struct SeasonRankRow: View {
         .monospacedDigit()
         .foregroundStyle(self.color)
         .frame(width: 34)
-      Circle().fill(WePLiColor.imagePlaceholder).frame(width: 40, height: 40).accessibilityHidden(true)
+      WePLiArtwork(size: 40, style: .circle).accessibilityHidden(true)
       VStack(alignment: .leading, spacing: 2) {
         Text(self.isMe ? "\(self.entry.name) · 나" : self.entry.name)
           .wepliFont(.body)

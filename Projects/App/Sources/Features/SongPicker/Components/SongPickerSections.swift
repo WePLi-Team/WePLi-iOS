@@ -141,7 +141,7 @@ struct SongPickerResults: View {
       self.store.send(.trackToggled(track.id))
     } label: {
       HStack(spacing: 12) {
-        RoundedRectangle(cornerRadius: 4).fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48)
+        WePLiArtwork(size: 48, style: .rounded(4))
         VStack(alignment: .leading, spacing: 2) {
           Text(track.title)
             .wepliFont(.body, weight: isOn ? .semibold : .regular)
@@ -174,7 +174,7 @@ struct SongPickerTray: View {
       ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 10) {
           ForEach(self.tracks) { track in
-            RoundedRectangle(cornerRadius: 8).fill(WePLiColor.imagePlaceholder).frame(width: 52, height: 52)
+            WePLiArtwork(size: 52, style: .rounded(8))
               .overlay(alignment: .topTrailing) {
                 Button {
                   self.onRemove(track.id)

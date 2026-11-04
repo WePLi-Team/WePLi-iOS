@@ -24,7 +24,7 @@ private struct SeasonHostCard: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack(spacing: 12) {
-        Circle().fill(WePLiColor.imagePlaceholder).frame(width: 48, height: 48).accessibilityHidden(true)
+        WePLiArtwork(size: 48, style: .circle).accessibilityHidden(true)
         VStack(alignment: .leading, spacing: 2) {
           HStack(spacing: 6) {
             Text(self.host.name).wepliFont(.callout, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
