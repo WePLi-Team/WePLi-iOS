@@ -182,7 +182,6 @@ jobs:
       - name: Tuist version
         run: tuist version
 
-      # SwiftGen 생성물은 커밋돼 있어 CI에서 설치하지 않는다(brew 설치만 약 2분)
       - name: Setup utilities
         env:
           HOMEBREW_NO_AUTO_UPDATE: '1'

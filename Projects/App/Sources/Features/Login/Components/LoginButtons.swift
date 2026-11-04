@@ -33,7 +33,7 @@ struct LoginButtons: View {
 
       Button(action: self.onGoogle) {
         HStack(spacing: 10) {
-          Asset.Assets.google.swiftUIImage
+          WePLiAsset.Assets.google.swiftUIImage
             .resizable()
             .scaledToFit()
             .frame(width: 18, height: 18)

@@ -58,7 +58,7 @@ let project = Project(
           ],
         ],
       ]),
-      sources: ["Sources/**", "Generated/**", "Shared/Sources/**"],
+      sources: ["Sources/**", "Shared/Sources/**"],
       resources: ["Resources/**"],
       entitlements: .file(path: .relativeToManifest("App.entitlements")),
       scripts: [

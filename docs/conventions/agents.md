@@ -63,7 +63,7 @@
 
 - 진입점 · 루트 Reducer(화면 전환): `Projects/App/Sources/App.swift` · `ContentView.swift` · `Features/App/`
 - 공용 View · 확장: `Projects/App/Sources/Components/` · `Extensions/`
-- 리소스: `Projects/App/Resources/`(Assets · Colors · `Localizable.xcstrings`) · `Projects/App/Derived/` · `Generated/`(생성물, 손으로 고치지 않음)
+- 리소스: `Projects/App/Resources/`(Assets · Colors · `Localizable.xcstrings`) · `Projects/App/Derived/`(Tuist 생성물, 손으로 고치지 않음)
 - Core 모듈: `Projects/Core/**`
 - 프로젝트 · 의존성: `Projects/App/Project.swift` · `Workspace.swift` · `Tuist/**`(`Package.swift` · `Package.resolved` · `ProjectDescriptionHelpers`) · `Projects/App/App.entitlements`
-- 설정: `Configs/*.xcconfig`(Debug · Release는 비밀값 — 커밋 금지) · `.swiftlint.yml` · `.swiftformat` · `swiftgen.yml` · `fastlane/` · `mise.toml`
+- 설정: `Configs/*.xcconfig`(Debug · Release는 비밀값 — 커밋 금지) · `.swiftlint.yml` · `.swiftformat` · `fastlane/` · `mise.toml`
