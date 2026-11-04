@@ -113,9 +113,7 @@ struct SystemStatusFeature {
       case .policyTapped:
         state.policy = CommunityPolicyFeature.State()
         return .none
-      case .policy(.presented(.delegate(.dismiss))):
-        state.policy = nil
-        return .none
+      // 운영정책은 스스로 닫는다(@Dependency(\.dismiss) — ifLet이 policy를 nil로)
       case .policy:
         return .none
       case .eventClosed:

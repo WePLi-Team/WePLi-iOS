@@ -33,7 +33,6 @@ struct DailySongFeature {
     case answered(DailyQuestion)
     case answerFailed(DailyQuestion.Pick?)
     case toastDismissed
-    case delegate(DailySongDelegate)
   }
 
   enum CancelID {
@@ -48,6 +47,9 @@ struct DailySongFeature {
 
   @Dependency(\.date.now)
   var date
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -72,7 +74,7 @@ struct DailySongFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .timerTicked:
         state.now = self.date
         return .none
@@ -84,8 +86,6 @@ struct DailySongFeature {
         return self.answer(&state, action)
       case .toastDismissed:
         state.toast = nil
-        return .none
-      case .delegate:
         return .none
       }
     }
@@ -138,8 +138,4 @@ struct DailySongFeature {
     }
     return .none
   }
-}
-
-enum DailySongDelegate: Equatable {
-  case dismiss
 }

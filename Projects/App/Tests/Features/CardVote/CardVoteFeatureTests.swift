@@ -106,7 +106,10 @@ final class CardVoteFeatureTests: XCTestCase {
     let store = TestStore(initialState: self.loaded()) {
       CardVoteFeature()
     }
+    let dismissed = LockIsolated(false)
+    store.dependencies.dismiss = DismissEffect { dismissed.setValue(true) }
     await store.send(.returnToRelayButtonTapped)
-    await store.receive(.delegate(.dismiss))
+    await store.finish()
+    XCTAssertTrue(dismissed.value)
   }
 }

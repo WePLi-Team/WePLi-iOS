@@ -37,8 +37,11 @@ final class NoticesFeatureTests: XCTestCase {
     // 이미 읽은 글은 다시 보내지 않는다
     await store.send(.noticeTapped("policy")) { $0.selectedID = "policy" }
     await store.send(.backToListTapped) { $0.selectedID = nil }
+    let dismissed = LockIsolated(false)
+    store.dependencies.dismiss = DismissEffect { dismissed.setValue(true) }
     await store.send(.backButtonTapped)
-    await store.receive(.delegate(.dismiss))
+    await store.finish()
+    XCTAssertTrue(dismissed.value)
   }
 
   func testTab_clearsSelection() async {

@@ -69,7 +69,6 @@ struct PostDetailFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     case more(postID: Post.ID)
     case play(postID: Post.ID)
     case showProfile(String)
@@ -84,6 +83,9 @@ struct PostDetailFeature {
   var communityClient
 
   private static let logger = Logger(subsystem: "com.wepli", category: "PostDetail")
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -218,7 +220,7 @@ struct PostDetailFeature {
         return .none
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .moreButtonTapped:
         return .send(.delegate(.more(postID: state.postID)))

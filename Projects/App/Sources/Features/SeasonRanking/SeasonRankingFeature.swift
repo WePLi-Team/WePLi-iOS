@@ -25,7 +25,6 @@ struct SeasonRankingFeature {
     case followTapped(SeasonHost.ID)
     case followFailed(SeasonHost.ID, wasFollowing: Bool)
     case toastDismissed
-    case delegate(SeasonRankingDelegate)
   }
 
   @Dependency(\.seasonRankingClient)
@@ -33,6 +32,9 @@ struct SeasonRankingFeature {
 
   @Dependency(\.date.now)
   var date
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -49,7 +51,7 @@ struct SeasonRankingFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .tabSelected(tab):
         state.tab = tab
         return .none
@@ -62,8 +64,6 @@ struct SeasonRankingFeature {
         return .none
       case .toastDismissed:
         state.toast = nil
-        return .none
-      case .delegate:
         return .none
       }
     }
@@ -99,8 +99,4 @@ struct SeasonRankingFeature {
     guard let index = state.ranking?.hosts.firstIndex(where: { $0.id == id }) else { return }
     state.ranking?.hosts[index].isFollowing = isOn
   }
-}
-
-enum SeasonRankingDelegate: Equatable {
-  case dismiss
 }

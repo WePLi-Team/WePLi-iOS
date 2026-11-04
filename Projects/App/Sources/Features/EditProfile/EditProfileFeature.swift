@@ -42,7 +42,6 @@ struct EditProfileFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     /// 저장된 프로필 — 마이 탭이 갱신한다
     case profileUpdated(MyProfile)
     /// 사진 고르기(사진 보관함)
@@ -53,6 +52,9 @@ struct EditProfileFeature {
 
   @Dependency(\.editProfileClient)
   var client
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -102,7 +104,7 @@ struct EditProfileFeature {
         return .none
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .changePhotoTapped:
         return .send(.delegate(.pickPhoto))

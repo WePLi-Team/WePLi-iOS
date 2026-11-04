@@ -29,7 +29,6 @@ struct MyRecommendationFeature {
     case backButtonTapped
     case liveActivityTapped
     case cheerTapped
-    case delegate(MyRecommendationDelegate)
   }
 
   /// 원본 갱신 · 알림 시간
@@ -49,6 +48,9 @@ struct MyRecommendationFeature {
 
   @Dependency(\.date.now)
   var now
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -100,10 +102,10 @@ struct MyRecommendationFeature {
         return .none
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       // 미결정 — 잠금화면 Live Activity(ActivityKit 위젯)와 응원 요청 방식이 정해지면 잇는다
-      case .liveActivityTapped, .cheerTapped, .delegate:
+      case .liveActivityTapped, .cheerTapped:
         return .none
       }
     }
@@ -118,8 +120,4 @@ struct MyRecommendationFeature {
     else { return nil }
     return ReversalBanner(rank: after, songTitle: song.title)
   }
-}
-
-enum MyRecommendationDelegate: Equatable {
-  case dismiss
 }

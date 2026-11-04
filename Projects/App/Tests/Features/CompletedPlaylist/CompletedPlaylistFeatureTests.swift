@@ -63,8 +63,11 @@ final class CompletedPlaylistFeatureTests: XCTestCase {
     await store.receive(.delegate(.showPlaylist("first-love")))
     await store.send(.exportTapped)
     await store.receive(.delegate(.export(relayID: "wake-up")))
+    let dismissed = LockIsolated(false)
+    store.dependencies.dismiss = DismissEffect { dismissed.setValue(true) }
     await store.send(.backButtonTapped)
-    await store.receive(.delegate(.dismiss))
+    await store.finish()
+    XCTAssertTrue(dismissed.value)
   }
 }
 

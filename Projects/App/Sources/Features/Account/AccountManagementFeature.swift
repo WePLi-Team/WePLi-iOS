@@ -51,6 +51,9 @@ struct AccountManagementFeature {
   @Dependency(\.friendProfileClient)
   var friendClient
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -89,7 +92,7 @@ struct AccountManagementFeature {
       return .send(.doneTapped)
     }
     guard state.step > state.entry, let previous = AccountStep(rawValue: state.step.rawValue - 1) else {
-      return .send(.delegate(.dismiss))
+      return .run { _ in await self.dismiss() }
     }
     state.step = previous
     return .none
@@ -185,7 +188,6 @@ struct AccountManagementFeature {
 }
 
 enum AccountManagementDelegate: Equatable {
-  case dismiss
   /// 탈퇴 신청 뒤 로그아웃 — 앱 루트가 로그인 화면으로 돌아간다
   case signedOut
 }

@@ -38,7 +38,6 @@ struct PlaylistDetailFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     case play(playlistID: String, shuffled: Bool)
     case more(playlistID: String)
     case showTrack(PlaylistDetail.Track.ID)
@@ -49,6 +48,9 @@ struct PlaylistDetailFeature {
 
   @Dependency(\.playlistDetailClient)
   var client
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -95,7 +97,7 @@ struct PlaylistDetailFeature {
         return .send(.delegate(.play(playlistID: state.playlistID, shuffled: true)))
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .moreButtonTapped:
         return .send(.delegate(.more(playlistID: state.playlistID)))

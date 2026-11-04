@@ -12,10 +12,6 @@ struct ContentNavigation: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       guard let (source, action) = action.pathElement else { return .none }
-      if Self.isDismiss(action) {
-        state[stack: source.tab].pop(from: source.id)
-        return .none
-      }
       let next = self.music(action, source, state) ?? self.relay(action, source, state)
         ?? self.notice(action, source, state) ?? Self.operations(action) ?? Self.account(action)
       if let next {
@@ -50,32 +46,6 @@ struct ContentNavigation: Reducer {
   private static func account(_ action: Path.Action) -> Path.State? {
     guard case .editProfile(.delegate(.showWithdraw)) = action else { return nil }
     return .accountManagement(AccountManagementFeature.State(entry: .reason))
-  }
-
-  /// 뒤로 — 모든 화면 공통
-  static func isDismiss(_ action: Path.Action) -> Bool {
-    switch action {
-    case .relayDetail(.delegate(.dismiss)), .vote(.delegate(.dismiss)), .worldCup(.delegate(.dismiss)),
-         .batonRelay(.delegate(.dismiss)), .liveTrend(.delegate(.dismiss)),
-         .dailySong(.delegate(.dismiss)),
-         .myRecommendation(.delegate(.dismiss)), .topPrediction(.delegate(.dismiss)),
-         .seasonRanking(.delegate(.dismiss)),
-         .completedPlaylist(.delegate(.dismiss)), .exportedPlaylist(.delegate(.dismiss)),
-         .notifications(.delegate(.dismiss)),
-         .postDetail(.delegate(.dismiss)), .editProfile(.delegate(.dismiss)), .library(.delegate(.dismiss)),
-         .notificationSettings(.delegate(.dismiss)), .musicServices(.delegate(.dismiss)),
-         .notices(.delegate(.dismiss)), .appInfo(.delegate(.dismiss)),
-         .helpCenter(.delegate(.dismiss)),
-         .inquiryHistory(.delegate(.dismiss)), .inquiryDetail(.delegate(.dismiss)),
-         .myPlaylist(.delegate(.dismiss)),
-         .songDetail(.delegate(.dismiss)), .artist(.delegate(.dismiss)), .playlistDetail(.delegate(.dismiss)),
-         .friendProfile(.delegate(.dismiss)), .tasteMatch(.delegate(.dismiss)),
-         .communityPolicy(.delegate(.dismiss)), .hiddenPost(.delegate(.dismiss)),
-         .accountManagement(.delegate(.dismiss)):
-      true
-    default:
-      false
-    }
   }
 
   /// 곡 · 아티스트 · 플리 · 게시글 사이 이동

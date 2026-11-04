@@ -54,12 +54,14 @@ struct CardVoteFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     case playPreview(VoteCandidate.ID)
   }
 
   @Dependency(\.cardVoteClient)
   var client
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     BindingReducer()
@@ -117,7 +119,7 @@ struct CardVoteFeature {
         return .none
 
       case .backButtonTapped, .returnToRelayButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case let .playTapped(id):
         return .send(.delegate(.playPreview(id)))

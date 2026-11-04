@@ -77,14 +77,8 @@ struct AccountGraceFeature {
         policy.document = AppDocument.all.first { $0.id == "policy" }
         state.policy = policy
         return .none
-      case .policy(.presented(.backButtonTapped)):
-        state.policy = nil
-        return .none
       case .helpTapped:
         state.helpCenter = HelpCenterFeature.State()
-        return .none
-      case .helpCenter(.presented(.delegate(.dismiss))):
-        state.helpCenter = nil
         return .none
       case .toastDismissed:
         state.toast = nil

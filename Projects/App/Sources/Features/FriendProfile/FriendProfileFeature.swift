@@ -64,6 +64,9 @@ struct FriendProfileFeature {
   @Dependency(\.friendProfileClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -79,7 +82,7 @@ struct FriendProfileFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .menu(action):
         return self.menu(action, &state)
       case let .rollback(rollback):
@@ -160,7 +163,6 @@ enum FriendProfileRollback: Equatable {
 }
 
 enum FriendProfileDelegate: Equatable {
-  case dismiss
   case showTasteMatch(userID: String)
   case showPost(String)
   case showPlaylist(String)

@@ -43,6 +43,9 @@ struct CompletedPlaylistFeature {
   @Dependency(\.completedPlaylistClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -62,7 +65,7 @@ struct CompletedPlaylistFeature {
         return self.load(&state)
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .likeTapped, .saveTapped, .nextRelayAlertTapped:
         return self.toggle(action, &state)
@@ -164,7 +167,6 @@ enum CompletedPlaylistToggle: Equatable, Sendable {
 }
 
 enum CompletedPlaylistDelegate: Equatable {
-  case dismiss
   case showSong(String)
   case songMenu(ComposeTrack)
   case showPlaylist(String)

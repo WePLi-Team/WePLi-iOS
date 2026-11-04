@@ -30,11 +30,13 @@ struct ExportedPlaylistFeature {
     case syncNowTapped
     case openInServiceTapped
     case toastDismissed
-    case delegate(ExportedPlaylistDelegate)
   }
 
   @Dependency(\.exportClient)
   var client
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -51,7 +53,7 @@ struct ExportedPlaylistFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .syncToggleTapped:
         guard let isOn = state.playlist?.isSyncOn else { return .none }
         state.playlist?.isSyncOn = !isOn
@@ -72,7 +74,7 @@ struct ExportedPlaylistFeature {
         state.toast = nil
         return .none
       // 원본에 동작이 없다(지금 반영하기 · 서비스에서 열기) — 실제 연동 때 잇는다
-      case .syncNowTapped, .openInServiceTapped, .delegate:
+      case .syncNowTapped, .openInServiceTapped:
         return .none
       }
     }
@@ -89,8 +91,4 @@ struct ExportedPlaylistFeature {
       }
     }
   }
-}
-
-enum ExportedPlaylistDelegate: Equatable {
-  case dismiss
 }

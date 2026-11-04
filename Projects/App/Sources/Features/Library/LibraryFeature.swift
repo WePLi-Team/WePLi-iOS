@@ -38,7 +38,6 @@ struct LibraryFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     /// 내 플레이리스트 편집 (UI-10d)
     case editPlaylists
     case createPlaylist
@@ -62,6 +61,9 @@ struct LibraryFeature {
 
   @Dependency(\.date.now)
   var now
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -102,7 +104,7 @@ struct LibraryFeature {
         return .send(.delegate(.editPlaylists))
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .newPlaylistTapped:
         return .send(.delegate(.createPlaylist))

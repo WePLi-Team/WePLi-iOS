@@ -90,8 +90,11 @@ final class RelayDetailFeatureTests: XCTestCase {
     await store.receive(.delegate(.addToMyPlaylist(relayID: "r")))
     await store.send(.exportButtonTapped)
     await store.receive(.delegate(.export(relayID: "r")))
+    let dismissed = LockIsolated(false)
+    store.dependencies.dismiss = DismissEffect { dismissed.setValue(true) }
     await store.send(.backButtonTapped)
-    await store.receive(.delegate(.dismiss))
+    await store.finish()
+    XCTAssertTrue(dismissed.value)
   }
 
   func testLoadFailure_thenRetry() async {

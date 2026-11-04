@@ -58,6 +58,9 @@ struct HelpCenterFeature {
   @Dependency(\.helpCenterClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -70,7 +73,7 @@ struct HelpCenterFeature {
         state.inquiries = inquiries
         return .none
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .faqTapped(id):
         if state.openFAQs.contains(id) {
           state.openFAQs.remove(id)
@@ -179,7 +182,6 @@ struct HelpCenterFeature {
 }
 
 enum HelpCenterDelegate: Equatable {
-  case dismiss
   case showInquiry(Inquiry)
   case showHistory
 }

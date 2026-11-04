@@ -47,6 +47,9 @@ struct TopPredictionFeature {
   @Dependency(\.topPredictionClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -62,7 +65,7 @@ struct TopPredictionFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .optionTapped(id):
         // 확정 전까지는 바꿀 수 있다
         guard state.prediction?.lockedID == nil, !state.isSubmitting else { return .none }
@@ -156,7 +159,6 @@ struct TopPredictionFeature {
 }
 
 enum TopPredictionDelegate: Equatable {
-  case dismiss
   /// 확정했다 — 홈 1위 예측 섹션도 「예측 완료」로 바꾼다
   case predicted(relayID: String, optionID: TopPrediction.Option.ID)
   /// 「내 칭호」 머리 → 시즌 랭킹(UI-8f)

@@ -120,6 +120,6 @@ final class SystemStatusFeatureTests: XCTestCase {
     let store = TestStore(initialState: initial) { SystemStatusFeature() }
     await store.send(.policyTapped) { $0.policy = CommunityPolicyFeature.State() }
     await store.send(.policy(.presented(.backButtonTapped)))
-    await store.receive(.policy(.presented(.delegate(.dismiss)))) { $0.policy = nil }
+    await store.receive(\.policy.dismiss) { $0.policy = nil }
   }
 }

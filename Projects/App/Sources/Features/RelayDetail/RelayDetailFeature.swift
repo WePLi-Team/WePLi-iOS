@@ -41,7 +41,6 @@ struct RelayDetailFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     case share(relayID: String)
     /// 곡 검색 · 추천 (UI-2a)
     case showRecommend(relayID: String)
@@ -66,6 +65,9 @@ struct RelayDetailFeature {
 
   @Dependency(\.date.now)
   var now
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -100,7 +102,7 @@ struct RelayDetailFeature {
         return state.displayState == .completed ? .cancel(id: CancelID.timer) : .none
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .shareButtonTapped:
         return .send(.delegate(.share(relayID: state.relayID)))

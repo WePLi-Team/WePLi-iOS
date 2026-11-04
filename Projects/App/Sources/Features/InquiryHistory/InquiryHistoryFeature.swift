@@ -31,6 +31,9 @@ struct InquiryHistoryFeature {
   @Dependency(\.helpCenterClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -50,7 +53,7 @@ struct InquiryHistoryFeature {
         state.loadFailed = state.inquiries == nil
         return .none
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case let .rowTapped(id):
         guard var inquiries = state.inquiries, var inquiry = inquiries.first(where: { $0.id == id }) else {
           return .none
@@ -98,7 +101,6 @@ struct InquiryHistoryFeature {
 }
 
 enum InquiryHistoryDelegate: Equatable {
-  case dismiss
   case showInquiry(Inquiry)
   /// 빈 상태 「1:1 문의하기」 → 고객센터 문의 시트
   case compose

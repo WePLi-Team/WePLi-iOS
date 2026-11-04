@@ -39,6 +39,9 @@ struct ArtistFeature {
   @Dependency(\.artistClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -75,7 +78,7 @@ struct ArtistFeature {
         return .none
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case let .relatedArtistTapped(name):
         return .send(.delegate(.showArtist(name)))
@@ -114,7 +117,6 @@ struct ArtistFeature {
 }
 
 enum ArtistDelegate: Equatable {
-  case dismiss
   /// 함께 많이 듣는 아티스트 → 다른 아티스트 화면
   case showArtist(String)
   case showSong(ArtistDetail.Song.ID)

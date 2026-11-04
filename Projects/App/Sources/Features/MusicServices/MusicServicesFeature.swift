@@ -36,6 +36,9 @@ struct MusicServicesFeature {
   @Dependency(\.musicServicesClient)
   var client
 
+  @Dependency(\.dismiss)
+  var dismiss
+
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
@@ -51,7 +54,7 @@ struct MusicServicesFeature {
       case .retryButtonTapped:
         return self.load(&state)
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
       case .connectTapped, .connected, .connectFailed, .disconnectTapped:
         return self.connection(&state, action)
       case .defaultSelected, .autoExportToggled, .saveFailed:
@@ -151,7 +154,6 @@ struct MusicServicesFeature {
 }
 
 enum MusicServicesDelegate: Equatable {
-  case dismiss
   /// 내보낸 플리(UI-14m)
   case showExported(playlistID: String)
 }

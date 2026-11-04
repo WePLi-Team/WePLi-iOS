@@ -44,7 +44,6 @@ struct SongDetailFeature {
   }
 
   enum Delegate: Equatable {
-    case dismiss
     case share(songID: String)
     case more(songID: String)
     /// 아티스트 (UI-5b)
@@ -68,6 +67,9 @@ struct SongDetailFeature {
 
   @Dependency(\.continuousClock)
   var clock
+
+  @Dependency(\.dismiss)
+  var dismiss
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -130,7 +132,7 @@ struct SongDetailFeature {
         return .none
 
       case .backButtonTapped:
-        return .send(.delegate(.dismiss))
+        return .run { _ in await self.dismiss() }
 
       case .shareButtonTapped:
         return .send(.delegate(.share(songID: state.songID)))
