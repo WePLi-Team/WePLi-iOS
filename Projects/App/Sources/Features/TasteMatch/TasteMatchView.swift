@@ -37,16 +37,8 @@ struct TasteMatchView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("취향 궁합").wepliFont(.button).foregroundStyle(WePLiColor.textPrimary).accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") { self.store.send(.backButtonTapped) }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
-    .background(WePLiColor.background)
+    WePLiNavigationBar(title: "취향 궁합") { self.store.send(.backButtonTapped) }
+      .background(WePLiColor.background)
   }
 }
 

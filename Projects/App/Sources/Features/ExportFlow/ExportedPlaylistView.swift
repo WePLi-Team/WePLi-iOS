@@ -12,17 +12,7 @@ struct ExportedPlaylistView: View {
   var body: some View {
     WithPerceptionTracking {
       VStack(spacing: 0) {
-        ZStack {
-          Text("내보낸 플리").wepliFont(.button).foregroundStyle(WePLiColor.textPrimary).accessibilityAddTraits(.isHeader)
-          HStack {
-            WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") {
-              self.store.send(.backButtonTapped)
-            }
-            Spacer()
-          }
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 48)
+        WePLiNavigationBar(title: "내보낸 플리") { self.store.send(.backButtonTapped) }
         if let playlist = self.store.playlist {
           ScrollView { self.content(playlist) }
         } else if self.store.loadFailed {

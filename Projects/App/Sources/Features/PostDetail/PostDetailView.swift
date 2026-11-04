@@ -45,23 +45,11 @@ struct PostDetailView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("게시글")
-        .wepliFont(.button)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") {
-          self.store.send(.backButtonTapped)
-        }
-        Spacer()
-        WePLiIconButton(systemName: "ellipsis", accessibilityLabel: "더보기") {
-          self.store.send(.moreButtonTapped)
-        }
+    WePLiNavigationBar(title: "게시글") { self.store.send(.backButtonTapped) } trailing: {
+      WePLiIconButton(systemName: "ellipsis", accessibilityLabel: "더보기") {
+        self.store.send(.moreButtonTapped)
       }
     }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
     .background(WePLiColor.background)
   }
 

@@ -40,26 +40,14 @@ struct EditProfileView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("내 정보 수정")
+    WePLiNavigationBar(title: "내 정보 수정") { self.store.send(.backButtonTapped) } trailing: {
+      Button("완료") { self.store.send(.doneButtonTapped) }
         .wepliFont(.button)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") {
-          self.store.send(.backButtonTapped)
-        }
-        Spacer()
-        Button("완료") { self.store.send(.doneButtonTapped) }
-          .wepliFont(.button)
-          .foregroundStyle(self.store.canSave ? WePLiColor.accent : WePLiColor.textDisabled.opacity(0.7))
-          .disabled(!self.store.canSave)
-          .padding(.horizontal, 8)
-          .frame(minHeight: 44)
-      }
+        .foregroundStyle(self.store.canSave ? WePLiColor.accent : WePLiColor.textDisabled.opacity(0.7))
+        .disabled(!self.store.canSave)
+        .padding(.horizontal, 8)
+        .frame(minHeight: 44)
     }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
     .background(WePLiColor.background)
   }
 

@@ -48,16 +48,8 @@ struct MusicServicesView: View {
   }
 
   private var navigationBar: some View {
-    ZStack {
-      Text("음악 서비스").wepliFont(.button).foregroundStyle(WePLiColor.textPrimary).accessibilityAddTraits(.isHeader)
-      HStack {
-        WePLiIconButton(systemName: "chevron.left", accessibilityLabel: "뒤로") { self.store.send(.backButtonTapped) }
-        Spacer()
-      }
-    }
-    .padding(.horizontal, 16)
-    .frame(height: 48)
-    .background(WePLiColor.background)
+    WePLiNavigationBar(title: "음악 서비스") { self.store.send(.backButtonTapped) }
+      .background(WePLiColor.background)
   }
 
   private var failed: some View {
