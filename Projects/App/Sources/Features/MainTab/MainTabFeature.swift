@@ -82,6 +82,8 @@ struct MainTabFeature {
     @Presents var liveExport: LiveExportFeature.State?
     var liveExportSource: PathSource?
     var songMenuSource: PathSource?
+    /// 곡 메뉴 · 곡 공유 시트가 다 내려간 뒤 띄울 화면 — 시트가 닫히는 동안 띄우면 무시된다
+    var followUpAfterSheet: SongFollowUp?
     /// 「먼저 둘러볼게요」로 들어온 손님(DEC-032) — 계정이 있어야 하는 동작은 로그인을 요청한다
     var isGuest = false
     /// 손님이 투표 · 추천 등을 눌렀을 때 띄우는 로그인 요청 시트
@@ -156,8 +158,8 @@ struct MainTabFeature {
     case exportFlow(PresentationAction<ExportFlowFeature.Action>)
     case liveExport(PresentationAction<LiveExportFeature.Action>)
     case player(PlayerFeature.Action)
-    /// 시트가 닫히는 동안 다음 화면을 띄우면 무시되므로 잠시 뒤에 띄운다
-    case presentAfterSheet(SongFollowUp)
+    /// 곡 메뉴 · 곡 공유 시트가 다 내려갔다(onDismiss) — 기다리던 다음 화면을 띄운다
+    case sheetDismissed
     case compose(PresentationAction<ComposePostFeature.Action>)
     case replySongPicker(PresentationAction<SongPickerFeature.Action>)
     /// 로그인 요청 시트 「계속 둘러보기」 · 닫기

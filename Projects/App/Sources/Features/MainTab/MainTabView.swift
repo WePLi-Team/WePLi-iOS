@@ -195,10 +195,14 @@ private struct MainTabSheets: ViewModifier {
           SongPickerView(store: pickerStore)
             .wepliSheetStyle(detents: [.large])
         }
-        .sheet(item: self.$store.scope(state: \.songMenu, action: \.songMenu)) { menuStore in
-          SongMenuView(store: menuStore)
-            .wepliSheetStyle(detents: [.height(SongMenuView.height)])
-        }
+        .sheet(
+          item: self.$store.scope(state: \.songMenu, action: \.songMenu),
+          onDismiss: { self.store.send(.sheetDismissed) },
+          content: { menuStore in
+            SongMenuView(store: menuStore)
+              .wepliSheetStyle(detents: [.height(SongMenuView.height)])
+          }
+        )
         .sheet(item: Binding(
           get: { [loginPrompt = self.store.loginPrompt] in loginPrompt },
           set: {
@@ -234,9 +238,11 @@ private struct MainTabCovers: ViewModifier {
         .fullScreenCover(item: self.$store.scope(state: \.listeningShare, action: \.listeningShare)) { shareStore in
           ListeningShareView(store: shareStore)
         }
-        .fullScreenCover(item: self.$store.scope(state: \.songShare, action: \.songShare)) { shareStore in
-          SongShareView(store: shareStore)
-        }
+        .fullScreenCover(
+          item: self.$store.scope(state: \.songShare, action: \.songShare),
+          onDismiss: { self.store.send(.sheetDismissed) },
+          content: { shareStore in SongShareView(store: shareStore) }
+        )
         .fullScreenCover(isPresented: self.$store.player.isExpanded.sending(\.player.expandedChanged)) {
           NowPlayingView(store: self.store.scope(state: \.player, action: \.player))
         }

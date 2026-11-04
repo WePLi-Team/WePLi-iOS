@@ -311,8 +311,11 @@ final class SongNavigationTests: XCTestCase {
     await store.send(.songShare(.presented(.shareAsPostTapped)))
     await store.receive(.songShare(.presented(.delegate(.shareAsPost(songID: song.id)))))
     XCTAssertNil(store.state.songShare)
-    await store.receive(.presentAfterSheet(.compose(ComposeTrack(id: song.id, title: song.title, artist: song.artist))))
+    // 시트가 다 내려가기 전에는 띄우지 않는다
+    XCTAssertNil(store.state.compose)
+    await store.send(.sheetDismissed)
     XCTAssertEqual(store.state.compose?.tracks.map(\.title), [song.title])
+    XCTAssertNil(store.state.followUpAfterSheet)
   }
 
   private func menuStore() -> (TestStoreOf<MainTabFeature>, StackElementID, SongDetail) {
@@ -359,8 +362,11 @@ final class SongNavigationTests: XCTestCase {
     await store.send(.songMenu(.presented(.itemTapped(.instagram))))
     await store.receive(.songMenu(.presented(.delegate(.selected(.instagram)))))
     XCTAssertNil(store.state.songMenu)
-    await store.skipReceivedActions()
+    XCTAssertNil(store.state.songShare)
+    await store.send(.sheetDismissed)
     XCTAssertEqual(store.state.songShare?.card.title, song.title)
+    // 기다리는 화면이 없으면 시트가 닫혀도 아무것도 띄우지 않는다
+    await store.send(.sheetDismissed)
   }
 
   func testSongDetailArtist_opensArtistThenRelatedArtistAndSong() async {

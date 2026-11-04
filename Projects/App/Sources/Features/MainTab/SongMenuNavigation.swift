@@ -67,11 +67,13 @@ struct SongMenuNavigation: Reducer {
     case .instagram, .screenshot:
       let card = SongNavigation().card(songID: song.id, title: song.title, artist: song.artist, in: state)
       self.close(&state)
-      return SongNavigation().presentAfterSheet(.share(card))
+      state.followUpAfterSheet = .share(card)
+      return .none
 
     case .shareAsPost:
       self.close(&state)
-      return SongNavigation().presentAfterSheet(.compose(song))
+      state.followUpAfterSheet = .compose(song)
+      return .none
 
     case .info:
       // 곡 상세에서 연 시트면 닫기만, 아니면 곡 상세를 연다
