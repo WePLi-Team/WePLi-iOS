@@ -31,6 +31,8 @@ let swiftLintScript: TargetScript = .pre(
 
 let project = Project(
   name: "WePLi",
+  // 한국어 전용 앱(#242)
+  options: .options(defaultKnownRegions: ["Base", "ko"], developmentRegion: "ko"),
   settings: .settings(
     base: SharedSettings.base.base,
     configurations: [
