@@ -52,6 +52,9 @@ Projects/Core/DesignSystem/               WePLiDesignSystem 프레임워크 — 
 Projects/Core/SharedModels/               WePLiSharedModels 프레임워크 — 여러 기능이 함께 쓰는 값 타입(곡 · 게시글 · 릴레이 · 프로필 ·
                                          이의 신청 대상 · 표시 형식). Foundation만 의존. 쓰는 파일은 `import WePLiSharedModels` (공통 파일, DEC-033)
 Projects/Core/{Network,Utils}             아직 없음 — 실제 API가 붙을 때 만든다
+Projects/Features/Support/                WePLiSupportFeatures 프레임워크 — 공지 · 앱 정보 · 운영정책 · 이의 신청 · 고객센터 · 문의 내역 · 알림 설정
+                                         (DEC-033 3단계 시범). 안 구조는 Features/<F>/와 같다. 메인 탭이 쓰는 선언은 public,
+                                         테스트는 Projects/App/Tests에서 `@testable import WePLiSupportFeatures`
 ```
 
 - 지금은 `AuthClient`가 `LoginFeature.swift` 안에 있다. 새 Client는 `Client/` 폴더에 둔다(기존 것은 옮기지 않음 — 별도 이슈).

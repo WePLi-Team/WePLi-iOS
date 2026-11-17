@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiSupportFeatures
 import XCTest
 
 // UI-17b · DEC-027

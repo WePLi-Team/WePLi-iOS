@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSupportFeatures
 
 // REQ-112 · UI-7d · DEC-014 — 앱 시작 때 서버 설정을 받아, 겹치면 강제 업데이트 > 점검 > 오프라인 > 이용 제한 > 이벤트 하나만 보인다.
 

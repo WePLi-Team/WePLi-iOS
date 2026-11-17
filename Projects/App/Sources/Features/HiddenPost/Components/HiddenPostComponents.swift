@@ -1,5 +1,6 @@
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSupportFeatures
 
 // UI-17c · UI-7e — 가려진 내 글 카드 · 진행 상황 · 커뮤니티 맨 위 안내 카드
 

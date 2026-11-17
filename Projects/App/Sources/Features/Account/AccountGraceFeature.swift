@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSupportFeatures
 
 // UI-17e · DEC-004 — 로그인 직후 계정 상태 화면(전체 화면, 내비게이션 바 없음).
 // 탈퇴 유예: 14일 안에 다시 로그인하면 먼저 뜨고 「계정 되살리기」로 바로 돌아온다.
