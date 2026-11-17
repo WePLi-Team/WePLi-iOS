@@ -10,7 +10,7 @@ struct HiddenPostCard: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack(spacing: 10) {
-        AvatarPlaceholder(name: self.post.author).frame(width: 32, height: 32)
+        WePLiAvatar(name: self.post.author).frame(width: 32, height: 32)
         VStack(alignment: .leading, spacing: 2) {
           Text(self.post.author).wepliFont(.subheadline, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)
           Text("\(HiddenPostText.day(self.post.postedAt)) · 나에게만 보여요")

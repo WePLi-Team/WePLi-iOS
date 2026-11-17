@@ -16,7 +16,7 @@ struct PostDetailBody: View {
     VStack(alignment: .leading, spacing: 14) {
       Button(action: self.onAuthor) {
         HStack(spacing: 10) {
-          AvatarPlaceholder(name: self.post.author).frame(width: 36, height: 36)
+          WePLiAvatar(name: self.post.author).frame(width: 36, height: 36)
           Text(self.post.author).wepliFont(.subheadline, weight: .semibold).foregroundStyle(Color.white)
         }
       }
@@ -147,7 +147,7 @@ struct CommentRow: View {
 
   var body: some View {
     HStack(alignment: .top, spacing: 10) {
-      AvatarPlaceholder(name: self.comment.author).frame(width: 36, height: 36)
+      WePLiAvatar(name: self.comment.author).frame(width: 36, height: 36)
       VStack(alignment: .leading, spacing: 4) {
         HStack(spacing: 4) {
           Text(self.comment.author).wepliFont(.footnote, weight: .semibold).foregroundStyle(WePLiColor.textPrimary)

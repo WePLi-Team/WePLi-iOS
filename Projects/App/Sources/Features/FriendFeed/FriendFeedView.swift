@@ -72,7 +72,7 @@ struct FriendFeedView: View {
       self.store.send(.sameSongTapped)
     } label: {
       HStack(spacing: 8) {
-        ListeningEqualizer()
+        WePLiEqualizer()
         (Text(friend.name).fontWeight(.semibold) + Text("님과 지금 같은 곡을 듣는 중 · \(friend.title)"))
           .wepliFont(.footnote)
           .foregroundStyle(WePLiColor.accent)

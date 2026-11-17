@@ -177,7 +177,7 @@ private struct FriendReportActions: View {
 
   var body: some View {
     if !self.store.isBlocked {
-      ExportSecondaryButton(title: FriendProfileText.reportBlock(self.name)) {
+      WePLiSecondaryButton(title: FriendProfileText.reportBlock(self.name)) {
         self.store.send(.menu(.reportBlockTapped))
       }
     }

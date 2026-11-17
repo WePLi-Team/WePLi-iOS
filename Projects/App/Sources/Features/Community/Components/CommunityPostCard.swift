@@ -36,7 +36,7 @@ struct CommunityPostCard: View {
     HStack(spacing: 10) {
       Button(action: self.onAuthor) {
         HStack(spacing: 10) {
-          AvatarPlaceholder(name: self.post.author)
+          WePLiAvatar(name: self.post.author)
             .frame(width: 32, height: 32)
           Text(self.post.author)
             .wepliFont(.subheadline, weight: .semibold)

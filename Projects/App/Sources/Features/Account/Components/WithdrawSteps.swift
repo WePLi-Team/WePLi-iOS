@@ -113,7 +113,7 @@ struct WithdrawDoneContent: View {
           .foregroundStyle(WePLiColor.textSecondary)
           .lineSpacing(4)
       }
-      ExportSecondaryButton(title: "확인", action: self.onConfirm).padding(.top, 30)
+      WePLiSecondaryButton(title: "확인", action: self.onConfirm).padding(.top, 30)
       Spacer()
     }
     .multilineTextAlignment(.center)

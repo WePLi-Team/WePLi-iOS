@@ -12,7 +12,7 @@ struct FriendNowPlayingLine: View {
   var body: some View {
     Button(action: self.action) {
       HStack(spacing: 6) {
-        ListeningEqualizer()
+        WePLiEqualizer()
         (Text(self.song.title) + Text(" · \(self.song.artist)").font(WePLiFont.font(.footnote, weight: .light)))
           .wepliFont(.footnote)
           .lineLimit(1)
@@ -37,7 +37,7 @@ struct FriendNowPlayingMenu: View {
         WePLiArtwork(size: 52, style: .rounded(4))
         VStack(alignment: .leading, spacing: 2) {
           HStack(spacing: 6) {
-            ListeningEqualizer()
+            WePLiEqualizer()
             Text("지금 듣는 중 · \(self.song.timeText)").font(WePLiFont.font(.caption, weight: .semibold))
               .foregroundStyle(WePLiColor.accent)
           }
