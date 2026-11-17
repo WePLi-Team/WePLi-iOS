@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-075 · UI-2e — 명함 만들기 6단계: 소개 → 곡 → 한 줄 소개 → Instagram → 생성 → 완성
 

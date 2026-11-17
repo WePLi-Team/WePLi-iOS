@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-060 · UI-1d · DEC-004 — 커뮤니티 피드
 

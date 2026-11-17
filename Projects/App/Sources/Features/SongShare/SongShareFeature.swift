@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-066 · UI-3g — 곡 공유 카드
 // 공유 대상(스토리 · 링크 · 이미지 · 더보기)은 아이콘 줄, 앱 안의 동작(게시글 · 플리 추가)은 아래 목록(원본 노트 02)

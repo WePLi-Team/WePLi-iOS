@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-022 · UI-4a 미니 플레이어 · UI-4b 지금 재생 중 · DEC-004
 // 한 재생을 미니 플레이어와 전체 화면이 함께 쓴다. 30초 미리듣기가 끝나면 다음 곡으로 넘어가고, 마지막 곡이면 멈춘다.

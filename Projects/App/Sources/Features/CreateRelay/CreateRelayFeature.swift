@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-036 · UI-6a · DEC-004 — 릴레이리스트 만들기(시트)
 

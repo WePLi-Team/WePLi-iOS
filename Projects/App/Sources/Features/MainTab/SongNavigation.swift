@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-066 — 곡 상세의 공유 → 곡 공유 카드(UI-3g), 시트를 닫은 뒤 이어 띄우는 화면
 

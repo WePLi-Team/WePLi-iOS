@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-023 · UI-1b 곡 메뉴 시트 — 곡 상세 ··· 에서 열고, 행마다 목적지로 잇는다
 // 아티스트 정보 보기 → 아티스트(UI-5b) · 인스타그램 · 스크린샷 → 공유 카드(UI-3g, 원본 노트 03) · 게시글로 공유하기 → 게시글 작성

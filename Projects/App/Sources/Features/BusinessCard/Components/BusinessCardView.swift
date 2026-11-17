@@ -1,5 +1,6 @@
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // UI-2e 명함 카드 — 247×354, 모서리 13, 면 rgb(3,3,3) · 테두리 #2F2F38
 // 날짜(오른쪽 위) · 닉네임 22 · 성향 12 #C8CFFF · 한 줄 소개 13 Light · 디스크 180(오른쪽으로 잘림) · Best Pick · Instagram

@@ -1,53 +1,7 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-030 · UI-10a
-
-struct Relay: Equatable, Identifiable, Sendable {
-  enum VoteFormat: String, Equatable, Sendable {
-    case card
-    case worldCup
-    case baton
-
-    /// 목록 배지 문구 (원본: 카드 · 월드컵 · 바통)
-    var title: String {
-      switch self {
-      case .card: "카드"
-      case .worldCup: "월드컵"
-      case .baton: "바통"
-      }
-    }
-  }
-
-  enum Status: Equatable, Sendable {
-    case live(endsAt: Date)
-    case completed
-  }
-
-  let id: String
-  let title: String
-  let voteFormat: VoteFormat
-  let participantCount: Int
-  let status: Status
-  /// 내가 곡을 추천했거나 투표한 릴레이
-  let isMine: Bool
-
-  var endsAt: Date? {
-    if case let .live(endsAt) = self.status {
-      return endsAt
-    }
-    return nil
-  }
-
-  var isLive: Bool {
-    self.endsAt != nil
-  }
-
-  /// 「3,012」 · 바통은 「친구 8」
-  var participantText: String {
-    let count = self.participantCount.formatted(.number.grouping(.automatic))
-    return self.voteFormat == .baton ? "친구 \(count)" : count
-  }
-}
 
 enum RelayFilter: CaseIterable, Equatable, Sendable {
   case live
@@ -94,22 +48,5 @@ struct RelaySections: Equatable {
     case .mine:
       return RelaySections(list: relays.filter(\.isMine))
     }
-  }
-}
-
-/// 남은 시간 표기 — 1일 이상 「N일 N시간」, 미만 「H:MM:SS」 (UI-9a · UI-10a)
-enum RemainingTimeFormatter {
-  static func string(from now: Date, to end: Date) -> String {
-    var seconds = max(0, Int(end.timeIntervalSince(now)))
-    let days = seconds / 86400
-    seconds %= 86400
-    let hours = seconds / 3600
-    seconds %= 3600
-    let minutes = seconds / 60
-    seconds %= 60
-    if days > 0 {
-      return "\(days)일 \(hours)시간"
-    }
-    return String(format: "%d:%02d:%02d", hours, minutes, seconds)
   }
 }

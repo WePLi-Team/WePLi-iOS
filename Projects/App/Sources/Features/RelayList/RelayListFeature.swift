@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import Foundation
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // REQ-030 · UI-10a — 릴레이 탭 첫 화면
 

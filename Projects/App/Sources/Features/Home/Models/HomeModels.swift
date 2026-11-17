@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-020 · UI-12a(DEC-008) — 통합 홈
 

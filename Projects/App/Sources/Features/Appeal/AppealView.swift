@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // REQ-073 · UI-11d — 이의 신청. 대상 카드 → 사유 · 설명 · 기준 안내 → 「이의 신청 보내기」, 보내면 진행 타임라인
 // 사유는 라벤더 선택 칩(34 · 14pt), 보내기는 그라데이션 버튼(DEC-009)

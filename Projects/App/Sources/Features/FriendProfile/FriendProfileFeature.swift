@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-079 · UI-13g · UI-17d · DEC-010 · DEC-020 · DEC-029 — 친구 프로필(push). 팔로우 · 차단 · 좋아요 · 초대는
 // 먼저 반영하고 서버가 거절하면 되돌린다(DEC-004). 신고는 접수된 뒤에 안내하고, 같은 사람은 한 번만 신고한다.

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // UI-13g — 화면 안 동작 · 팔로우 · 초대 · 좋아요 · ··· 메뉴(차단 · 신고)
 

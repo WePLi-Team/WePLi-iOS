@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-061 · REQ-062 — 백엔드 · 음원 카탈로그가 정해지기 전까지 원본(UI-2a · 2b) 예시로 동작하는 목업이다.
 

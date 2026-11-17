@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+import WePLiSharedModels
 import XCTest
 
 // REQ-079 · UI-13g · UI-17d · DEC-020 · DEC-023 · DEC-029

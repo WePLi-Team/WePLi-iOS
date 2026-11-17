@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-025 · UI-3d · DEC-004 — 플레이리스트 상세
 

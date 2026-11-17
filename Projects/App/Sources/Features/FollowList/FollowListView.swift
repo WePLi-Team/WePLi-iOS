@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // REQ-074 · UI-10c — 팔로워 · 팔로잉
 

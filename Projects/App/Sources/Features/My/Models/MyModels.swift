@@ -2,44 +2,6 @@ import Foundation
 
 // REQ-070 · UI-1e · UI-3e
 
-/// 나의 성향 5종 — 원본 personaData 순서
-enum Persona: Int, CaseIterable, Equatable, Sendable {
-  case socialTunes
-  case melodyMemories
-  case nostalgiaSeoner
-  case sentimentalSymphony
-  case energyFlash
-
-  var name: String {
-    switch self {
-    case .socialTunes: "소셜 튠즈"
-    case .melodyMemories: "멜로디 메모리즈"
-    case .nostalgiaSeoner: "노스텔지어 서너"
-    case .sentimentalSymphony: "센티멘탈 심포니"
-    case .energyFlash: "에너지 플래시"
-    }
-  }
-
-  var summary: String {
-    switch self {
-    case .socialTunes: "같이 노래 듣는 걸 좋아해요"
-    case .melodyMemories: "추억을 노래와 함께 간직하고 싶어요"
-    case .nostalgiaSeoner: "옛날 감성의 노래를 좋아해요"
-    case .sentimentalSymphony: "감성적인 노래를 좋아해요"
-    case .energyFlash: "신나는 노래를 좋아해요"
-    }
-  }
-}
-
-struct MyProfile: Equatable, Sendable {
-  var nickname: String
-  var email: String
-  var persona: Persona?
-  var photoURL: URL?
-  /// 소개(50자, UI-3e)
-  var bio = ""
-}
-
 /// 마이 탭 그룹 목록의 행 (UI-1e)
 enum MyMenu: Equatable, CaseIterable, Sendable {
   case myPlaylists

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-022 — 화면의 재생 버튼 → 미리듣기 플레이어(UI-4b). 화면에 보이는 곡 목록을 대기열로 쓴다.
 // 릴레이 상세 전체 듣기 · 곡 재생(UI-3c), 완성 플리 전체 듣기(UI-14b), 플리 상세 재생 · 셔플(UI-3d),

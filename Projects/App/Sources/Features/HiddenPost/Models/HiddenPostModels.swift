@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // UI-17c · UI-7e · DEC-024 — 신고 5건으로 임시로 가려진 내 글. 다른 사람에게는 가려지고 글쓴이에게는 그대로 보인다.
 // 가려진 시각 · 사유는 서버 값(DEC-004), 날짜는 Asia/Seoul
