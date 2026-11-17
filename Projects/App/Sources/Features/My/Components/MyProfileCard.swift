@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-1e 프로필 카드 — 사진 64 · 카메라 배지 22 · 닉네임 20 SemiBold · 이메일 14 Light · 나의 성향 칩
 

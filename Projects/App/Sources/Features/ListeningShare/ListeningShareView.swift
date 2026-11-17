@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-079 · UI-13a — 지금 듣는 음악: 연결과 공개 범위(전체 화면). 닫기 · 제목 · 2단계 표시 · 단계 · 아래 버튼
 

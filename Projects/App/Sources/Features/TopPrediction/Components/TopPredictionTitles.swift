@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-8d 아래쪽 · DEC-021 — 내 칭호. 머리 → 대표 칭호 미리보기 → 3열 격자.
 // 얻은 칭호를 누르면 대표가 된다(대표는 홀로그램 고리). 못 얻은 칭호는 아이콘 색으로만 구분한다

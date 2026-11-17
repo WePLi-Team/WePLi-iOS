@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-4c 결과 행 · 칩 · 둘러보기 타일
 

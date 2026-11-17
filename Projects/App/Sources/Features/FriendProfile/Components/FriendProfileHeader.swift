@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-13g 머리 — 지금 듣는 곡 커버를 흐리게 깔고 검정으로 녹인다. 듣는 중이면 프로필 사진에 홀로그램 링.
 // 이름 · 팔로우 칩 → 아이디 · 팔로워 · 팔로잉 → 지금 듣는 중 한 줄 → 소개 → 성향 배지 · 취향 일치 → 초대 · 명함 · 공유

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-075 · UI-2e — 명함 만들기(전체 화면). 좌표는 원본(402×874, 화면 위 기준)을 그대로 쓴다.
 // 카드는 소개 · 생성 · 완성 단계에서 보이고, 단계마다 위치 · 기울기 · 크기가 0.6초에 걸쳐 바뀐다.

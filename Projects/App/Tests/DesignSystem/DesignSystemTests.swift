@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 @testable import WePLi
+import WePLiDesignSystem
 import XCTest
 
 // REQ-002 · REQ-004 · REQ-005 — 토큰 값이 원본(docs/design/README.md · UI-12d)과 같은지 지킨다.

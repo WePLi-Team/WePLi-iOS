@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-16d 「흐르는 커버 벽」 — 앨범 커버 세 줄이 천천히 흐르고 가운데 줄만 반대 방향.
 // y300 아래는 점진 블러와 검정 그라디언트로 녹인다. 동작 줄이기면 멈춘다(16d 노트).

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-013 · UI-7c — 계정 관리 → 탈퇴 1/2 사유 → 2/2 확인 → 완료. 한 화면 안에서 단계를 바꾼다(원본).
 

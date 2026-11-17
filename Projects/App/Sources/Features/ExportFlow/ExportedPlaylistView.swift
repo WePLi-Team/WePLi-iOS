@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-050 · UI-14m — 내보낸 플리 · 변경 기록. 위플리가 내 음악 앱 속 플리를 무엇 때문에 바꿨는지 보여준다.
 

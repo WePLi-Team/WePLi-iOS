@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-080 · UI-4c · UI-12d
 // iOS 26: 하단에 떠 있는 검색 캡슐 + 홈 원형 버튼(다른 탭은 접힘)

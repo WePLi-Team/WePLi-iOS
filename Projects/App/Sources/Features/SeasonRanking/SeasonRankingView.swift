@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-8f — 시즌 랭킹. 큰 제목 「랭킹」 → 밑줄 탭(큐레이터 · 호스트) → 탭 내용
 

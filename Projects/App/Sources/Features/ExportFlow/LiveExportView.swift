@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-050 · UI-14l — 지금 순위로 먼저 담기. 3단계 흐름(지금 → 마감 전 → 마감)과 자동 반영 스위치
 

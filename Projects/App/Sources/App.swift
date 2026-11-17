@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 #if !DEBUG
   // 출시 빌드를 만들 때 알린다 — 백엔드가 정해지지 않아 Client의 liveValue가 목업(mockValue)이고,

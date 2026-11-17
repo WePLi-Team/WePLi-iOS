@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-6d — 점수 고리(210, #C8CFFF로 차오름) · 아티스트 · 추천해 볼 곡 · 둘이서 플레이리스트 만들기
 

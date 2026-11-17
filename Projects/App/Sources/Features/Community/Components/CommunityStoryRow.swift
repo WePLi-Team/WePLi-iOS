@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-1d 스토리 줄 — 링 58(모서리 22) · 간격 54(모서리 20) · 사진 50(모서리 18), 새 스토리 #C8CFFF · 본 스토리 #2A2A33
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-079 · UI-13f — 지금 위플리. 히어로(실시간 점 · 듣는 사람 수 · 곡 · 듣기) → 시간대 밑줄 탭 → 순위 → 안내
 

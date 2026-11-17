@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-039 · UI-8d · DEC-016 — 1위 예측. 곡 고르기 → 「예측하기」 → 잠김.
 // 비율 · 막대는 잠근 뒤에만 보인다(다른 사람 선택에 휩쓸리지 않게). 잠그면 목록 아래 「내 예측 · 변경 불가」 카드

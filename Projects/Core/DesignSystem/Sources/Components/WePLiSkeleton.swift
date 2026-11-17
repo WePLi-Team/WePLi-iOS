@@ -2,24 +2,31 @@ import SwiftUI
 
 // REQ-003 · UI-10f 「로딩」 — 스피너만 쓰지 않고 실제 배치와 같은 회색 틀이 천천히 깜빡인다.
 
-enum WePLiSkeleton {
+public enum WePLiSkeleton {
   /// 깜빡임: 불투명도 1 ↔ 0.45, 0.9초
-  static let dimmedOpacity: Double = 0.45
-  static let pulseDuration: Double = 0.9
+  public static let dimmedOpacity: Double = 0.45
+  public static let pulseDuration: Double = 0.9
 }
 
 /// 회색 틀 하나. 배치는 화면이 정한다.
-struct WePLiSkeletonBlock: View {
-  var width: CGFloat?
-  let height: CGFloat
-  var cornerRadius: CGFloat = 6
-  var color = WePLiColor.surface2
+public struct WePLiSkeletonBlock: View {
+  public var width: CGFloat?
+  public let height: CGFloat
+  public var cornerRadius: CGFloat = 6
+  public var color = WePLiColor.surface2
 
-  var body: some View {
+  public var body: some View {
     RoundedRectangle(cornerRadius: self.cornerRadius)
       .fill(self.color)
       .frame(width: self.width, height: self.height)
       .frame(maxWidth: self.width == nil ? .infinity : nil, alignment: .leading)
+  }
+
+  public init(width: CGFloat? = nil, height: CGFloat, cornerRadius: CGFloat = 6, color: Color = WePLiColor.surface2) {
+    self.width = width
+    self.height = height
+    self.cornerRadius = cornerRadius
+    self.color = color
   }
 }
 
@@ -43,7 +50,7 @@ private struct WePLiPulse: ViewModifier {
   }
 }
 
-extension View {
+public extension View {
   /// 스켈레톤 묶음에 붙여 천천히 깜빡이게 한다. 동작 줄이기 설정이면 깜빡이지 않는다.
   func wepliPulse() -> some View {
     self.modifier(WePLiPulse())
@@ -51,11 +58,11 @@ extension View {
 }
 
 /// 곡 행 스켈레톤 — 52pt 아트 + 두 줄
-struct WePLiSongRowSkeleton: View {
-  var titleRatio: CGFloat = 0.7
-  var subtitleRatio: CGFloat = 0.4
+public struct WePLiSongRowSkeleton: View {
+  public var titleRatio: CGFloat = 0.7
+  public var subtitleRatio: CGFloat = 0.4
 
-  var body: some View {
+  public var body: some View {
     HStack(spacing: 12) {
       WePLiSkeletonBlock(width: 52, height: 52, cornerRadius: 4)
       GeometryReader { proxy in
@@ -72,11 +79,16 @@ struct WePLiSongRowSkeleton: View {
       .frame(height: 52)
     }
   }
+
+  public init(titleRatio: CGFloat = 0.7, subtitleRatio: CGFloat = 0.4) {
+    self.titleRatio = titleRatio
+    self.subtitleRatio = subtitleRatio
+  }
 }
 
 /// 홈 배치 스켈레톤 — 히어로 420 + 제목 바 + 곡 행 3개 (UI-10f)
-struct WePLiHomeSkeleton: View {
-  var body: some View {
+public struct WePLiHomeSkeleton: View {
+  public var body: some View {
     VStack(spacing: 14) {
       Rectangle().fill(WePLiColor.surface1).frame(height: 420)
       VStack(alignment: .leading, spacing: 10) {
@@ -93,6 +105,8 @@ struct WePLiHomeSkeleton: View {
     }
     .wepliPulse()
   }
+
+  public init() {}
 }
 
 #Preview {

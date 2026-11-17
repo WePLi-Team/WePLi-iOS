@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-12a 히어로 · 넘기는 대표 릴레이 — 높이 510(12b 500 · 12c 384), 가로로 넘김, 아래 점
 // 장마다: 위 스크림 150 · 아래 70% 그라디언트 · 태그 13 SemiBold · 제목 28 · 남은 시간 · 1위 곡 + 커버 60

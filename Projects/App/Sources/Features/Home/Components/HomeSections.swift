@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-12a 섹션 공용 — 제목 18 SemiBold + 꺾쇠 18 #D8D8DD(더 볼 목록이 있을 때만, 제목 전체를 누름) · 설명 12 Light #A3A3A3
 

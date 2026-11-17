@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-7a 부품 — 공지 줄 · 이벤트 배너 카드 · 메타 줄(「중요」 · 상태 · 날짜)
 // 원본의 분홍 「중요」 알약은 갱신본에서 라벤더 글자로 바뀌었다(DEC-009와 같음)

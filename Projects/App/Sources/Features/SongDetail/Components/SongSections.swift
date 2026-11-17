@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-2d 3분할 카드 · 곡/앨범 정보 · 함께 들으면 좋은 곡 · 이 가수의 다른 앨범
 

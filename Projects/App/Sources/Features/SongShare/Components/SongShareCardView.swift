@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-3g 「노래 공유 컴포넌트」 — 255×354, 모서리 10. 앨범 아트 전체 배경 · 날짜 · 프로필 · 곡 정보 · 진행 바
 // 이미지로 저장할 때도 이 뷰를 그대로 그린다(ImageRenderer).

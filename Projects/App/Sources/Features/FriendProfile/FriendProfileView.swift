@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-079 · UI-13g · DEC-010 · DEC-020 — 친구 프로필 B안. 머리 → 밑줄 탭(게시글 · 플레이리스트 · 릴레이 · 들은 음악).
 // 오른쪽 위 ··· 에서 공유 · 링크 복사 · 차단 · 신고. 차단하면 머리 · 탭 대신 「차단한 사용자예요」

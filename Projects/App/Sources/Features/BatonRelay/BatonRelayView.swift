@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-035 · UI-8c — 바통 릴레이. 달리는 사람 8명 · 이어진 곡 · 내 차례(남은 시간 · 곡 · 다음 키워드) · 넘기기
 // 링크로 막 들어왔으면 초대 받기(UI-11c)를 먼저 보여준다.

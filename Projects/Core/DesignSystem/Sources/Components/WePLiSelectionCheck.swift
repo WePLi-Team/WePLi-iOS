@@ -3,16 +3,21 @@ import SwiftUI
 // DEC-017 「목록에서 고르기」 — 빈 동그라미 없이 고른 줄만 오른쪽 체크(#C8CFFF 선 2.6)
 // 고르지 않은 줄은 같은 크기의 빈 자리를 둬서 글자 폭이 바뀌지 않게 한다
 
-struct WePLiSelectionCheck: View {
-  let isOn: Bool
-  var size: CGFloat = 20
+public struct WePLiSelectionCheck: View {
+  public let isOn: Bool
+  public var size: CGFloat = 20
 
-  var body: some View {
+  public var body: some View {
     CheckShape()
       .stroke(WePLiColor.accent, style: StrokeStyle(lineWidth: 2.6 * self.size / 20, lineCap: .round, lineJoin: .round))
       .opacity(self.isOn ? 1 : 0)
       .frame(width: self.size, height: self.size)
       .accessibilityHidden(true)
+  }
+
+  public init(isOn: Bool, size: CGFloat = 20) {
+    self.isOn = isOn
+    self.size = size
   }
 }
 

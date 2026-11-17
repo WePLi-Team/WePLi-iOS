@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-7c 탈퇴 1/2 사유(여러 개) · 2/2 확인(5줄 + 동의) · 완료
 // 원본 「다음」은 흰 버튼 — 흰 버튼 금지(DEC-009)라 그라디언트 주요 버튼. 확인 줄의 분홍 점은 회색 점(DEC-009)

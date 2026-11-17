@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-10a — 피처 카드 · 목록 행 · 필터 칩
 // 커버 이미지는 백엔드가 정해지면 붙인다. 지금은 릴레이마다 다른 그라디언트 자리 표시.

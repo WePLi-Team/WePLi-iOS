@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-17b — 커뮤니티 운영정책. 시행일 → 금지되는 행동 → 이용 제한 단계 표(지금 내 단계만 라벤더) → 알아두세요 → 이의 신청하기
 

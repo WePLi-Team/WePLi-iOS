@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-7d 다섯 상태 — 강제 업데이트(닫기 없음) · 점검 · 오프라인 · 이용 제한 · 이벤트 팝업
 

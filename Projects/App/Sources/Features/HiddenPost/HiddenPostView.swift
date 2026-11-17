@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-17c — 내 가려진 글. 안내 → 내 글(나에게만 보여요) → 진행 상황, 아래에 이의 신청하기 · 운영정책 보기 · 글 삭제하기
 

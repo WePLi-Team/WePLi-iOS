@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import PhotosUI
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-7b 1:1 문의 시트 — 유형(필수) · 내용(필수, 1000자) · 사진(최대 3장) · 답변 받는 곳(DEC-025) · 자동 첨부 안내 · 보내기
 // 원본의 흰 선택 칩은 DEC-009(흰 바탕 버튼 금지)에 따라 라벤더 칩(WePLiChip)으로

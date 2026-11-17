@@ -23,7 +23,7 @@ xcodebuild -workspace WePLi.xcworkspace -scheme WePLi -destination 'platform=iOS
 mise exec -- swiftlint --strict --config .swiftlint.yml
 mise exec -- swiftformat --lint . --config .swiftformat
 
-# 에셋 · 폰트 접근자(WePLiAsset · WePLiFontFamily)는 tuist generate가 Projects/App/Derived에 만든다
+# 에셋 · 폰트 접근자(WePLiAsset · WePLiDesignSystemFontFamily)는 tuist generate가 각 프로젝트의 Derived에 만든다
 ```
 
 ### Fastlane Commands
@@ -40,7 +40,7 @@ bundle exec fastlane ios ci          # Full CI pipeline (bootstrap + test + arch
 ### Project Structure (Tuist Modular)
 
 - `Projects/App/` - Main app target with SwiftUI views and TCA reducers
-- `Projects/Core/` - Core modules (DesignSystem, Network, Utils - currently scaffolded)
+- `Projects/Core/DesignSystem/` - `WePLiDesignSystem` framework: tokens, chrome, shared components, Pretendard fonts (DEC-033 module split, step 1)
 - `Tuist/` - Tuist configuration and SPM dependencies
 - `Configs/` - xcconfig files for Debug/Release builds
 

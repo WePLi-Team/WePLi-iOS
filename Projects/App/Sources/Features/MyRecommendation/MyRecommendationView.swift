@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-038 · UI-8a(v2) — 내 추천곡 실시간 순위
 // 히어로 460(내 곡 아트) · 내비(뒤로 · 잠금화면 · 응원 요청) · 「현재 순위」 목록 · 위에서 내려오는 역전 알림

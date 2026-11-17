@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-078 · UI-10d — 내 플레이리스트 · 편집
 // 보기: 커버 112 · 이름 20 Bold · 「N곡 · 비공개」 · 재생(그라디언트) · 게시글로 공유

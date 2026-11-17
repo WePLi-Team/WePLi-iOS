@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-022 · UI-4a 노트 02 — 탭 바 위 「지금 재생 중」 미니 플레이어. 누르면 4b가 열린다.
 // iOS 26: 56pt 캡슐 글래스, 양옆 20 · 탭 바 위 10, 원형 아트, 재생/일시정지 · 다음

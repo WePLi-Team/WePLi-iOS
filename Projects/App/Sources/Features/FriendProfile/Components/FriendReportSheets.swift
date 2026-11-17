@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-17d · DEC-029 — 신고 시트(13g 보완). 사유 5개 중 하나, 「기타」면 사유 입력칸(필수 · 200자)
 // → 「신고를 접수했어요」(바로 차단). 같은 사람을 다시 신고하면 「이미 신고했어요」와 신고한 날 · 사유 · 진행 상태

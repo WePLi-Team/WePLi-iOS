@@ -2,15 +2,15 @@ import SwiftUI
 
 // REQ-002 · 토스트 — 상단 중앙 44pt 캡슐, 체크 아이콘 #A4FFFF, 3초 유지 · 사라짐 200ms (모션 03)
 
-enum WePLiToast {
-  static let height: CGFloat = 44
-  static let duration: Duration = .seconds(3)
+public enum WePLiToast {
+  public static let height: CGFloat = 44
+  public static let duration: Duration = .seconds(3)
 }
 
-struct WePLiToastView: View {
-  let message: String
+public struct WePLiToastView: View {
+  public let message: String
 
-  var body: some View {
+  public var body: some View {
     HStack(spacing: 8) {
       Image(systemName: "checkmark")
         .font(.system(size: 14, weight: .bold))
@@ -24,6 +24,10 @@ struct WePLiToastView: View {
     .frame(height: WePLiToast.height)
     .wepliGlass(in: Capsule())
     .accessibilityElement(children: .combine)
+  }
+
+  public init(message: String) {
+    self.message = message
   }
 }
 
@@ -48,7 +52,7 @@ private struct WePLiToastModifier: ViewModifier {
   }
 }
 
-extension View {
+public extension View {
   /// `message`에 문자열을 넣으면 토스트가 뜨고 3초 뒤 `nil`로 돌아간다.
   func wepliToast(_ message: Binding<String?>) -> some View {
     self.modifier(WePLiToastModifier(message: message))
