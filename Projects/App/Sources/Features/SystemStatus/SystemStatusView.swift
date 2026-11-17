@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSupportFeatures
 
 // REQ-112 · UI-7d · DEC-014 — 앱 전체를 감싸는 시스템 상태. 막는 상태(강제 업데이트 · 점검 · 오프라인)는 위를 덮고,
 // 이용 제한은 닫을 수 있는 시트, 이벤트는 아래 팝업으로 띄운다.

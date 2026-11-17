@@ -42,6 +42,7 @@ bundle exec fastlane ios ci          # Full CI pipeline (bootstrap + test + arch
 - `Projects/App/` - Main app target with SwiftUI views and TCA reducers
 - `Projects/Core/DesignSystem/` - `WePLiDesignSystem` framework: tokens, chrome, shared components, Pretendard fonts (DEC-033 module split, step 1)
 - `Projects/Core/SharedModels/` - `WePLiSharedModels` framework: value types shared across features (tracks, post, relay, profile, formatters)
+- `Projects/Features/Support/` - `WePLiSupportFeatures` framework: notices, app info, policy, appeal, help center, inquiry history, notification settings (DEC-033 step 3 pilot)
 - `Tuist/` - Tuist configuration and SPM dependencies
 - `Configs/` - xcconfig files for Debug/Release builds
 

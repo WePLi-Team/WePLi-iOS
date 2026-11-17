@@ -1,6 +1,7 @@
 import ComposableArchitecture
 @testable import WePLi
 import WePLiSharedModels
+@testable import WePLiSupportFeatures
 import XCTest
 
 // REQ-112 · UI-7d · DEC-014

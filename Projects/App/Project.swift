@@ -70,6 +70,7 @@ let project = Project(
         .external(name: "ComposableArchitecture"),
         .project(target: "WePLiDesignSystem", path: "../Core/DesignSystem"),
         .project(target: "WePLiSharedModels", path: "../Core/SharedModels"),
+        .project(target: "WePLiSupportFeatures", path: "../Features/Support"),
         .target(name: "WePLiWidget"),
       ]
     ),

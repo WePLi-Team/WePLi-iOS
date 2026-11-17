@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSupportFeatures
 
 // REQ-001 · DEC-007 — 탭 첫 화면에서 여는 화면
 // 릴레이: 릴레이 상세 · 커뮤니티: 알림 · 게시글 상세 · 마이: 내 정보 수정 · 보관함 · 알림 설정 · 검색: 곡 · 플리 · 릴레이 · 게시글

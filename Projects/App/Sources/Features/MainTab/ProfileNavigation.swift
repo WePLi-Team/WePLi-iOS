@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSupportFeatures
 
 // REQ-079 · UI-13g · DEC-010 — 친구 프로필을 여는 곳과 프로필에서 여는 화면.
 // 커뮤니티 글쓴이 · 친구 피드 · 검색 사용자 · 게시글 상세 글쓴이 → 친구 프로필(같은 탭 스택에 push)

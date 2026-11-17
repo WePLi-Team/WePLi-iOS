@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSupportFeatures
 
 // UI-17c · DEC-024 · DEC-031 — 내 가려진 글(push). 커뮤니티 맨 위 7e 안내 카드에서 연다.
 // 진행 상황을 보여주고 이의 신청(UI-11d) · 운영정책(UI-17b) · 삭제 중 고르게 한다.
