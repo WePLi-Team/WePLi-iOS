@@ -57,7 +57,7 @@ struct FriendFeedRow: View {
           HStack(spacing: 6) {
             Text(self.row.title).wepliFont(.body).foregroundStyle(WePLiColor.textPrimary).lineLimit(1)
             if self.row.isPlaying {
-              ListeningEqualizer()
+              WePLiEqualizer()
             }
           }
           Text("#\(self.row.artist)").wepliFont(.footnote, weight: .light).foregroundStyle(WePLiColor.accent)

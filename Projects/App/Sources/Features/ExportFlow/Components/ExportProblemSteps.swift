@@ -24,7 +24,7 @@ struct ExportSubscriptionStep: View {
         Spacer(minLength: 0)
         VStack(spacing: 10) {
           WePLiPrimaryButton(title: "Apple Music 구독 혜택 보기") { self.store.send(.subscriptionOfferTapped) }
-          ExportSecondaryButton(title: "다른 서비스로 담기") { self.store.send(.otherServiceTapped) }
+          WePLiSecondaryButton(title: "다른 서비스로 담기") { self.store.send(.otherServiceTapped) }
           Button("곡 목록으로 옮기기") { self.store.send(.copyListTapped) }
             .wepliFont(.subheadline)
             .foregroundStyle(WePLiColor.accent)

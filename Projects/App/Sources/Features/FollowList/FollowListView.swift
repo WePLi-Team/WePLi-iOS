@@ -77,7 +77,7 @@ struct FollowUserRow: View {
     HStack(spacing: 12) {
       Button(action: self.onTap) {
         HStack(spacing: 12) {
-          AvatarPlaceholder(name: self.user.name).frame(width: 44, height: 44)
+          WePLiAvatar(name: self.user.name).frame(width: 44, height: 44)
           VStack(alignment: .leading, spacing: 1) {
             Text(self.user.name).wepliFont(.body, weight: .medium).foregroundStyle(WePLiColor.textPrimary)
             Text(self.subtitle).wepliFont(.caption).foregroundStyle(WePLiColor.textQuaternary)

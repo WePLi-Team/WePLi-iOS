@@ -152,7 +152,7 @@ struct RestrictionSheet: View {
         .wepliFont(.subheadline)
         .foregroundStyle(WePLiColor.textSecondary)
       Spacer(minLength: 0)
-      ExportSecondaryButton(title: "이의 신청하기", action: self.onAppeal)
+      WePLiSecondaryButton(title: "이의 신청하기", action: self.onAppeal)
       // 커뮤니티만 막으니 시트는 아래로 내려 닫을 수 있다
       Button("운영정책 보기", action: self.onPolicy)
         .wepliFont(.callout)

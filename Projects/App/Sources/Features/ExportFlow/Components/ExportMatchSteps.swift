@@ -70,7 +70,7 @@ struct ExportMatchingStep: View {
         .wepliFont(.footnote, weight: .light)
         .multilineTextAlignment(.center)
         .foregroundStyle(WePLiColor.textTertiary)
-      ExportSecondaryButton(title: "닫기") { self.store.send(.closeTapped) }
+      WePLiSecondaryButton(title: "닫기") { self.store.send(.closeTapped) }
     }
     .padding(.horizontal, 20)
     .padding(.top, 40)

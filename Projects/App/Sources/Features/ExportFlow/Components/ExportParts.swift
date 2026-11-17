@@ -82,25 +82,6 @@ struct ExportCheck: View {
   }
 }
 
-/// 보조 캡슐 버튼 — 흰색 10%, 높이 50
-struct ExportSecondaryButton: View {
-  let title: String
-  let action: () -> Void
-
-  var body: some View {
-    Button(action: self.action) {
-      Text(self.title)
-        .wepliFont(.body, weight: .semibold)
-        .foregroundStyle(WePLiColor.textPrimary)
-        .frame(maxWidth: .infinity)
-        .frame(height: 50)
-        .background(WePLiColor.secondaryButtonFill, in: Capsule())
-        .contentShape(Capsule())
-    }
-    .buttonStyle(.plain)
-  }
-}
-
 /// 글자 버튼 — 높이 44, #A3A3A3 (나중에 · 확인할 곡은 빼고 담기)
 struct ExportTextButton: View {
   let title: String

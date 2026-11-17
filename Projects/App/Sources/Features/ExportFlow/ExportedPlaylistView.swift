@@ -118,8 +118,8 @@ struct ExportedPlaylistView: View {
   private func actions(_ playlist: ExportedPlaylist) -> some View {
     VStack(spacing: 0) {
       HStack(spacing: 10) {
-        ExportSecondaryButton(title: "지금 반영하기") { self.store.send(.syncNowTapped) }
-        ExportSecondaryButton(title: "\(playlist.service.name)에서 열기") { self.store.send(.openInServiceTapped) }
+        WePLiSecondaryButton(title: "지금 반영하기") { self.store.send(.syncNowTapped) }
+        WePLiSecondaryButton(title: "\(playlist.service.name)에서 열기") { self.store.send(.openInServiceTapped) }
       }
       .padding(.top, 28)
       Button(playlist.isSyncOn ? "자동 반영 멈추기" : "자동 반영 다시 켜기") { self.store.send(.syncToggleTapped) }

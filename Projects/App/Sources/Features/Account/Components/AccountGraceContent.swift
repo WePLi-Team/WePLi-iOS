@@ -66,7 +66,7 @@ struct AccountRestoredContent: View {
         .wepliFont(.body, weight: .light)
         .foregroundStyle(WePLiColor.textSecondary)
         .lineSpacing(4)
-      ExportSecondaryButton(title: "홈으로", action: self.onHome).padding(.top, 30)
+      WePLiSecondaryButton(title: "홈으로", action: self.onHome).padding(.top, 30)
       Spacer()
     }
     .multilineTextAlignment(.center)
@@ -96,7 +96,7 @@ struct AccountBlockedContent: View {
       .padding(.top, 36)
       Spacer()
       VStack(spacing: 4) {
-        ExportSecondaryButton(title: "운영정책 보기", action: self.onPolicy)
+        WePLiSecondaryButton(title: "운영정책 보기", action: self.onPolicy)
         Button("고객센터에 문의하기", action: self.onHelp)
           .wepliFont(.body)
           .foregroundStyle(WePLiColor.accent)

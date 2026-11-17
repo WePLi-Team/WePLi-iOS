@@ -90,7 +90,7 @@ struct NoticesView: View {
         if let banner = notice.eventAction, let title = banner.action {
           self.eventButton(title, url: banner.actionURL)
         }
-        ExportSecondaryButton(title: "목록으로") { self.store.send(.backToListTapped) }
+        WePLiSecondaryButton(title: "목록으로") { self.store.send(.backToListTapped) }
       }
       .padding(.top, 10)
     }
