@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiRelayFeatures
 import XCTest
 
 // REQ-034 · UI-8b · DEC-004

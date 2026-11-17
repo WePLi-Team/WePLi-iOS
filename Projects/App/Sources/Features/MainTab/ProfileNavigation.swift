@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiRelayFeatures
 import WePLiSupportFeatures
 
 // REQ-079 · UI-13g · DEC-010 — 친구 프로필을 여는 곳과 프로필에서 여는 화면.

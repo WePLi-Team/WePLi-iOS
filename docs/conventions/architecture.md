@@ -55,6 +55,7 @@ Projects/Core/{Network,Utils}             아직 없음 — 실제 API가 붙을
 Projects/Features/Support/                WePLiSupportFeatures 프레임워크 — 공지 · 앱 정보 · 운영정책 · 이의 신청 · 고객센터 · 문의 내역 · 알림 설정
                                          (DEC-033 3단계 시범). 안 구조는 Features/<F>/와 같다. 메인 탭이 쓰는 선언은 public,
                                          테스트는 Projects/App/Tests에서 `@testable import WePLiSupportFeatures`
+Projects/Features/Relay/                  WePLiRelayFeatures — 릴레이 목록 · 상세 · 카드 투표 · 곡 월드컵 · 바통 · 1위 예측 · 내 추천 순위 · 시즌 랭킹
 ```
 
 - 지금은 `AuthClient`가 `LoginFeature.swift` 안에 있다. 새 Client는 `Client/` 폴더에 둔다(기존 것은 옮기지 않음 — 별도 이슈).

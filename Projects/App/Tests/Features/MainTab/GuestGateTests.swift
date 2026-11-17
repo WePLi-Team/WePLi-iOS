@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiRelayFeatures
 import XCTest
 
 // DEC-032 — 손님은 둘러보기만, 투표 · 추천 등은 로그인 요청 시트
