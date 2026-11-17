@@ -1,4 +1,5 @@
 import Foundation
+import WePLiRelayFeatures
 
 // REQ-020 · UI-12a(DEC-008) — 홈 「내 참여 · 사람」 섹션. 순위 · 점수 · 비율 · 청취자 수는 서버 값(DEC-004)
 

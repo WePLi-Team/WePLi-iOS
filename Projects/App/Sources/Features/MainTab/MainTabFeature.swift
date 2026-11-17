@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiRelayFeatures
 import WePLiSupportFeatures
 
 // REQ-001 · UI-12d — 메인 탭: 홈 · 릴레이 · 커뮤니티 · 마이 + 검색

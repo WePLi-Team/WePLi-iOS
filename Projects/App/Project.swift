@@ -71,6 +71,7 @@ let project = Project(
         .project(target: "WePLiDesignSystem", path: "../Core/DesignSystem"),
         .project(target: "WePLiSharedModels", path: "../Core/SharedModels"),
         .project(target: "WePLiSupportFeatures", path: "../Features/Support"),
+        .project(target: "WePLiRelayFeatures", path: "../Features/Relay"),
         .target(name: "WePLiWidget"),
       ]
     ),

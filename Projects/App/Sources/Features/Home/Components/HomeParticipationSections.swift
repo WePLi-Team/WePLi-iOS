@@ -1,5 +1,6 @@
 import SwiftUI
 import WePLiDesignSystem
+import WePLiRelayFeatures
 
 // UI-12a 「내 참여 · 사람」 섹션 — 내 추천곡(8a) · 투표 중 릴레이(9a) · 1위 예측(8d) · 친구(13) · 지금 듣는 중(13 집계)
 
