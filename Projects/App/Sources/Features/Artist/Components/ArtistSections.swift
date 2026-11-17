@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-5b 본문 — 인기곡 Top 5 · 앨범(가로) · 위플리에서 함께 듣는 곳 · 함께 많이 듣는 아티스트(가로). 섹션 간격 32
 

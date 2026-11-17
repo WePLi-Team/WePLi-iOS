@@ -2,20 +2,20 @@ import SwiftUI
 
 // REQ-003 · UI-10f 「빈 상태」 — 왜 비었는지 + 다음에 할 일을 한 문장씩, 버튼 하나.
 
-struct WePLiEmptyState: View {
-  let systemImage: String
-  let title: String
-  let message: String
-  var actionTitle: String?
-  var action: (() -> Void)?
+public struct WePLiEmptyState: View {
+  public let systemImage: String
+  public let title: String
+  public let message: String
+  public var actionTitle: String?
+  public var action: (() -> Void)?
 
-  enum Metric {
-    static let iconCircle: CGFloat = 72
-    static let iconSize: CGFloat = 30
-    static let buttonHeight: CGFloat = 44
+  public enum Metric {
+    public static let iconCircle: CGFloat = 72
+    public static let iconSize: CGFloat = 30
+    public static let buttonHeight: CGFloat = 44
   }
 
-  var body: some View {
+  public var body: some View {
     VStack(spacing: 10) {
       Image(systemName: self.systemImage)
         .font(.system(size: Metric.iconSize, weight: .light))
@@ -50,11 +50,25 @@ struct WePLiEmptyState: View {
     .padding(.horizontal, 32)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
+
+  public init(
+    systemImage: String,
+    title: String,
+    message: String,
+    actionTitle: String? = nil,
+    action: (() -> Void)? = nil
+  ) {
+    self.systemImage = systemImage
+    self.title = title
+    self.message = message
+    self.actionTitle = actionTitle
+    self.action = action
+  }
 }
 
 // MARK: - 원본 문구 프리셋 (UI-10f)
 
-extension WePLiEmptyState {
+public extension WePLiEmptyState {
   static func feed(onWrite: @escaping () -> Void) -> Self {
     Self(
       systemImage: "square.and.pencil",

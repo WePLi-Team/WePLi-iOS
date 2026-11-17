@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-2d 히어로 — 블러 배경 · 아트 264(모서리 14) · 곡명 26 Bold · 아티스트 17 Medium #C8CFFF · 버튼 2개(50) · 진행 바(4)
 

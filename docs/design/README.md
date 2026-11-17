@@ -87,7 +87,7 @@
 
 ## 토큰 (값 체계만)
 
-2026-10-15부터 `WePLi Design System.dc.html`이 토큰 · 부품의 기준 문서다(「새 화면은 이 페이지의 값과 부품만으로 만듭니다」). 아래 표는 이전 정리 + 바뀐 점이다. 코드 토큰은 `Projects/App/Sources/DesignSystem`.
+2026-10-15부터 `WePLi Design System.dc.html`이 토큰 · 부품의 기준 문서다(「새 화면은 이 페이지의 값과 부품만으로 만듭니다」). 아래 표는 이전 정리 + 바뀐 점이다. 코드 토큰은 `Projects/Core/DesignSystem/Sources`(`WePLiDesignSystem` 모듈, DEC-033).
 
 바뀐 점(디자인 시스템 · 디자인 원칙 · 모션 기준):
 - 분홍 #FE82DB는 **좋아요 · 급상승에만**. 하락 ▼은 #6B6B7C, 「곧 마감」에 분홍을 쓰지 않는다.

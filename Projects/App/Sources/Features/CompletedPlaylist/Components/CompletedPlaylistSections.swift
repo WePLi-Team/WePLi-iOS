@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-14b 구성 요소 — 히어로 500 · 동작 줄 4칸 · 내 추천곡 결과 · 최종 순위 · 댓글 · 다음 릴레이 · 비슷한 완성 플리
 

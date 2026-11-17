@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-1b 곡 메뉴 시트 — 헤더(커버 52 · 곡명 17 SemiBold · 가수 14 #B5B5C0 · 좋아요 · 닫기 44)
 // 묶음: 모서리 22 · 흰색 6% · 행 50 · 아이콘 22 #D8D8DD · 구분선 왼쪽 54

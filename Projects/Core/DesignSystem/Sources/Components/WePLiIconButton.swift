@@ -3,17 +3,17 @@ import SwiftUI
 // REQ-002 · UI-12d 「상단 버튼 · 뒤로가기」
 // iOS 26: 44pt 원형 글래스 버튼 · iOS 16: 배경 없는 아이콘(터치 영역 44pt 유지)
 
-struct WePLiIconButton: View {
-  let systemName: String
-  let accessibilityLabel: String
-  let action: () -> Void
+public struct WePLiIconButton: View {
+  public let systemName: String
+  public let accessibilityLabel: String
+  public let action: () -> Void
 
   @Environment(\.wepliChrome)
   private var chrome
 
-  static let size: CGFloat = 44
+  public static let size: CGFloat = 44
 
-  var body: some View {
+  public var body: some View {
     Button(action: self.action) {
       Image(systemName: self.systemName)
         .font(.system(size: 18, weight: .semibold))
@@ -24,6 +24,12 @@ struct WePLiIconButton: View {
     }
     .buttonStyle(.plain)
     .accessibilityLabel(self.accessibilityLabel)
+  }
+
+  public init(systemName: String, accessibilityLabel: String, action: @escaping () -> Void) {
+    self.systemName = systemName
+    self.accessibilityLabel = accessibilityLabel
+    self.action = action
   }
 }
 

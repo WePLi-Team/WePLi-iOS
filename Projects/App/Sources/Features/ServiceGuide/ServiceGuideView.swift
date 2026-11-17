@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-113 · UI-7f — 전체 화면 페이저. 좌우로 넘기거나 「다음」, 마지막 장은 「시작하기」
 

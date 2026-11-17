@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-060 · UI-1d — 커뮤니티 피드 · REQ-079 · UI-13b 친구 탭
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-110 · UI-7a — 공지 · 이벤트. 밑줄 탭, 「중요」 고정 · 안 읽음 점(공지), 배너 카드(이벤트), 상세 · 목록으로
 

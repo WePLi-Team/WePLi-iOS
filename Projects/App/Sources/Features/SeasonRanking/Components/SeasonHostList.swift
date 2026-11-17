@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-8f 호스트 탭 — 릴레이를 자주 · 잘 여는 사람. HOST 칩 · 통계 · 팔로우 · 커버 3장 · 최근 연 릴레이
 

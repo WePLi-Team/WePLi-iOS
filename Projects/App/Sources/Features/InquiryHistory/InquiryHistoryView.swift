@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-17a — 내 문의 내역. 안내 한 줄 → 문의 · 이의 신청 결과 줄(누르면 상세)
 

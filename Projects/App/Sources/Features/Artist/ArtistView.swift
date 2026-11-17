@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-024 · UI-5b — 아티스트. 큰 이미지 헤더 위에 투명 내비게이션(뒤로 · 공유)이 떠 있다.
 

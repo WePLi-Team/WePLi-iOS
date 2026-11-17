@@ -4,13 +4,13 @@ import SwiftUI
 // 밑줄 탭: 선택 17/700 + 밑줄 2 #C8CFFF · 꺼짐 17/500 #6B6B7C · 탭 간격 22 · 아래 패딩 10 · 바닥선 0.5 흰색 10%
 // 칩: 높이 32 · 좌우 14 · 13 · 선택 rgba(200,207,255,0.16) + #C8CFFF 600 · 꺼짐 흰색 6% + #B5B5C0 · 간격 8
 
-struct WePLiUnderlineTabs<Item: Hashable>: View {
-  let items: [Item]
-  let selected: Item
-  let title: (Item) -> String
-  let onSelect: (Item) -> Void
+public struct WePLiUnderlineTabs<Item: Hashable>: View {
+  public let items: [Item]
+  public let selected: Item
+  public let title: (Item) -> String
+  public let onSelect: (Item) -> Void
 
-  var body: some View {
+  public var body: some View {
     HStack(spacing: 22) {
       ForEach(self.items, id: \.self) { item in
         let isOn = item == self.selected
@@ -39,21 +39,28 @@ struct WePLiUnderlineTabs<Item: Hashable>: View {
     }
     .animation(.spring(response: 0.35, dampingFraction: 0.8), value: self.selected)
   }
+
+  public init(items: [Item], selected: Item, title: @escaping (Item) -> String, onSelect: @escaping (Item) -> Void) {
+    self.items = items
+    self.selected = selected
+    self.title = title
+    self.onSelect = onSelect
+  }
 }
 
-struct WePLiChip: View {
+public struct WePLiChip: View {
   /// 기본 32 · 13pt, 큰 칩 34 · 14pt(11d 사유)
-  enum Size {
+  public enum Size {
     case regular
     case large
   }
 
-  let title: String
-  let isOn: Bool
-  var size: Size = .regular
-  let action: () -> Void
+  public let title: String
+  public let isOn: Bool
+  public var size: Size = .regular
+  public let action: () -> Void
 
-  var body: some View {
+  public var body: some View {
     Button(action: self.action) {
       Text(self.title)
         .wepliFont(self.size == .large ? .subheadline : .footnote, weight: self.isOn ? .semibold : .regular)
@@ -64,6 +71,13 @@ struct WePLiChip: View {
     }
     .buttonStyle(.plain)
     .accessibilityAddTraits(self.isOn ? [.isButton, .isSelected] : .isButton)
+  }
+
+  public init(title: String, isOn: Bool, size: Size = .regular, action: @escaping () -> Void) {
+    self.title = title
+    self.isOn = isOn
+    self.size = size
+    self.action = action
   }
 }
 

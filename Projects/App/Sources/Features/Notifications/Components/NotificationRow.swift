@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-4d 알림 행 · 권한 카드
 

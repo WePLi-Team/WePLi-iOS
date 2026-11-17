@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-114 · UI-7g — 앱 정보 · 약관 및 정책 · (숨김) 개발자 모드
 

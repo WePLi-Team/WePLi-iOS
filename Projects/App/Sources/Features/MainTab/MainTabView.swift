@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-001 — 탭마다 자기 내비게이션 스택을 갖고, 탭을 바꿔도 각 탭의 화면 상태를 유지한다.
 // 탭 내용은 각 기능 이슈에서 채운다. 지금은 10f 빈 상태 규칙(이유 + 다음 할 일)의 자리 표시.

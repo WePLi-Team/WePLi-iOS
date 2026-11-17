@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-13g 탭 — 게시글(커뮤니티) · 플레이리스트 · 릴레이(추천한 곡과 결과) · 들은 음악
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-11d 부품 — 대상 카드 · 설명 칸(500자) · 진행 타임라인
 

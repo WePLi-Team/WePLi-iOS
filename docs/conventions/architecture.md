@@ -44,11 +44,12 @@ Projects/App/Sources/
       Models/<Feature>Models.swift       값 타입
       Components/<Name>Section.swift     하위 View
   Components/                            여러 기능이 쓰는 View (공통 파일)
-  DesignSystem/                          토큰(WePLiColor · WePLiGradient · WePLiFont) · 크롬(WePLiChrome) · 공통 컴포넌트 (공통 파일)
   Extensions/                            (공통 파일)
-Projects/App/Resources/                  Assets · Colors · Localizable.xcstrings · Fonts(Pretendard, SIL OFL) (공통 파일)
+Projects/App/Resources/                  Assets · Colors · Localizable.xcstrings (공통 파일)
 Projects/App/Tests/                      TestStore 기반 Reducer 테스트 → Tests/Features/<Feature>/
-Projects/Core/{DesignSystem,Network,Utils}  미결정 — 아직 빈 모듈. 옮길 시점은 DEC로 정한다
+Projects/Core/DesignSystem/               WePLiDesignSystem 프레임워크 — 토큰(WePLiColor · WePLiGradient · WePLiFont) · 크롬(WePLiChrome)
+                                         · 공통 컴포넌트 · Fonts(Pretendard, SIL OFL). 쓰는 파일은 `import WePLiDesignSystem` (공통 파일, DEC-033)
+Projects/Core/{Network,Utils}             아직 없음 — 실제 API가 붙을 때 만든다
 ```
 
 - 지금은 `AuthClient`가 `LoginFeature.swift` 안에 있다. 새 Client는 `Client/` 폴더에 둔다(기존 것은 옮기지 않음 — 별도 이슈).

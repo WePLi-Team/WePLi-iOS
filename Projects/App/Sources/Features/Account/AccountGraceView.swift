@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-17e — 탈퇴 유예(계정 되살리기 → 다시 만나서 반가워요) · 재가입 제한(아직 다시 가입할 수 없어요)
 

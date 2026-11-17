@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-034 · UI-8b(v2) — 곡 월드컵. 위 · 아래 반쪽을 눌러 고르고, 결승이 끝나면 나의 우승곡과 다른 사람들의 우승곡을 보여 준다.
 

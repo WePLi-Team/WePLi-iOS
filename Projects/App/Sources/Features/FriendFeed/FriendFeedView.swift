@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-079 · UI-13b — 커뮤니티 › 친구. 지금 듣는 중 줄 → 같은 곡 한 줄 → 친구 피드(반응) → 이번 주 친구들이 많이 들은 곡
 

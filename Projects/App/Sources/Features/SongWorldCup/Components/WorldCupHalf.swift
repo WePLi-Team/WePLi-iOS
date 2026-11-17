@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-8b v2 대결 반쪽 — 앨범 아트 전체 배경(흐림 없음) + 반쪽마다 다른 어두운 그라디언트
 // 글자: 「추천 {사람}」 12 Light #D8D8DD · 곡명 26 SemiBold · 「#가수」 14 #C8CFFF

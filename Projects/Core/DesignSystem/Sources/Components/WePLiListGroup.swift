@@ -4,14 +4,14 @@ import SwiftUI
 // iOS 26: 모서리 26 · 행 52 · 바탕 #141417 · 구분선 rgba(255,255,255,0.08)
 // iOS 16: 모서리 10 · 행 44 · 바탕 #1C1C1E · 구분선 rgba(84,84,88,0.65)
 
-struct WePLiListGroup<Content: View>: View {
-  var title: String?
-  @ViewBuilder var content: () -> Content
+public struct WePLiListGroup<Content: View>: View {
+  public var title: String?
+  @ViewBuilder public var content: () -> Content
 
   @Environment(\.wepliChrome)
   private var chrome
 
-  var body: some View {
+  public var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       if let title = self.title {
         Text(title)
@@ -31,28 +31,33 @@ struct WePLiListGroup<Content: View>: View {
     }
     .padding(.horizontal, 16)
   }
+
+  public init(title: String? = nil, @ViewBuilder content: @escaping () -> Content) {
+    self.title = title
+    self.content = content
+  }
 }
 
 /// 아이콘 타일(30pt) + 라벨 + 값 또는 화살표. `action`이 없으면 누를 수 없는 값 행이다.
-struct WePLiListRow: View {
-  let systemImage: String
-  let title: String
-  var value: String?
-  var showsSeparator = true
-  var action: (() -> Void)?
+public struct WePLiListRow: View {
+  public let systemImage: String
+  public let title: String
+  public var value: String?
+  public var showsSeparator = true
+  public var action: (() -> Void)?
 
   @Environment(\.wepliChrome)
   private var chrome
 
-  enum Metric {
-    static let iconTile: CGFloat = 30
-    static let iconTileRadius: CGFloat = 8
-    static let iconSize: CGFloat = 16
+  public enum Metric {
+    public static let iconTile: CGFloat = 30
+    public static let iconTileRadius: CGFloat = 8
+    public static let iconSize: CGFloat = 16
     /// 구분선 시작점: 좌우 여백 16 + 타일 30 + 간격 12
-    static let separatorInset: CGFloat = 58
+    public static let separatorInset: CGFloat = 58
   }
 
-  var body: some View {
+  public var body: some View {
     if let action = self.action {
       Button(action: action) { self.row }
         .buttonStyle(.plain)
@@ -97,6 +102,20 @@ struct WePLiListRow: View {
       }
     }
     .accessibilityElement(children: .combine)
+  }
+
+  public init(
+    systemImage: String,
+    title: String,
+    value: String? = nil,
+    showsSeparator: Bool = true,
+    action: (() -> Void)? = nil
+  ) {
+    self.systemImage = systemImage
+    self.title = title
+    self.value = value
+    self.showsSeparator = showsSeparator
+    self.action = action
   }
 }
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-10d 곡 행 — 높이 62 · 커버 44(모서리 4) · 제목 15 · 가수 13 흰색 70%
 // 보기: 오른쪽 ··· · 편집: 왼쪽 빨간 − 22, 오른쪽 ▲▼(12, #8E8E99)

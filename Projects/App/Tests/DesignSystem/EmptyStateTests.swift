@@ -1,4 +1,5 @@
 @testable import WePLi
+import WePLiDesignSystem
 import XCTest
 
 // REQ-003 · UI-10f — 빈 상태 문구 · 스켈레톤 수치가 원본과 같은지 지킨다.

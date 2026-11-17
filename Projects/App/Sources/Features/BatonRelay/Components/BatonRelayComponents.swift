@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-8c — 달리는 사람 줄 · 이어진 곡 · 내 차례
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-12a 둘러보기 섹션 — 커뮤니티 인기글 · 위플리 인기 랭킹 · 추천 플리 · 테마별 플리 · Youtube Cover
 

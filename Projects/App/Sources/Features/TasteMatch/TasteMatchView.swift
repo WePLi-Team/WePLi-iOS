@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-102 · UI-6d — 취향 궁합: 점수 고리 → 문구 · 같은 성향 → 둘 다 자주 듣는 아티스트 → 추천해 볼 곡 → 둘이서 플레이리스트 만들기
 

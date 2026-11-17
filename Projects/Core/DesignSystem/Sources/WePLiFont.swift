@@ -3,15 +3,15 @@ import SwiftUI
 // REQ-004 · 글꼴 토큰 — Pretendard (SIL OFL 1.1, Resources/Fonts)
 // 크기 · 굵기는 Claude Design 캔버스에서 쓰인 단계만 둔다. 최소 12pt(목차 공통 규칙).
 
-enum WePLiFont {
-  enum Weight {
+public enum WePLiFont {
+  public enum Weight {
     case light
     case regular
     case medium
     case semibold
     case bold
 
-    var postScriptName: String {
+    public var postScriptName: String {
       switch self {
       case .light: "Pretendard-Light"
       case .regular: "Pretendard-Regular"
@@ -23,7 +23,7 @@ enum WePLiFont {
   }
 
   /// 디자인에 쓰이는 글자 단계. `size`는 기본 크기이고, 다이내믹 타입에 맞춰 함께 커진다.
-  enum Style: CaseIterable {
+  public enum Style: CaseIterable {
     /// 34 Bold — 큰 제목(커뮤니티 · 알림 · 검색)
     case largeTitle
     /// 32 Bold — 탭 첫 화면 제목(릴레이, UI-10a)
@@ -49,7 +49,7 @@ enum WePLiFont {
     /// 12 Regular — 해시태그 · 배지(최소 크기)
     case caption
 
-    var size: CGFloat {
+    public var size: CGFloat {
       switch self {
       case .largeTitle: 34
       case .screenTitle: 32
@@ -66,7 +66,7 @@ enum WePLiFont {
       }
     }
 
-    var weight: Weight {
+    public var weight: Weight {
       switch self {
       case .largeTitle, .screenTitle, .title2: .bold
       case .title1, .title3, .headline, .button: .semibold
@@ -74,7 +74,7 @@ enum WePLiFont {
       }
     }
 
-    var relativeTo: Font.TextStyle {
+    public var relativeTo: Font.TextStyle {
       switch self {
       case .largeTitle, .screenTitle: .largeTitle
       case .title1: .title
@@ -90,17 +90,17 @@ enum WePLiFont {
     }
   }
 
-  static func font(_ style: Style, weight: Weight? = nil) -> Font {
+  public static func font(_ style: Style, weight: Weight? = nil) -> Font {
     .custom((weight ?? style.weight).postScriptName, size: style.size, relativeTo: style.relativeTo)
   }
 
   /// 앱 시작 때 한 번 호출한다(App.swift).
-  static func register() {
-    WePLiFontFamily.registerAllCustomFonts()
+  public static func register() {
+    WePLiDesignSystemFontFamily.registerAllCustomFonts()
   }
 }
 
-extension View {
+public extension View {
   /// `.wepliFont(.body)` — 디자인 글자 단계를 적용한다.
   func wepliFont(_ style: WePLiFont.Style, weight: WePLiFont.Weight? = nil) -> some View {
     self.font(WePLiFont.font(style, weight: weight))

@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-17a 부품 — 내비게이션 바 · 문의 한 줄(7b와 같이 씀) · 상세 머리 · 진행 기록 · 답변 대기 안내
 

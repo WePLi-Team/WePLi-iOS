@@ -2,9 +2,9 @@ import SwiftUI
 
 // REQ-004 · 그라디언트 토큰 — docs/design/README.md 「토큰」
 
-enum WePLiGradient {
+public enum WePLiGradient {
   /// 로고 · 배지 · 강조 텍스트 (#9DABFF → #C8CFFF → #A4FFFF)
-  static let brand = LinearGradient(
+  public static let brand = LinearGradient(
     stops: [
       .init(color: Color(rgbHex: 0x9DABFF), location: 0),
       .init(color: Color(rgbHex: 0xC8CFFF), location: 0.3927),
@@ -15,7 +15,7 @@ enum WePLiGradient {
   )
 
   /// 주요 CTA 버튼 (linear-gradient 97.483deg, #FFD8E6 0% · #F0D4F3 14% · #C3D2FF 71% · #B5D3F7 100%)
-  static let cta = LinearGradient(
+  public static let cta = LinearGradient(
     stops: [
       .init(color: Color(rgbHex: 0xFFD8E6), location: 0),
       .init(color: Color(rgbHex: 0xF0D4F3), location: 0.14),
@@ -27,14 +27,14 @@ enum WePLiGradient {
   )
 
   /// 하단 고정 버튼 · 탭 바 위 콘텐츠 페이드
-  static let bottomFade = LinearGradient(
+  public static let bottomFade = LinearGradient(
     colors: [Color.black.opacity(0), Color.black.opacity(0.85)],
     startPoint: .top,
     endPoint: .bottom
   )
 
   /// 공유 시트 「스토리」 타일 (UI-3g, linear-gradient 222.409deg #334FFF → #C838F6 → #FF1F7A → #FF8534 → #FFBD28)
-  static let storyTile = LinearGradient(
+  public static let storyTile = LinearGradient(
     stops: [
       .init(color: Color(rgbHex: 0x334FFF), location: 0.1329),
       .init(color: Color(rgbHex: 0xC838F6), location: 0.3284),
@@ -47,7 +47,7 @@ enum WePLiGradient {
   )
 
   /// 곡 월드컵 VS 배지 테두리 (UI-8b v2, conic-gradient from 103.645deg)
-  static let vsRing = AngularGradient(
+  public static let vsRing = AngularGradient(
     stops: [
       .init(color: Color(rgbHex: 0xB0C6FF), location: 0),
       .init(color: Color(rgbHex: 0xEEF4E1), location: 54.0 / 360),

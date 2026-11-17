@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-111 · UI-7b — 고객센터. 자주 묻는 질문(펼치고 접기) → 1:1 문의하기 → 내 문의 내역(줄 모양 · 상세는 UI-17a)
 

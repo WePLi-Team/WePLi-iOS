@@ -37,7 +37,7 @@ Projects/App/Resources/{Assets,Colors}.xcassets · Localizable.xcstrings
 ## 값 · 토큰
 
 - 색 · 간격 · 글자 · 시간 같은 값은 토큰 · 설정 이름으로만 쓴다. 화면 코드에 숫자를 직접 쓰지 않는다.
-- 토큰은 `Projects/App/Sources/DesignSystem/`에 있다(REQ-004).
+- 토큰은 `Projects/Core/DesignSystem/Sources/`(`WePLiDesignSystem` 모듈)에 있다(REQ-004 · DEC-033). 앱에서 쓰는 선언은 `public`으로 둔다.
 
   | 무엇 | 쓰는 법 |
   |---|---|

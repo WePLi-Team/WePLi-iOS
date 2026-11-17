@@ -33,7 +33,7 @@ private struct SheetCornerAndBackground: ViewModifier {
   }
 }
 
-extension View {
+public extension View {
   /// 시트 안쪽 루트 뷰에 붙인다. 기본은 중간 · 전체 높이.
   func wepliSheetStyle(detents: Set<PresentationDetent> = [.medium, .large]) -> some View {
     self.modifier(WePLiSheetModifier(detents: detents))

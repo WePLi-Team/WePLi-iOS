@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-066 · UI-3g — 곡 공유 카드(전체 화면). 위: 미리보기 카드(×1.12, 위 82) · 아래: 떠 있는 공유 시트(여백 8, 모서리 40)
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-14c–14o 공통 — 서비스 아이콘 · 시트 내비 · 스위치 행 · 체크 · 보조 버튼
 

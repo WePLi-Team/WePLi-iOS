@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-5b 헤더 — 이미지 440 · 위 스크림 140(검정 45% → 0) · 아래 스크림 220(검정 → 0)
 // 이름 34 Bold · 차트 라벨 13 SemiBold #C8CFFF · 좋아요 46(켜면 #FE82DB) · 전체 재생 56(#C8CFFF)

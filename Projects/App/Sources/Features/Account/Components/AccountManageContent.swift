@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-7c 계정 관리 — 로그인 정보(Apple · Google · 가입일) · 차단한 사용자(차단 해제) · 회원 탈퇴
 

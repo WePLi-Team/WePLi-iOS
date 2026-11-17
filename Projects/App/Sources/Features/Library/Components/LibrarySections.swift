@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-5c 세그먼트 · 상태 배지 · 세그먼트별 목록
 

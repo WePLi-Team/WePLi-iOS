@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-8a(v2) 구성 요소 — 순위 행 · 역전 알림 배너
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-16d 로그인 — 흐르는 커버 벽 위에 Figma 원본 문구, 아래에 Apple · Google · 먼저 둘러볼게요(DEC-032)
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-022 · UI-4b — 지금 재생 중. 미니 플레이어를 누르면 올라오는 iOS 음악 앱 방식의 전체 화면 플레이어.
 // 위쪽 손잡이를 끌어내리면 닫힌다. 일시정지하면 앨범 아트가 0.86으로 작아진다(4b 노트 03).

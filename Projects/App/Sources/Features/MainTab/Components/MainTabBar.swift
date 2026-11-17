@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-001 · UI-12d 「탭 바」
 // iOS 26: 떠 있는 글래스 캡슐 4탭(62pt) + 분리된 원형 검색 버튼(62pt), 좌우 20 · 아래 26

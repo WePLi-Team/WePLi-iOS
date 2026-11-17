@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-3d 헤더 · 아티스트 · 수록곡
 

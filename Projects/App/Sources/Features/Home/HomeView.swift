@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-020 · UI-12a(DEC-008) — 통합 홈. 히어로(위로 상태 바까지) 위에 머리가 얹히고, 아래로 섹션이 36 간격으로 이어진다.
 // 17섹션: 히어로 · TOP 100 · 배너(#101) → 내 참여 · 사람(#102) → 발견 · 내 취향 · 둘러보기(#103)

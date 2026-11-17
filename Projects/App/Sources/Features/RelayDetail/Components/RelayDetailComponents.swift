@@ -1,4 +1,5 @@
 import SwiftUI
+import WePLiDesignSystem
 
 // UI-3c 구성 요소 — 커버 헤더 · 순위 행 · 곡 없음 카드 · 글래스 캡슐 버튼
 

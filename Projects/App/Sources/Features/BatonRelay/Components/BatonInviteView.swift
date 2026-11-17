@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiDesignSystem
 
 // REQ-035 · UI-11c — 바통 초대 링크로 들어왔을 때. 누가 넘겼는지 · 앞사람 곡 · 이어받을 키워드 · 제한 시간을 먼저 보여주고
 // 「바통 받기」를 눌러야 24시간 타이머가 시작된다. 부담스러우면 바로 넘길 수 있다.
