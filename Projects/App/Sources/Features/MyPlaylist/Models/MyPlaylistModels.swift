@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-078 · UI-10d — 내 플레이리스트
 

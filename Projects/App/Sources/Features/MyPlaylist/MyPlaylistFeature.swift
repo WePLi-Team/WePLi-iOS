@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-078 · UI-10d · DEC-004 — 내 플레이리스트 · 편집
 // 편집 중 바뀐 이름 · 곡 · 순서는 화면에 바로 반영되고(원본), 「완료」를 누르면 서버에 저장한다. 실패하면 편집 전으로 되돌린다.

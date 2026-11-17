@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // UI-2a 최근 · 급상승 검색어, 결과, 하단 선택 트레이
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-075 · UI-2e · DEC-004 — 명함 만들기
 // 뒤로 가도 입력값은 남는다. 닫기 · 나가기는 흐름을 닫는다(원본 프로토타입은 처음으로 되돌림).

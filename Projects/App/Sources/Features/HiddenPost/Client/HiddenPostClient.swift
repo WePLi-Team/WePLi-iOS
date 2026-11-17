@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // UI-17c — 가려진 내 글 삭제는 서버가 한다. 백엔드가 정해지기 전까지 목업이다.
 

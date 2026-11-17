@@ -1,13 +1,7 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-061 · REQ-062 · UI-2b · UI-2a
-
-/// 게시글에 붙이는 곡. 같은 곡은 카탈로그 id로 가려낸다(표기가 달라도 같은 곡).
-struct ComposeTrack: Equatable, Identifiable, Sendable {
-  let id: String
-  let title: String
-  let artist: String
-}
 
 struct PostDraft: Equatable, Sendable {
   var title: String

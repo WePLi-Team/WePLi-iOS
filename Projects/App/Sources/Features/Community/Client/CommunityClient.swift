@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-060 — 백엔드가 정해지기 전까지 목업이다. 좋아요 · 저장은 서버 값이 원본(DEC-004).
 

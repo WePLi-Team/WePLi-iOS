@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-022 · DEC-004 — 미리듣기 오디오. 지금은 목업이다(소리 없이 진행만 한다).
 // 미결정 — 실제 미리듣기는 MusicKit 카탈로그의 previewAssets URL을 AVPlayer로 튼다(앱 서비스 설정 필요).

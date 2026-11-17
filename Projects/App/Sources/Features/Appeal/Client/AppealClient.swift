@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-073 · DEC-024 — 이의 신청 저장 · 검토 · 결과 알림은 서버가 한다. 백엔드가 정해지기 전까지 목업이다.
 // 개인정보 — 설명 내용은 로그에 남기지 않는다.

@@ -1,5 +1,6 @@
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // UI-5c 세그먼트 · 상태 배지 · 세그먼트별 목록
 

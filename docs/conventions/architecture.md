@@ -49,6 +49,8 @@ Projects/App/Resources/                  Assets · Colors · Localizable.xcstrin
 Projects/App/Tests/                      TestStore 기반 Reducer 테스트 → Tests/Features/<Feature>/
 Projects/Core/DesignSystem/               WePLiDesignSystem 프레임워크 — 토큰(WePLiColor · WePLiGradient · WePLiFont) · 크롬(WePLiChrome)
                                          · 공통 컴포넌트 · Fonts(Pretendard, SIL OFL). 쓰는 파일은 `import WePLiDesignSystem` (공통 파일, DEC-033)
+Projects/Core/SharedModels/               WePLiSharedModels 프레임워크 — 여러 기능이 함께 쓰는 값 타입(곡 · 게시글 · 릴레이 · 프로필 ·
+                                         이의 신청 대상 · 표시 형식). Foundation만 의존. 쓰는 파일은 `import WePLiSharedModels` (공통 파일, DEC-033)
 Projects/Core/{Network,Utils}             아직 없음 — 실제 API가 붙을 때 만든다
 ```
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-040 · UI-14b · DEC-004 — 완성 플리 · 기준 화면
 // 좋아요 · 저장 · 다음 릴레이 알림은 먼저 반영하고 실패하면 되돌린다.

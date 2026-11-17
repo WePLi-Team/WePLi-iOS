@@ -3,37 +3,6 @@ import Foundation
 // REQ-073 · UI-11d · DEC-024 — 이의 신청. 게시글 · 이용 제한마다 1번, 24시간 안에 결과(알림 · 내 문의 내역).
 // 결과가 뒤집히면 서버가 바로 복구하고 제한 기록을 지운다(DEC-004)
 
-/// 이의 신청 대상 — 7e 가려진 글 · 7d 이용 제한
-struct AppealTarget: Equatable, Sendable {
-  enum Kind: Equatable, Sendable {
-    case post
-    case restriction
-  }
-
-  let id: String
-  let kind: Kind
-  /// 「비 오는 날 듣는 플리」 · 「커뮤니티 7일 이용 제한」
-  let title: String
-  /// 「욕설 · 비하 표현 신고 누적」
-  let reason: String
-
-  /// 「대상 게시글」 — 이용 제한 대상은 원본에 없어 같은 꼴로 둔다
-  var label: String {
-    switch self.kind {
-    case .post: "대상 게시글"
-    case .restriction: "대상 이용 제한"
-    }
-  }
-
-  /// 「가려진 사유 · …」 · 「제한 사유 · …」
-  var reasonLine: String {
-    switch self.kind {
-    case .post: "가려진 사유 · \(self.reason)"
-    case .restriction: "제한 사유 · \(self.reason)"
-    }
-  }
-}
-
 enum AppealReason: CaseIterable, Equatable, Sendable {
   case different
   case missingContext

@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-063 · REQ-064 · UI-2c · UI-9c · UI-9d
 

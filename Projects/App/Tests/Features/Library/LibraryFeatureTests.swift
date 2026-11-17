@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+import WePLiSharedModels
 import XCTest
 
 // REQ-077 · UI-5c

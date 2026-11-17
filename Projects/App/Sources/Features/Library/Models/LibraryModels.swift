@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-077 · UI-5c
 

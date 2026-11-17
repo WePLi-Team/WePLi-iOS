@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // REQ-031 · UI-3c
 

@@ -2,12 +2,6 @@ import Foundation
 
 // REQ-022 · UI-4b — 미리듣기 플레이어. Apple Music 카탈로그 미리듣기는 30초다(4b 노트 02).
 
-struct PlayerTrack: Equatable, Identifiable, Sendable {
-  let id: String
-  let title: String
-  let artist: String
-}
-
 enum PlayerText {
   /// 미리듣기 길이(초)
   static let previewLength = 30

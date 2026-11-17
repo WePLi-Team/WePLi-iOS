@@ -1,5 +1,6 @@
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // UI-6a 구역 — 미리보기 카드 · 커버 · 기간 · 투표 방식 · 첫 곡 · 참여 범위
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-063 · DEC-004 — 백엔드가 정해지기 전까지 원본(UI-2c · 9c · 9d) 예시를 돌려주는 목업이다.
 

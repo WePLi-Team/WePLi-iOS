@@ -1,5 +1,6 @@
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // UI-1d 게시글 카드 — 작성자 행 · 제목 18 SemiBold · 본문 15 Regular #B5B5C0 · 곡 칩 · 플리 카드 · 액션 줄(44)
 

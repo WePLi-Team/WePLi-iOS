@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+import WePLiSharedModels
 import XCTest
 
 // REQ-061 · REQ-062 · UI-2b · UI-2a

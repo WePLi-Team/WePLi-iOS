@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-036 · DEC-004 — 마감 시각은 서버가 정한다. 백엔드가 정해지기 전까지 목업이다.
 

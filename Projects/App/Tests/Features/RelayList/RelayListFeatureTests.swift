@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+import WePLiSharedModels
 import XCTest
 
 // REQ-030 · UI-10a

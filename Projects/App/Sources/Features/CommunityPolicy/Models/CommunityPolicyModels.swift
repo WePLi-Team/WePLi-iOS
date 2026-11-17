@@ -1,4 +1,5 @@
 import Foundation
+import WePLiSharedModels
 
 // UI-17b · DEC-027 — 커뮤니티 운영정책. 제한 단계는 위반이 확인될 때마다 하나씩 올라간다.
 // 지금 내 단계 · 이의 신청 대상은 서버 값(DEC-004)

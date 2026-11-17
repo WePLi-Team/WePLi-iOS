@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-073 · UI-11d · DEC-024 — 이의 신청. 사유 하나와 설명을 보내면 진행 상태로 바뀐다(되돌릴 수 없음)
 

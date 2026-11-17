@@ -69,6 +69,7 @@ let project = Project(
       dependencies: [
         .external(name: "ComposableArchitecture"),
         .project(target: "WePLiDesignSystem", path: "../Core/DesignSystem"),
+        .project(target: "WePLiSharedModels", path: "../Core/SharedModels"),
         .target(name: "WePLiWidget"),
       ]
     ),

@@ -1,5 +1,6 @@
 import SwiftUI
 import WePLiDesignSystem
+import WePLiSharedModels
 
 // UI-2e 단계 공통 — 제목 24 SemiBold · 설명 14 #A3A3A3 · 큰 버튼 54(켜면 CTA 그라디언트, 끄면 흰색 8% · #6B6B7C)
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-012 — 백엔드가 정해지기 전까지 저장은 목업이다(받은 값을 그대로 돌려준다).
 

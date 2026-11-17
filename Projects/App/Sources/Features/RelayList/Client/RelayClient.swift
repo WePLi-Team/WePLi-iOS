@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiSharedModels
 
 // REQ-030 — 백엔드가 정해지기 전까지 liveValue도 목업이다(AGENTS.md 「미결정」).
 
