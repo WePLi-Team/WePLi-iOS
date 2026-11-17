@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiCommunityFeatures
 import WePLiSupportFeatures
 
 // UI-17a · UI-7b — 고객센터 · 내 문의 내역 → 문의 상세. 상세의 「추가로 문의하기」는 고객센터 문의 시트로,

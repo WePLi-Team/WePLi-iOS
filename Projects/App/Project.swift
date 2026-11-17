@@ -60,7 +60,7 @@ let project = Project(
           ],
         ],
       ]),
-      sources: ["Sources/**", "Shared/Sources/**"],
+      sources: ["Sources/**"],
       resources: ["Resources/**"],
       entitlements: .file(path: .relativeToManifest("App.entitlements")),
       scripts: [
@@ -72,6 +72,7 @@ let project = Project(
         .project(target: "WePLiSharedModels", path: "../Core/SharedModels"),
         .project(target: "WePLiSupportFeatures", path: "../Features/Support"),
         .project(target: "WePLiRelayFeatures", path: "../Features/Relay"),
+        .project(target: "WePLiCommunityFeatures", path: "../Features/Community"),
         .target(name: "WePLiWidget"),
       ]
     ),
