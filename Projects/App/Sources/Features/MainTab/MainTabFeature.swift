@@ -3,6 +3,7 @@ import Foundation
 import WePLiAccountFeatures
 import WePLiCommunityFeatures
 import WePLiCreateFeatures
+import WePLiHomeFeatures
 import WePLiMusicFeatures
 import WePLiRelayFeatures
 import WePLiSupportFeatures

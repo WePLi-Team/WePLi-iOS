@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiHomeFeatures
 import XCTest
 
 // REQ-050 · UI-11b

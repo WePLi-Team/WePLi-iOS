@@ -62,6 +62,8 @@ Projects/Features/Account/                WePLiAccountFeatures — 계정 관리
                                          로그인 화면 이미지(앨범 커버 · Google 로고)는 이 모듈의 Resources에 있다
 Projects/Features/Music/                  WePLiMusicFeatures — 곡 상세 · 아티스트 · 플리 상세 · 보관함 · 내 플리 · 플레이어 · 곡 메뉴 · 곡 공유 · 검색
 Projects/Features/Create/                 WePLiCreateFeatures — 게시글 작성 · 곡 선택 · 릴레이 만들기 · 명함
+Projects/Features/Home/                   WePLiHomeFeatures — 홈 · 실시간 트렌드 · 오늘의 곡 · 완성 플리 · 내보내기 · 음악 서비스 · 듣는 중 공유.
+                                         홈은 메인 탭 타입을 모른다 — 탭 전환은 HomeTabTarget으로 알리고 메인 탭이 바꾼다
 ```
 
 - 지금은 `AuthClient`가 `LoginFeature.swift` 안에 있다. 새 Client는 `Client/` 폴더에 둔다(기존 것은 옮기지 않음 — 별도 이슈).

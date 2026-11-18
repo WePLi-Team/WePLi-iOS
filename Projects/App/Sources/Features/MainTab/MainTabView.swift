@@ -4,6 +4,7 @@ import WePLiAccountFeatures
 import WePLiCommunityFeatures
 import WePLiCreateFeatures
 import WePLiDesignSystem
+import WePLiHomeFeatures
 import WePLiMusicFeatures
 import WePLiRelayFeatures
 import WePLiSupportFeatures

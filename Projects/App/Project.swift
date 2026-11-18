@@ -76,6 +76,7 @@ let project = Project(
         .project(target: "WePLiAccountFeatures", path: "../Features/Account"),
         .project(target: "WePLiMusicFeatures", path: "../Features/Music"),
         .project(target: "WePLiCreateFeatures", path: "../Features/Create"),
+        .project(target: "WePLiHomeFeatures", path: "../Features/Home"),
         .target(name: "WePLiWidget"),
       ]
     ),
