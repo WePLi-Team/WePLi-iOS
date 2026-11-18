@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiAccountFeatures
 import WePLiSharedModels
 @testable import WePLiSupportFeatures
 import XCTest

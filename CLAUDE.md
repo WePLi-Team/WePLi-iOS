@@ -45,6 +45,7 @@ bundle exec fastlane ios ci          # Full CI pipeline (bootstrap + test + arch
 - `Projects/Features/Support/` - `WePLiSupportFeatures` framework: notices, app info, policy, appeal, help center, inquiry history, notification settings (DEC-033 step 3 pilot)
 - `Projects/Features/Relay/` - `WePLiRelayFeatures` framework: relay list/detail, card vote, world cup, baton, prediction, my recommendation, season ranking
 - `Projects/Features/Community/` - `WePLiCommunityFeatures` framework: community feed, friend feed, hidden post, post detail, follow list, friend profile, taste match, notifications
+- `Projects/Features/Account/` - `WePLiAccountFeatures` framework: account management, login, my, edit profile, system status, service guide (login images live in its Resources)
 - `Tuist/` - Tuist configuration and SPM dependencies
 - `Configs/` - xcconfig files for Debug/Release builds
 

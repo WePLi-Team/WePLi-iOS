@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiAccountFeatures
 import WePLiCommunityFeatures
 import WePLiDesignSystem
 import WePLiRelayFeatures

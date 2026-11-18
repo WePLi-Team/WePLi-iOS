@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiAccountFeatures
 
 struct AppView: View {
   let store: StoreOf<AppFeature>

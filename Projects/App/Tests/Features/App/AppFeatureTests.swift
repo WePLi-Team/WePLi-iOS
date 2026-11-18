@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiAccountFeatures
 import XCTest
 
 // #104 — 로그인 버튼을 누르면 메인 탭으로 임시 진입(실제 연동은 #14)

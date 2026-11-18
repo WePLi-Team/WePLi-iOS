@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import WePLiAccountFeatures
 import WePLiDesignSystem
 
 #if !DEBUG

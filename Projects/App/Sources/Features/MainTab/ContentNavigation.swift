@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiAccountFeatures
 import WePLiCommunityFeatures
 import WePLiRelayFeatures
 import WePLiSupportFeatures
