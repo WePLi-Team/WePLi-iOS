@@ -47,6 +47,7 @@ bundle exec fastlane ios ci          # Full CI pipeline (bootstrap + test + arch
 - `Projects/Features/Community/` - `WePLiCommunityFeatures` framework: community feed, friend feed, hidden post, post detail, follow list, friend profile, taste match, notifications
 - `Projects/Features/Account/` - `WePLiAccountFeatures` framework: account management, login, my, edit profile, system status, service guide (login images live in its Resources)
 - `Projects/Features/Music/` - `WePLiMusicFeatures` framework: song detail, artist, playlist detail, library, my playlist, player, song menu, song share, search
+- `Projects/Features/Create/` - `WePLiCreateFeatures` framework: compose post, song picker, create relay, business card
 - `Tuist/` - Tuist configuration and SPM dependencies
 - `Configs/` - xcconfig files for Debug/Release builds
 
