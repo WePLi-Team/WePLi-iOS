@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiAccountFeatures
 
 // 앱 루트 — 로그인 화면과 메인 탭을 오간다. 탈퇴 신청 뒤 로그아웃하면 로그인 화면으로 돌아온다.
 // 「먼저 둘러볼게요」는 메인 탭을 손님으로 열고, 손님이 로그인을 고르면 로그인 화면으로 돌아온다(DEC-032).

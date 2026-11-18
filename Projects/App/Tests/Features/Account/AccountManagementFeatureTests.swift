@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiAccountFeatures
 import XCTest
 
 // REQ-013 · UI-7c · UI-17e · DEC-004

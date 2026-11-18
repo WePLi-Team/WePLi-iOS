@@ -1,0 +1,81 @@
+import Foundation
+
+// REQ-070 · UI-1e · UI-3e
+
+/// 마이 탭 그룹 목록의 행 (UI-1e)
+public enum MyMenu: Equatable, CaseIterable, Sendable {
+  case myPlaylists
+  case joinedRelays
+  case likesAndSaves
+  case notificationSettings
+  /// 음악 서비스 연결 · 내보낸 플레이리스트(UI-11b 「마이 › 설정 › 음악 서비스」)
+  case musicServices
+  /// 지금 듣는 음악 연결 · 공개 범위(UI-13a 「마이 › 설정」)
+  case listeningShare
+  case serviceGuide
+  case noticesAndTerms
+  /// 고객센터(UI-7b · DEC-013)
+  case helpCenter
+  /// 계정 관리 · 회원 탈퇴(UI-7c) — 고객센터 FAQ 「마이 › 계정 관리」
+  case accountManagement
+  case developerMode
+
+  public var title: String {
+    switch self {
+    case .myPlaylists: "내 플레이리스트"
+    case .joinedRelays: "참여한 릴레이리스트"
+    case .likesAndSaves: "좋아요 • 저장"
+    case .notificationSettings: "알림 설정"
+    case .musicServices: "음악 서비스"
+    case .listeningShare: "지금 듣는 음악"
+    case .serviceGuide: "서비스 이용 가이드"
+    case .noticesAndTerms: "공지 • 이용약관"
+    case .helpCenter: "고객센터"
+    case .accountManagement: "계정 관리"
+    case .developerMode: "개발자 모드"
+    }
+  }
+
+  public var systemImage: String {
+    switch self {
+    case .myPlaylists: "list.bullet"
+    case .joinedRelays: "music.note.list"
+    case .likesAndSaves: "heart"
+    case .notificationSettings: "bell"
+    case .musicServices: "music.note"
+    case .listeningShare: "headphones"
+    case .serviceGuide: "book.closed"
+    case .noticesAndTerms: "doc.text"
+    case .helpCenter: "questionmark.bubble"
+    case .accountManagement: "person.crop.circle"
+    case .developerMode: "terminal"
+    }
+  }
+}
+
+/// 그룹 순서와 헤더 — 「앱 버전」 행은 값만 보여 주는 행이라 메뉴가 아니다.
+public enum MyMenuSection: CaseIterable, Equatable {
+  case activity
+  case settings
+  case appInfo
+  case etc
+
+  public var title: String {
+    switch self {
+    case .activity: "내 활동"
+    case .settings: "설정"
+    case .appInfo: "앱 정보"
+    case .etc: "기타"
+    }
+  }
+
+  /// 개발자 모드 행은 개발자 모드가 켜졌을 때만 보인다(UI-7g).
+  public func menus(isDeveloperModeEnabled: Bool) -> [MyMenu] {
+    switch self {
+    case .activity: [.myPlaylists, .joinedRelays, .likesAndSaves]
+    case .settings: [.notificationSettings, .musicServices, .listeningShare, .accountManagement]
+    case .appInfo: [.serviceGuide, .noticesAndTerms, .helpCenter]
+    case .etc: isDeveloperModeEnabled ? [.developerMode] : []
+    }
+  }
+}
