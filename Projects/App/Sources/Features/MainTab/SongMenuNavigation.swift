@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import WePLiMusicFeatures
 import WePLiSharedModels
 
 // REQ-023 · UI-1b 곡 메뉴 시트 — 곡 상세 ··· 에서 열고, 행마다 목적지로 잇는다

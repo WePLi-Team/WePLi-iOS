@@ -1,0 +1,68 @@
+import ComposableArchitecture
+import Foundation
+import Photos
+import UIKit
+
+// REQ-066 · UI-3g — 공유 링크 · 클립보드 · 사진 앱 저장
+
+public enum SongShareError: Error, Equatable {
+  /// 사진 앱 접근을 허용하지 않음
+  case photoAccessDenied
+}
+
+public struct SongShareClient {
+  public var link: @Sendable (_ songID: String) async throws -> URL
+  public var copy: @Sendable (_ url: URL) async -> Void
+  public var saveImage: @Sendable (_ png: Data) async throws -> Void
+
+  public init(
+    link: @escaping @Sendable (_ songID: String) async throws -> URL,
+    copy: @escaping @Sendable (_ url: URL) async -> Void,
+    saveImage: @escaping @Sendable (_ png: Data) async throws -> Void
+  ) {
+    self.link = link
+    self.copy = copy
+    self.saveImage = saveImage
+  }
+}
+
+extension SongShareClient: DependencyKey {
+  /// 미결정 — 공유 링크 도메인(Universal Links). 정해지기 전까지 예약 도메인을 쓴다.
+  public static let linkBase = URL(string: "https://wepli.example/songs")
+
+  public static let liveValue = SongShareClient(
+    link: { songID in
+      guard let url = linkBase?.appendingPathComponent(songID) else { throw URLError(.badURL) }
+      return url
+    },
+    copy: { url in
+      await MainActor.run { UIPasteboard.general.url = url }
+    },
+    saveImage: { png in
+      let status = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
+      guard status == .authorized || status == .limited else { throw SongShareError.photoAccessDenied }
+      try await PHPhotoLibrary.shared().performChanges {
+        PHAssetCreationRequest.forAsset().addResource(with: .photo, data: png, options: nil)
+      }
+    }
+  )
+
+  public static let previewValue = SongShareClient(
+    link: { URL(string: "https://wepli.example/songs/\($0)") ?? URL(fileURLWithPath: "/") },
+    copy: { _ in },
+    saveImage: { _ in }
+  )
+
+  public static let testValue = SongShareClient(
+    link: unimplemented("SongShareClient.link", placeholder: URL(fileURLWithPath: "/")),
+    copy: unimplemented("SongShareClient.copy"),
+    saveImage: unimplemented("SongShareClient.saveImage")
+  )
+}
+
+public extension DependencyValues {
+  var songShareClient: SongShareClient {
+    get { self[SongShareClient.self] }
+    set { self[SongShareClient.self] = newValue }
+  }
+}

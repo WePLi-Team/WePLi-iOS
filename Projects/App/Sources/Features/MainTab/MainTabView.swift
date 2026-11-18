@@ -3,6 +3,7 @@ import SwiftUI
 import WePLiAccountFeatures
 import WePLiCommunityFeatures
 import WePLiDesignSystem
+import WePLiMusicFeatures
 import WePLiRelayFeatures
 import WePLiSupportFeatures
 

@@ -60,6 +60,7 @@ Projects/Features/Community/              WePLiCommunityFeatures — 커뮤니�
                                          취향 궁합 · 알림. 위젯 공유 코드(Projects/App/Shared)도 이 모듈이 컴파일한다(앱 타깃은 안 함)
 Projects/Features/Account/                WePLiAccountFeatures — 계정 관리 · 로그인 · 마이 · 내 정보 수정 · 시스템 상태 · 서비스 안내.
                                          로그인 화면 이미지(앨범 커버 · Google 로고)는 이 모듈의 Resources에 있다
+Projects/Features/Music/                  WePLiMusicFeatures — 곡 상세 · 아티스트 · 플리 상세 · 보관함 · 내 플리 · 플레이어 · 곡 메뉴 · 곡 공유 · 검색
 ```
 
 - 지금은 `AuthClient`가 `LoginFeature.swift` 안에 있다. 새 Client는 `Client/` 폴더에 둔다(기존 것은 옮기지 않음 — 별도 이슈).

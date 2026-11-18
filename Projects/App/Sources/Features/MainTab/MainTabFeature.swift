@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Foundation
 import WePLiAccountFeatures
 import WePLiCommunityFeatures
+import WePLiMusicFeatures
 import WePLiRelayFeatures
 import WePLiSupportFeatures
 

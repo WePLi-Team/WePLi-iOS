@@ -1,0 +1,59 @@
+import ComposableArchitecture
+import Foundation
+import WePLiSharedModels
+
+// REQ-022 · DEC-004 — 미리듣기 오디오. 지금은 목업이다(소리 없이 진행만 한다).
+// 미결정 — 실제 미리듣기는 MusicKit 카탈로그의 previewAssets URL을 AVPlayer로 튼다(앱 서비스 설정 필요).
+
+public struct PlayerClient {
+  public var play: @Sendable (_ track: PlayerTrack) async -> Void
+  public var pause: @Sendable () async -> Void
+  public var resume: @Sendable () async -> Void
+  /// 좋아요 — 곡 상세 · 곡 메뉴와 같은 좋아요다
+  public var setLiked: @Sendable (_ trackID: PlayerTrack.ID, _ isLiked: Bool) async throws -> Void
+  /// 「Music에서 전체 곡 듣기」
+  public var openInMusic: @Sendable (_ track: PlayerTrack) async -> Void
+
+  public init(
+    play: @escaping @Sendable (_ track: PlayerTrack) async -> Void,
+    pause: @escaping @Sendable () async -> Void,
+    resume: @escaping @Sendable () async -> Void,
+    setLiked: @escaping @Sendable (_ trackID: PlayerTrack.ID, _ isLiked: Bool) async throws -> Void,
+    openInMusic: @escaping @Sendable (_ track: PlayerTrack) async -> Void
+  ) {
+    self.play = play
+    self.pause = pause
+    self.resume = resume
+    self.setLiked = setLiked
+    self.openInMusic = openInMusic
+  }
+}
+
+extension PlayerClient: DependencyKey {
+  public static let mockValue = PlayerClient(
+    play: { _ in },
+    pause: {},
+    resume: {},
+    setLiked: { _, _ in },
+    openInMusic: { _ in }
+  )
+
+  /// 실제 API를 붙이기 전까지 목업(백엔드 미정 · AGENTS.md) — 붙이면 이 줄만 바꾼다
+  public static let liveValue = mockValue
+  public static let previewValue = mockValue
+
+  public static let testValue = PlayerClient(
+    play: { _ in },
+    pause: {},
+    resume: {},
+    setLiked: unimplemented("PlayerClient.setLiked"),
+    openInMusic: unimplemented("PlayerClient.openInMusic")
+  )
+}
+
+public extension DependencyValues {
+  var playerClient: PlayerClient {
+    get { self[PlayerClient.self] }
+    set { self[PlayerClient.self] = newValue }
+  }
+}
