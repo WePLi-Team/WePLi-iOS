@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiMusicFeatures
 import XCTest
 
 // REQ-080 · UI-4c
