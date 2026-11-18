@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import WePLi
+@testable import WePLiCommunityFeatures
 import XCTest
 
 // REQ-081 · UI-4d
