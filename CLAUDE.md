@@ -39,7 +39,7 @@ bundle exec fastlane ios ci          # Full CI pipeline (bootstrap + test + arch
 
 ### Project Structure (Tuist Modular)
 
-- `Projects/App/` - Main app target with SwiftUI views and TCA reducers
+- `Projects/App/` - Main app target: app entry (`App`) and main tab assembly (`MainTab`) only; features live in `Projects/Features/*`
 - `Projects/Core/DesignSystem/` - `WePLiDesignSystem` framework: tokens, chrome, shared components, Pretendard fonts (DEC-033 module split, step 1)
 - `Projects/Core/SharedModels/` - `WePLiSharedModels` framework: value types shared across features (tracks, post, relay, profile, formatters)
 - `Projects/Features/Support/` - `WePLiSupportFeatures` framework: notices, app info, policy, appeal, help center, inquiry history, notification settings (DEC-033 step 3 pilot)
@@ -48,6 +48,7 @@ bundle exec fastlane ios ci          # Full CI pipeline (bootstrap + test + arch
 - `Projects/Features/Account/` - `WePLiAccountFeatures` framework: account management, login, my, edit profile, system status, service guide (login images live in its Resources)
 - `Projects/Features/Music/` - `WePLiMusicFeatures` framework: song detail, artist, playlist detail, library, my playlist, player, song menu, song share, search
 - `Projects/Features/Create/` - `WePLiCreateFeatures` framework: compose post, song picker, create relay, business card
+- `Projects/Features/Home/` - `WePLiHomeFeatures` framework: home, live trend, daily song, completed playlist, export flow, music services, listening share
 - `Tuist/` - Tuist configuration and SPM dependencies
 - `Configs/` - xcconfig files for Debug/Release builds
 

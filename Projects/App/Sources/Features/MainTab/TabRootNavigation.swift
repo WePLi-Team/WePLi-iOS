@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Foundation
 import WePLiAccountFeatures
 import WePLiCommunityFeatures
+import WePLiHomeFeatures
 import WePLiMusicFeatures
 import WePLiRelayFeatures
 import WePLiSupportFeatures
@@ -93,7 +94,11 @@ struct TabRootNavigation: Reducer {
       return .none
     }
     switch delegate {
-    case let .switchTab(tab):
+    case let .switchTab(target):
+      let tab: MainTabFeature.Tab = switch target {
+      case .relay: .relay
+      case .search: .search
+      }
       return MainTabFeature.select(tab, &state)
     case let .songMenu(song):
       state.songMenuSource = nil
